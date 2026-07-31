@@ -1,0 +1,6 @@
+{
+  "baseUrl": "https://gctp.in/chennai-home",
+  "browser": "chromium",
+  "headless": false,
+  "timeout": 60000
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Prashanth",
+  "mobile": "8861983424",
+  "incidentType": "WEATHER",
+  "incidentSubType": "FLOOD",
+  "location": "Chennai Central",
+  "message": "Automation Testing using Playwright."
+}
