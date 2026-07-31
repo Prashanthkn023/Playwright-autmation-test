@@ -1,4 +1,4 @@
-import { test } from '../Fixtures/baseTest';
+import { test } from '../fixtures/baseTest';
 
 test('TC_004 End To End Flow', async ({
 
