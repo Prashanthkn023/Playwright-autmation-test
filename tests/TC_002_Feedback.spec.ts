@@ -1,4 +1,4 @@
-import { test } from '../Fixtures/baseTest';
+import { test } from '../fixtures/baseTest';
 
 import feedbackData from '../testdata/feedback.json';
 
