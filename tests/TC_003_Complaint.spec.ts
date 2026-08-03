@@ -1,4 +1,4 @@
-import { test } from '../Fixtures/baseTest';
+import { test } from '../fixtures/baseTest';
 import complaintData from '../testdata/complaint.json';
 
 test.setTimeout(60000); // 3 minutes

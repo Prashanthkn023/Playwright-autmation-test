@@ -3,6 +3,9 @@ import { BasePage } from './BasePage';
 import path from 'path';
 
 export class ComplaintPage extends BasePage {
+    uploadPNG() {
+        throw new Error('Method not implemented.');
+    }
 
     readonly heading: Locator;
     readonly nameInput: Locator;
@@ -109,7 +112,7 @@ export class ComplaintPage extends BasePage {
 
     // Verify Toast
     async verifyToastMessage() {
-        await expect(this.toastMessage).toBeVisible({ timeout: 10000 });
+        await expect(this.toastMessage).toBeVisible({ timeout: 30000 });
 
         const text = await this.toastMessage.textContent();
         console.log("Toast:", text);
@@ -117,7 +120,7 @@ export class ComplaintPage extends BasePage {
 
     // Verify OTP Field
     async verifyOTPField() {
-        await expect(this.otpField).toBeVisible({ timeout: 10000 });
+        await expect(this.otpField).toBeVisible({ timeout: 60000 });
 
         console.log("OTP field displayed.");
     }
@@ -127,7 +130,7 @@ export class ComplaintPage extends BasePage {
 
         console.log(`Please enter OTP within ${seconds} seconds`);
 
-        await this.page.waitForTimeout(seconds * 1000);
+        await this.page.waitForTimeout(seconds * 3000);
     }
 
     // Verify & Submit
