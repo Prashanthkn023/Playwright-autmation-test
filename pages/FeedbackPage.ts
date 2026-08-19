@@ -1,5 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
+import Tesseract from 'tesseract.js';
 
 export class FeedbackPage extends BasePage {
 
@@ -47,14 +48,32 @@ export class FeedbackPage extends BasePage {
         await this.message.fill(message);
     }
 
-    // Wait for Manual Captcha
-    async waitForCaptcha(seconds: number = 20) {
+    // Solve Captcha Automatically
+    async waitForCaptcha() {
 
-        console.log(
-            `Please enter captcha manually within ${seconds} seconds`
+        await this.page.locator('#canv').screenshot({
+            path: 'captcha.png'
+        });
+
+        const result = await Tesseract.recognize(
+            'captcha.png',
+            'eng'
         );
 
-        await this.page.waitForTimeout(seconds * 1000);
+        const captchaText =
+            result.data.text
+                .replace(/\s/g, '')
+                .trim();
+
+        console.log(
+            `Captcha : ${captchaText}`
+        );
+
+        await this.page
+            .locator(
+                'input[name="user_captcha_input"]'
+            )
+            .fill(captchaText);
     }
 
     // Click Submit

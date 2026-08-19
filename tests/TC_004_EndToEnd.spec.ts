@@ -24,9 +24,9 @@ test('TC_004 End To End Flow', async ({
 
     await complaint.submitComplaint({
         name: 'Prashanth',
-        mobile: '7619103887',
-        incidentType: 'WEATHER',
-        incidentSubType: 'FLOOD',
+        mobile: '8861983424',
+        incidentType: 'COMPLAINTS',
+        incidentSubType: 'GRIEVANCE',
         location: 'Chennai Central',
         message: 'Automation Testing using Playwright'
     });

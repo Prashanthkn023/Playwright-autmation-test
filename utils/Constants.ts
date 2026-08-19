@@ -18,5 +18,5 @@ export const Constants = {
 
     CAPTCHA_WAIT: 30000,
 
-    OTP_WAIT: 30000
+    OTP_WAIT: 60000
 };

@@ -9,7 +9,7 @@ export class BasePage {
 
   // Navigate to URL
   async navigate(url: string) {
-    await this.page.goto(url, { waitUntil: 'networkidle' });
+    await this.page.goto(url);
   }
 
   // Click on an element

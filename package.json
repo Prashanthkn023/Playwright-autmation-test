@@ -12,5 +12,8 @@
     "allure-commandline": "^2.43.0",
     "allure-playwright": "^3.10.2",
     "dotenv": "^17.4.2"
+  },
+  "dependencies": {
+    "tesseract.js": "^7.0.0"
   }
 }

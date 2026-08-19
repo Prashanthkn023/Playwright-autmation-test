@@ -21,7 +21,6 @@ export default defineConfig({
 
   reporter: [
     ['list'],
-    ['html', { open: 'never' }],
     ['allure-playwright']
   ],
 
@@ -36,7 +35,7 @@ export default defineConfig({
 
     trace: 'retain-on-failure',
 
-    actionTimeout: 30000,
+    actionTimeout: 60000,
 
     navigationTimeout: 60000,
 
@@ -56,7 +55,7 @@ export default defineConfig({
   projects: [
 
     {
-      name: 'Chromium',
+      name: 'Chrome',
       use: {
         ...devices['Desktop Chrome']
       }
