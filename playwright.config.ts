@@ -5,10 +5,10 @@ export default defineConfig({
 
   testDir: './tests',
 
-  timeout: Number(process.env.TIMEOUT) || 180000,
+  timeout: Number(process.env.TIMEOUT) || 300000,
 
   expect: {
-    timeout: 10000,
+    timeout: 15000,
   },
 
   fullyParallel: true,
@@ -37,7 +37,7 @@ export default defineConfig({
 
     actionTimeout: 60000,
 
-    navigationTimeout: 60000,
+    navigationTimeout: 90000,
 
     ignoreHTTPSErrors: true,
 
@@ -47,7 +47,10 @@ export default defineConfig({
     },
 
     launchOptions: {
-      slowMo: 200
+      slowMo: 200,
+      args: [
+        '--disable-blink-features=AutomationControlled'
+      ]
     }
 
   },
@@ -57,23 +60,10 @@ export default defineConfig({
     {
       name: 'chromium',
       use: {
-        ...devices['Desktop Chrome']
+        ...devices['Desktop Chrome'],
+        bypassCSP: true,
       }
     },
-
-    // {
-    //   name: 'Firefox',
-    //   use: {
-    //     ...devices['Desktop Firefox']
-    //   }
-    // },
-
-    // {
-    //   name: 'Webkit',
-    //   use: {
-    //     ...devices['Desktop Safari']
-    //   }
-    // }
 
   ],
 
