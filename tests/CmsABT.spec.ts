@@ -69,8 +69,12 @@ test('validate the cms home page About Us', async ({ page }) => {
     // Verify the GCTP image
     await expect(page.locator('.GCTPImg')).toBeVisible();
 
-    // Print the result after the Updates section is validated
+    // Print the result after the Updates section is validate
     console.log('Updates section passed.');
+    await page.getByRole('button', { name: 'About Us' }).hover();
+
+    // Open the Message from Police Commissioner section
+    await page.getByRole('navigation').getByText('Message from Police Commissioner').click(); 
 
     // Open the Message from Police Commissioner section
     await expect(
