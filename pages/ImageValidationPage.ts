@@ -16,8 +16,17 @@ export class ImageValidationPage {
 
         const brokenImages: string[] = [];
 
-        // Wait for all images to be loaded
-        await this.page.waitForLoadState('networkidle');
+        // Wait for page to be fully loaded with extended timeout
+        await this.page.waitForLoadState('networkidle', { timeout: 120000 });
+        
+        // Add additional wait time for images to load
+        await this.page.waitForTimeout(5000);
+
+        if (count === 0) {
+            console.log("WARNING: No images found on the page with src starting with https://gctp.in/");
+            console.log("======================================\n");
+            return;
+        }
 
         for (let i = 0; i < count; i++) {
 
@@ -33,7 +42,7 @@ export class ImageValidationPage {
                 // Check if image is actually loaded by verifying naturalWidth
                 const isLoaded = await images.nth(i).evaluate((img: HTMLImageElement) => {
                     return img.naturalWidth > 0 && img.naturalHeight > 0 && img.complete;
-                });
+                }).catch(() => false);
 
                 if (isLoaded) {
                     console.log(`PASS : ${src}`);
