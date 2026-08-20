@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import Tesseract from "tesseract.js";
 
-test("Validate the feedback form", async ({ page }) => {
+test("Validate the feedback form @manual", async ({ page }) => {
   await page.goto("https://gctp.in/chennai-feedback");
 
   // Select a rating
