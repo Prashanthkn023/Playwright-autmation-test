@@ -14,7 +14,7 @@ export class HomePage extends BasePage {
         this.feedbackLink = page.getByRole('link', { name: 'Feedback' });
         this.complaintLink = page.getByRole('link', { name: 'Complaints' });
 
-        // Update this locator if needed
+        // Home page logo
         this.homeLogo = page.locator('img[alt="logo"]');
 
         // All website images
@@ -28,8 +28,7 @@ export class HomePage extends BasePage {
 
     // Verify Home Page
     async verifyHomePage() {
-        await this.verifyURL(/chennai-home/);
-        await expect(this.page).toHaveURL(/chennai-home/);
+        await expect(this.page).toHaveURL('https://gctp.in/chennai-home');
     }
 
     // Open Feedback Page
