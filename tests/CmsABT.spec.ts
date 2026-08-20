@@ -73,6 +73,10 @@ test('validate the cms home page About Us', async ({ page }) => {
     console.log('Updates section passed.');
 
     // Open the Message from Police Commissioner section
+    await expect(
+      page.getByRole('navigation').getByText('Message from Police Commissioner')
+    ).toBeVisible({ timeout: 30000 });
+
     await page.getByRole('navigation').getByText('Message from Police Commissioner').click();
 
     // Verify the heading
