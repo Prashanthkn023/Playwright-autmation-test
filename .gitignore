@@ -13,6 +13,11 @@ allure-report/
 coverage/
 
 dist/
+
+# Captcha screenshots generated at test-run time
+captcha.png
+complaint-captcha.png
+
 # Playwright
 node_modules/
 /test-results/
