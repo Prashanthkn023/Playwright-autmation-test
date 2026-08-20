@@ -9,7 +9,7 @@ export class BasePage {
 
   // Navigate to URL
   async navigate(url: string) {
-    await this.page.goto('https://gctp.in/chennai-home', {
+    await this.page.goto(url, {
       waitUntil: 'domcontentloaded',
       timeout: 120000
     });
@@ -45,7 +45,7 @@ export class BasePage {
     await expect(this.page).toHaveURL(url);
   }
 
-  // Wait for a few seconds (avoid using unless necessary)
+  // Wait for a few seconds
   async wait(seconds: number) {
     await this.page.waitForTimeout(seconds * 1000);
   }
