@@ -2,7 +2,7 @@ import { test } from '../fixtures/baseTest';
 
 import feedbackData from '../testdata/feedback.json';
 
-test('TC_002 Feedback Form Submission', async ({ home, feedback }) => {
+test('TC_002 Feedback Form Submission @manual', async ({ home, feedback }) => {
 
     await home.openHomePage();
 

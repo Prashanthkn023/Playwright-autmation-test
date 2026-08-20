@@ -1,6 +1,6 @@
 import { test } from '../fixtures/baseTest';
 
-test('TC_004 End To End Flow', async ({
+test('TC_004 End To End Flow @manual', async ({
     home,
     image,
     feedback,

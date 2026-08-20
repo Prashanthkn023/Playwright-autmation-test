@@ -1,6 +1,6 @@
 import { test } from '../fixtures/baseTest';
 
-test('TC_003 Complaint Page Submission Flow', async ({ home, complaint }) => {
+test('TC_003 Complaint Page Submission Flow @manual', async ({ home, complaint }) => {
   await home.openHomePage();
   await home.openComplaint();
 
