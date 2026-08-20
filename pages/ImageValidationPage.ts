@@ -27,14 +27,12 @@ export class ImageValidationPage {
 
             try {
 
-                const response = await fetch(src, {
-                    method: 'HEAD'
-                });
+                const response = await this.page.request.head(src);
 
-                if (response.ok) {
+                if (response.ok()) {
                     console.log(`PASS : ${src}`);
                 } else {
-                    console.log(`FAIL : ${src} - ${response.status}`);
+                    console.log(`FAIL : ${src} - ${response.status()}`);
                     brokenImages.push(src);
                 }
 
