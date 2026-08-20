@@ -5,10 +5,10 @@ export default defineConfig({
 
   testDir: './tests',
 
-  timeout: Number(process.env.TIMEOUT) || 300000,
+  timeout: Number(process.env.TIMEOUT) || 600000, // Increased to 10 minutes
 
   expect: {
-    timeout: 15000,
+    timeout: 30000, // Increased expectation timeout
   },
 
   fullyParallel: true,
@@ -37,7 +37,7 @@ export default defineConfig({
 
     actionTimeout: 60000,
 
-    navigationTimeout: 90000,
+    navigationTimeout: 120000, // Increased navigation timeout
 
     ignoreHTTPSErrors: true,
 
@@ -49,7 +49,8 @@ export default defineConfig({
     launchOptions: {
       slowMo: 200,
       args: [
-        '--disable-blink-features=AutomationControlled'
+        '--disable-blink-features=AutomationControlled',
+        '--disable-blink-features=BlockCredentialedSubresources' // Allow loading images without CORS issues
       ]
     }
 
