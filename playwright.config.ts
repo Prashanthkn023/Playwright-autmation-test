@@ -21,12 +21,14 @@ export default defineConfig({
 
   reporter: [
     ['list'],
-    ['allure-playwright']
+    ['allure-playwright'],
+    ['junit', { outputFile: 'test-results/results.xml' }]
   ],
 
   use: {
 
     baseURL: process.env.BASE_URL || 'https://gctp.in/chennai-home',
+
     headless: process.env.CI ? true : process.env.HEADLESS === 'true',
 
     screenshot: 'only-on-failure',
