@@ -11,24 +11,47 @@ export class ImageValidationPage {
         const count = await images.count();
 
         console.log("\n======================================");
-        console.log(`📸 Total Images Found : ${count}`);
+        console.log(`Total Images Found : ${count}`);
         console.log("======================================");
 
         const brokenImages: string[] = [];
         const loadedImages: string[] = [];
 
         // Wait for page to be fully loaded with extended timeout
-        console.log("⏳ Waiting for networkidle state (up to 120s)...");
+        console.log("Waiting for networkidle state (up to 120s)...");
         await this.page.waitForLoadState('networkidle', { timeout: 120000 });
-        console.log("✓ Page reached networkidle state");
-        
+        console.log("Page reached networkidle state");
+
+        // Many images below the fold use native/JS lazy-loading, so the
+        // browser never requests them until they enter the viewport.
+        // Scroll the full page in steps to trigger those loads before we
+        // check naturalWidth/naturalHeight — no timeout increase fixes this.
+        console.log("Scrolling page to trigger lazy-loaded images...");
+        await this.page.evaluate(async () => {
+            await new Promise<void>((resolve) => {
+                let totalHeight = 0;
+                const distance = 300;
+                const timer = setInterval(() => {
+                    const scrollHeight = document.body.scrollHeight;
+                    window.scrollBy(0, distance);
+                    totalHeight += distance;
+                    if (totalHeight >= scrollHeight) {
+                        clearInterval(timer);
+                        window.scrollTo(0, 0); // back to top for consistent state
+                        resolve();
+                    }
+                }, 150);
+            });
+        });
+        console.log("Finished scrolling page");
+
         // Add additional wait time for images to load
-        console.log("⏳ Additional 5s wait for image rendering...");
+        console.log("Additional 5s wait for image rendering...");
         await this.page.waitForTimeout(5000);
-        console.log("✓ Ready to validate images");
+        console.log("Ready to validate images");
 
         if (count === 0) {
-            console.log("⚠️  WARNING: No images found on the page with src starting with https://gctp.in/");
+            console.log("WARNING: No images found on the page with src starting with https://gctp.in/");
             console.log("Check if:");
             console.log("  1. The website is accessible");
             console.log("  2. Images exist with src starting with https://gctp.in/");
@@ -42,11 +65,17 @@ export class ImageValidationPage {
             const src = await images.nth(i).getAttribute('src');
 
             if (!src) {
-                console.log(`⏭️  Image ${i + 1} - No src attribute`);
+                console.log(`SKIP - Image ${i + 1} - No src attribute`);
                 continue;
             }
 
             try {
+
+                // Scroll this specific image into view and give it a moment —
+                // some lazy-loaders only trigger once the element is actually
+                // close to/inside the viewport, not just "on the page".
+                await images.nth(i).scrollIntoViewIfNeeded({ timeout: 10000 }).catch(() => {});
+                await this.page.waitForTimeout(300);
 
                 // Check if image is actually loaded by verifying naturalWidth, naturalHeight, and complete state
                 const imageDetails = await images.nth(i).evaluate((img: HTMLImageElement) => {
@@ -60,50 +89,50 @@ export class ImageValidationPage {
                 }).catch(() => null);
 
                 if (imageDetails) {
-                    console.log(`\n📍 Image ${i + 1}:`);
+                    console.log(`\nImage ${i + 1}:`);
                     console.log(`   URL: ${src}`);
                     console.log(`   Dimensions: ${imageDetails.naturalWidth}x${imageDetails.naturalHeight}px`);
                     console.log(`   Complete: ${imageDetails.complete}`);
 
                     if (imageDetails.isLoaded) {
-                        console.log(`   ✅ PASS - Image loaded successfully`);
+                        console.log(`   PASS - Image loaded successfully`);
                         loadedImages.push(src);
                     } else {
-                        console.log(`   ❌ FAIL - Image not loaded or has zero dimensions`);
+                        console.log(`   FAIL - Image not loaded or has zero dimensions`);
                         brokenImages.push(src);
                     }
                 } else {
-                    console.log(`\n📍 Image ${i + 1}:`);
+                    console.log(`\nImage ${i + 1}:`);
                     console.log(`   URL: ${src}`);
-                    console.log(`   ❌ ERROR - Could not evaluate image properties`);
+                    console.log(`   ERROR - Could not evaluate image properties`);
                     brokenImages.push(src);
                 }
 
             } catch (error) {
 
-                console.log(`\n📍 Image ${i + 1}:`);
+                console.log(`\nImage ${i + 1}:`);
                 console.log(`   URL: ${src}`);
-                console.log(`   ❌ EXCEPTION: ${error}`);
+                console.log(`   EXCEPTION: ${error}`);
 
                 brokenImages.push(src);
             }
         }
 
         console.log("\n======================================");
-        console.log(`📊 Summary:`);
+        console.log(`Summary:`);
         console.log(`   Total Images: ${count}`);
-        console.log(`   ✅ Loaded: ${loadedImages.length}`);
-        console.log(`   ❌ Broken: ${brokenImages.length}`);
+        console.log(`   Loaded: ${loadedImages.length}`);
+        console.log(`   Broken: ${brokenImages.length}`);
 
         if (brokenImages.length > 0) {
 
-            console.log(`\n❌ Broken Images (${brokenImages.length}):`);
+            console.log(`\nBroken Images (${brokenImages.length}):`);
 
             brokenImages.forEach((img, idx) => console.log(`   ${idx + 1}. ${img}`));
 
         } else {
 
-            console.log("\n🎉 All Images Loaded Successfully!");
+            console.log("\nAll Images Loaded Successfully!");
 
         }
 
@@ -112,7 +141,7 @@ export class ImageValidationPage {
         // Detailed assertion message for debugging
         expect(
             brokenImages,
-            `❌ TEST FAILED: ${brokenImages.length} broken image(s) found out of ${count} total images. ` +
+            `TEST FAILED: ${brokenImages.length} broken image(s) found out of ${count} total images. ` +
             `Broken images: ${brokenImages.join(', ')}`
         ).toEqual([]);
     }
