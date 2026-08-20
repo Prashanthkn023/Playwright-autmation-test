@@ -9,7 +9,10 @@ export class BasePage {
 
   // Navigate to URL
   async navigate(url: string) {
-    await this.page.goto('https://gctp.in/chennai-home');
+    await this.page.goto('https://gctp.in/chennai-home', {
+      waitUntil: 'domcontentloaded',
+      timeout: 120000
+    });
   }
 
   // Click on an element
