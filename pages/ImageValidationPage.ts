@@ -16,6 +16,9 @@ export class ImageValidationPage {
 
         const brokenImages: string[] = [];
 
+        // Wait for all images to be loaded
+        await this.page.waitForLoadState('networkidle');
+
         for (let i = 0; i < count; i++) {
 
             const src = await images.nth(i).getAttribute('src');
@@ -27,18 +30,21 @@ export class ImageValidationPage {
 
             try {
 
-                const response = await this.page.request.head(src);
+                // Check if image is actually loaded by verifying naturalWidth
+                const isLoaded = await images.nth(i).evaluate((img: HTMLImageElement) => {
+                    return img.naturalWidth > 0 && img.naturalHeight > 0 && img.complete;
+                });
 
-                if (response.ok()) {
+                if (isLoaded) {
                     console.log(`PASS : ${src}`);
                 } else {
-                    console.log(`FAIL : ${src} - ${response.status()}`);
+                    console.log(`FAIL : ${src} - Image not loaded or has zero dimensions`);
                     brokenImages.push(src);
                 }
 
             } catch (error) {
 
-                console.log(`ERROR : ${src}`);
+                console.log(`ERROR : ${src} - ${error}`);
 
                 brokenImages.push(src);
             }
