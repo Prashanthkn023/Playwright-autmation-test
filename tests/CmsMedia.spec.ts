@@ -1,5 +1,5 @@
 import{test, expect} from '@playwright/test';
-const baseurl = "https://gctp.in"
+const baseurl = "https://gctp.in/chennai-home"
 test('verfiy the cms media page content',async({page})=> {
 
     await page.goto(baseurl)
@@ -30,6 +30,11 @@ test('verfiy the cms media page content',async({page})=> {
     expect(src).toContain('youtube.com/embed');
     await expect(page.getByText('Air Conditioned Helmet',{exact:true})).toBeVisible();
     await expect(page.getByText('Chennai Traffic Cops Get Air Conditioned helmet to beat the heat')).toBeVisible();
-
+    await expect(iframes.nth(2)).toBeVisible();
+    const secondSrc = await iframes.nth(2).getAttribute('src');
+    expect(src).toContain('youtube.com/embed');
+    await expect(page.getByText('Traffic Alert')).toBeVisible();
+    await page.getByText('Read More').click();
+    await expect(page.getByText(/Update on Jul 22,  Nungambakkam High Road CMRL Crane Breakdown near Therasha Church. Engineers on-site./)).toBeVisible();
 
 });

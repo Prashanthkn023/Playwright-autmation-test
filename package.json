@@ -7,13 +7,15 @@
     "image-report": "playwright test tests/TC_001_ImageValidation.spec.ts && playwright show-report"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.2",
-    "@types/node": "^26.1.2",
-    "allure-commandline": "^2.43.0",
-    "allure-playwright": "^3.10.2",
-    "dotenv": "^17.4.2"
-  },
+  "@playwright/test": "^1.54.2",
+  "@types/node": "^26.1.2",
+  "allure-commandline": "^2.43.0",
+  "allure-playwright": "^3.10.2",
+  "dotenv": "^17.4.2",
+  "exceljs": "^4.4.0"
+},
   "dependencies": {
+    "exceljs": "^4.4.0",
     "tesseract.js": "^7.0.0"
   }
 }

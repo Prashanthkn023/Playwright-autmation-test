@@ -1,7 +1,7 @@
 import{test, expect} from '@playwright/test';
-const baseurl = 'https://gctp.in/chennai-home'
+const baseurl = 'https://gctp.in/'
 test('verfiy the cms news page content',async({ page })=>{
-await page.goto('baseurl')
+await page.goto(baseurl)
   await page.getByRole('link', { name: 'News' }).click();
   await page.locator('section').filter({ hasText: 'Mega Bike Rally for Road' }).getByRole('button').click();
   await expect(page.getByRole('heading', { name: 'Mega Bike Rally for Road' })).toBeVisible();
@@ -16,6 +16,4 @@ await page.goto('baseurl')
   await expect(page.getByRole('img', { name: 'Zero Accident Day’ Drive' })).toBeVisible();
   await page.getByRole('button', { name: 'Go back' }).click();
   await page.getByRole('button', { name: 'Go back' }).click();
-
-
 })

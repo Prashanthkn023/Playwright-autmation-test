@@ -22,7 +22,8 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['allure-playwright'],
-    ['junit', { outputFile: 'test-results/results.xml' }]
+    ['junit', { outputFile: 'test-results/results.xml' }],
+    ['./reporters/bugReporter.ts']
   ],
 
   use: {

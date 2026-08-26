@@ -1,138 +1,346 @@
 import { test, expect } from '@playwright/test';
 
-// Define the application URL
+const cmsurl = 'https://cms.gctp.in/chennai-home';
 const baseurl = 'https://gctp.in/chennai-home';
 
-// Test case to validate the About Us section
-test('validate the cms home page About Us', async ({ page }) => {
-  try {
-    // Open the website
-    await page.goto(baseurl);
+test('verify CMS About Us content with published website', async ({ page }) => {
 
-    // Click the About Us button
-    await page.getByRole('button', { name: 'About Us' }).click();
+  // =====================================================
+  // CMS CONTENT → EXPECTED
+  // =====================================================
 
-    // Verify that the GCTP navigation menu is visible
-    await expect(page.getByRole('navigation').getByText('GCTP')).toBeVisible();
+  await page.goto(cmsurl);
 
-    // Click the GCTP navigation menu
-    await page.getByRole('navigation').getByText('GCTP').click();
+  // Login
+  await page.getByRole('textbox', { name: 'example@gmail.com' }).fill('Blessey@lnttest.com');
+  await page.getByRole('textbox', { name: '*******' }).fill('Blessey@123');
+  await page.getByRole('button', { name: 'Login' }).click();
 
-    // Verify the page title
-    await expect(page.getByText('Greater Chennai Traffic Police').nth(1)).toBeVisible();
+  // About Us
+  await page.getByRole('link', { name: 'About Us' }).click();
 
-    // Verify the page description
-    await expect(page.getByText('In 1659, when Chennai (then')).toBeVisible();
+  // GCTP
+  await page
+    .getByRole('link', { name: 'Greater Chennai Traffic Police' })
+    .click();
 
-    // Print the result after the GCTP section is validated
-    console.log('GCTP section passed.');
+  const expectedGctpHeading =
+    await page
+      .getByText('Greater Chennai Traffic Police', { exact: true })
+      .first()
+      .textContent();
+  const expectedGctpDescription =
+    await page
+      .getByText('In 1659, when Chennai (then')
+      .textContent();
 
-    // Open the Updates section
-    await page.getByRole('heading', { name: 'Updates' }).click();
+  // Updates
+  await expect(page.getByRole('heading', { name: 'UPDATES' })).toBeVisible();
 
-    // Verify the first image
-    await expect(page.locator('.home-hero-card-imgGTGC > img').first()).toBeVisible();
+  const expectedUpdate1Title =
+    await page
+      .getByText('Traffic Police: A Century of')
+      .textContent();
 
-    // Verify the first update title
-    await expect(page.getByText('Traffic Police: A Century of')).toBeVisible();
+  await page.getByText('Read More').first().click();
 
-    // Click the first Read More link
-    await page.getByText('Read More').first().click();
+  const expectedUpdate1Description =
+    await page
+      .locator('.home-hero-traffic-card-des > div')
+      .first()
+      .textContent();
 
-    // Verify the first update description
-    await expect(page.locator('.home-hero-traffic-card-des > div').first()).toBeVisible();
+  const expectedUpdate2Title =
+    await page
+      .getByText('First traffic police station')
+      .textContent();
 
-    // Verify the second image
-    await expect(page.locator('div:nth-child(2) > .home-hero-card-imgGTGC > img')).toBeVisible();
+  await page.getByText('Read More').first().click();
 
-    // Verify the second update title
-    await expect(page.getByText('First traffic police station')).toBeVisible();
+  const expectedUpdate2Description =
+    await page
+      .getByText('The 1929 "Functional Division')
+      .textContent();
 
-    // Click the second Read More link
-    await page.getByText('Read More').first().click();
+  const expectedUpdate3Title =
+    await page
+      .getByText('Establishment of the Chennai')
+      .textContent();
 
-    // Verify the second update description
-    await expect(page.getByText('The 1929 "Functional Division')).toBeVisible();
+  await page.getByText('Read More').first().click();
 
-    // Verify the third image
-    await expect(page.locator('div:nth-child(3) > .home-hero-card-imgGTGC > img')).toBeVisible();
+  const expectedUpdate3Description =
+    await page
+      .getByText('This photograph dates to 1929')
+      .textContent();
 
-    // Verify the third update title
-    await expect(page.getByText('Establishment of the Chennai')).toBeVisible();
+  // Message from Police Commissioner
+  await page
+    .getByRole('link', { name: 'Message from Police' })
+    .click();
 
-    // Click the third Read More link
-    await page.getByText('Read More').click();
+  const expectedCommissionerHeading =
+    await page
+      .getByText('Message From Commissioner Of')
+      .textContent();
 
-    // Verify the third update description
-    await expect(page.getByText('This photograph dates to 1929')).toBeVisible();
+  const expectedCommissionerMessage =
+    await page
+      .getByText('Dear Citizens of Chennai Road')
+      .textContent();
 
-    // Verify the GCTP image
-    await expect(page.locator('.GCTPImg')).toBeVisible();
+  const expectedCommissionerName =
+    await page
+      .getByText('Thiru Dr. A. Amalraj, IPS,')
+      .textContent();
 
-    // Print the result after the Updates section is validate
-    console.log('Updates section passed.');
-    await page.getByRole('button', { name: 'About Us' }).hover();
+  // Message from Additional COP
+  await page
+    .getByRole('link', { name: 'Message from Additional COP' })
+    .click();
 
-    // Open the Message from Police Commissioner section
-    await page.getByRole('navigation').getByText('Message from Police Commissioner').click(); 
+  const expectedAdditionalHeading =
+    await page
+      .getByText(
+        'Message From Additional Commissioner Of Police-Traffic'
+      )
+      .textContent();
 
-    // Open the Message from Police Commissioner section
-    await expect(
-      page.getByRole('navigation').getByText('Message from Police Commissioner')
-    ).toBeVisible({ timeout: 30000 });
+  const expectedAdditionalMessage =
+    await page
+      .getByText('Dear Citizens of Chennai,')
+      .textContent();
 
-    await page.getByRole('navigation').getByText('Message from Police Commissioner').click();
+  const expectedAdditionalName =
+    await page
+      .getByText('Dr.B. Shamoondeswari , IPS')
+      .textContent();
 
-    // Verify the heading
-    await expect(page.getByText('Message From Commissioner Of')).toBeVisible();
+  // Organogram
+  await page
+    .getByRole('link', { name: 'Organogram' })
+    .click();
 
-    // Verify the message content
-    await expect(page.getByText('Dear Citizens of Chennai Road')).toBeVisible();
-
-    // Verify the Commissioner's name
-    await expect(page.getByText('Thiru Dr. A. Amalraj, IPS,')).toBeVisible();
-
-    // Print the result after the Message from Police section is validated
-    console.log('Message from Police section passed.');
-
-    // Open the Message from Additional COP section
-    await page.getByRole('navigation').getByText('Message from Additional COP').click();
-
-    // Verify the heading
-    await expect(page.getByText('Message From Additional Commissioner Of Police-Traffic')).toBeVisible();
-
-    // Verify the message content
-    await expect(page.getByText('Dear Citizens of Chennai,')).toBeVisible();
-
-    // Verify the Additional Commissioner's name
-    await expect(page.getByText('Dr.B. Shamoondeswari , IPS')).toBeVisible();
-
-    // Print the result after the Additional COP section is validated
-    console.log('Additional COP section passed.');
-
-    // Open the Organogram section
-    await page.getByRole('navigation').getByText('Organogram').click();
-
-    // Verify the organizational hierarchy
-    await expect(
-      page.getByText(
+  const expectedOrganogram =
+    await page
+      .getByText(
         'Commissioner of PoliceAdditional Commissioner of Police, TrafficJoint'
       )
-    ).toBeVisible();
+      .textContent();
 
-    // Print the result after the Organogram section is validated
-    console.log('Organogram section passed.');
 
-    // Print the final result
-    console.log('All test cases passed.');
-  } catch (error) {
-    // Print the failure message
-    console.log('Test case failed.');
+  // =====================================================
+  // PUBLISHED WEBSITE → ACTUAL
+  // =====================================================
 
-    // Print the error details
-    console.error(error);
+  await page.goto(baseurl);
 
-    // Fail the test
-    throw error;
-  }
+  // About Us
+  await page.getByRole('button', { name: 'About Us' }).click();
+
+  // GCTP
+  await page
+    .getByRole('navigation')
+    .getByText('GCTP')
+    .click();
+
+  const actualGctpHeading =
+    await page
+      .getByText('Greater Chennai Traffic Police')
+      .nth(1)
+      .textContent();
+
+  const actualGctpDescription =
+    await page
+      .getByText('In 1659, when Chennai (then')
+      .textContent();
+
+  // Updates
+  await page
+    .getByRole('heading', { name: 'Updates' })
+    .click();
+
+  const actualUpdate1Title =
+    await page
+      .getByText('Traffic Police: A Century of')
+      .textContent();
+
+  await page.getByText('Read More').first().click();
+
+  const actualUpdate1Description =
+    await page
+      .locator('.home-hero-traffic-card-des > div')
+      .first()
+      .textContent();
+
+  const actualUpdate2Title =
+    await page
+      .getByText('First traffic police station')
+      .textContent();
+
+  await page.getByText('Read More').first().click();
+
+  const actualUpdate2Description =
+    await page
+      .getByText('The 1929 "Functional Division')
+      .textContent();
+
+  const actualUpdate3Title =
+    await page
+      .getByText('Establishment of the Chennai')
+      .textContent();
+
+  await page.getByText('Read More').first().click();
+
+  const actualUpdate3Description =
+    await page
+      .getByText('This photograph dates to 1929')
+      .textContent();
+
+  // Message from Police Commissioner
+  await page
+    .getByRole('button', { name: 'About Us' })
+    .hover();
+
+  await page
+    .getByRole('navigation')
+    .getByText('Message from Police Commissioner')
+    .click();
+
+  const actualCommissionerHeading =
+    await page
+      .getByText('Message From Commissioner Of')
+      .textContent();
+
+  const actualCommissionerMessage =
+    await page
+      .getByText('Dear Citizens of Chennai Road')
+      .textContent();
+
+  const actualCommissionerName =
+    await page
+      .getByText('Thiru Dr. A. Amalraj, IPS,')
+      .textContent();
+
+  // Message from Additional COP
+  await page
+    .getByRole('button', { name: 'About Us' })
+    .hover();
+
+  await page
+    .getByRole('navigation')
+    .getByText('Message from Additional COP')
+    .click();
+
+  const actualAdditionalHeading =
+    await page
+      .getByText(
+        'Message From Additional Commissioner Of Police-Traffic'
+      )
+      .textContent();
+
+  const actualAdditionalMessage =
+    await page
+      .getByText('Dear Citizens of Chennai,')
+      .textContent();
+
+  const actualAdditionalName =
+    await page
+      .getByText('Dr.B. Shamoondeswari , IPS')
+      .textContent();
+
+  // Organogram
+  await page
+    .getByRole('button', { name: 'About Us' })
+    .hover();
+
+  await page
+    .getByRole('navigation')
+    .getByText('Organogram')
+    .click();
+
+  const actualOrganogram =
+    await page
+      .getByText(
+        'Commissioner of PoliceAdditional Commissioner of Police, TrafficJoint'
+      )
+      .textContent();
+
+
+  // =====================================================
+  // COMPARE EXPECTED WITH ACTUAL
+  // =====================================================
+
+  // GCTP
+  expect(actualGctpHeading?.trim())
+    .toBe(expectedGctpHeading?.trim());
+
+  expect(actualGctpDescription?.trim())
+    .toBe(expectedGctpDescription?.trim());
+
+  // Update 1
+  expect(actualUpdate1Title?.trim())
+    .toBe(expectedUpdate1Title?.trim());
+
+  expect(actualUpdate1Description?.trim())
+    .toBe(expectedUpdate1Description?.trim());
+
+  // Update 2
+  expect(actualUpdate2Title?.trim())
+    .toBe(expectedUpdate2Title?.trim());
+
+  expect(actualUpdate2Description?.trim())
+    .toBe(expectedUpdate2Description?.trim());
+
+  // Update 3
+  expect(actualUpdate3Title?.trim())
+    .toBe(expectedUpdate3Title?.trim());
+
+  expect(actualUpdate3Description?.trim())
+    .toBe(expectedUpdate3Description?.trim());
+
+  // Police Commissioner
+  expect(actualCommissionerHeading?.trim())
+    .toBe(expectedCommissionerHeading?.trim());
+
+  expect(actualCommissionerMessage?.trim())
+    .toBe(expectedCommissionerMessage?.trim());
+
+  expect(actualCommissionerName?.trim())
+    .toBe(expectedCommissionerName?.trim());
+
+  // Additional COP
+  expect(actualAdditionalHeading?.trim())
+    .toBe(expectedAdditionalHeading?.trim());
+
+  expect(actualAdditionalMessage?.trim())
+    .toBe(expectedAdditionalMessage?.trim());
+
+  expect(actualAdditionalName?.trim())
+    .toBe(expectedAdditionalName?.trim());
+
+  // Organogram
+  expect(actualOrganogram?.trim())
+    .toBe(expectedOrganogram?.trim());
+
+
+  // =====================================================
+  // FINAL RESULT
+  // =====================================================
+
+  console.log('======================================');
+  console.log('CMS VS PUBLISHED WEBSITE');
+  console.log('======================================');
+  console.log('GCTP: PASS');
+  console.log('Update 1: PASS');
+  console.log('Update 2: PASS');
+  console.log('Update 3: PASS');
+  console.log('Police Commissioner: PASS');
+  console.log('Additional COP: PASS');
+  console.log('Organogram: PASS');
+  console.log('======================================');
+  console.log('ALL CONTENT MATCHED');
+  console.log('TEST CASE PASSED');
+  console.log('======================================');
+
 });
