@@ -98,8 +98,12 @@ export class ComplaintPage extends BasePage {
         )
         .first();
 
+    /*
+     * If multiple CAPTCHA canvas elements are present,
+     * use the LAST visible CAPTCHA.
+     */
     this.captchaBox =
-      page.locator('#canv');
+      page.locator('#canv').last();
 
     this.captchaInput =
       page.getByPlaceholder(
@@ -156,15 +160,41 @@ export class ComplaintPage extends BasePage {
     seconds: number = 20
   ): Promise<void> {
     try {
+
+      /*
+       * Wait until the latest CAPTCHA
+       * becomes visible.
+       */
+      await this.captchaBox.waitFor({
+        state: 'visible',
+        timeout: 15000
+      });
+
+      /*
+       * Small wait to make sure the CAPTCHA
+       * image/canvas has finished rendering.
+       */
+      await this.page.waitForTimeout(
+        1000
+      );
+
       const captchaPath =
         path.join(
           process.cwd(),
           'complaint-captcha.png'
         );
 
+      /*
+       * Capture the LAST CAPTCHA canvas.
+       */
       await this.captchaBox.screenshot({
         path: captchaPath
       });
+
+      console.log(
+        'CAPTCHA screenshot saved:',
+        captchaPath
+      );
 
       const result =
         await Tesseract.recognize(
@@ -178,13 +208,20 @@ export class ComplaintPage extends BasePage {
             /ReloadCaptcha/gi,
             ''
           )
-          .replace(/\s/g, '')
+          .replace(
+            /\s/g,
+            ''
+          )
           .replace(
             /[^a-zA-Z0-9]/g,
             ''
           )
           .trim();
 
+      /*
+       * CAPTCHA is expected to be
+       * maximum 6 characters.
+       */
       if (
         captchaText.length > 6
       ) {
@@ -203,19 +240,33 @@ export class ComplaintPage extends BasePage {
       if (
         captchaText
       ) {
+
         await this.captchaInput.fill(
           captchaText
         );
-      } else {
+
         console.log(
-          `Please enter CAPTCHA manually within ${seconds} seconds`
+          'CAPTCHA entered successfully.'
+        );
+
+      } else {
+
+        console.log(
+          `CAPTCHA could not be detected. Please enter CAPTCHA manually within ${seconds} seconds`
         );
 
         await this.page.waitForTimeout(
           seconds * 1000
         );
       }
-    } catch {
+
+    } catch (error) {
+
+      console.log(
+        'CAPTCHA detection failed:',
+        error
+      );
+
       console.log(
         `Please enter CAPTCHA manually within ${seconds} seconds`
       );
@@ -254,6 +305,7 @@ export class ComplaintPage extends BasePage {
   async selectLocation(
     location: string
   ): Promise<void> {
+
     await this.locationInput.fill(
       location
     );
@@ -265,7 +317,9 @@ export class ComplaintPage extends BasePage {
     const count =
       await this.locationSuggestion.count();
 
-    if (count > 0) {
+    if (
+      count > 0
+    ) {
       await this.locationSuggestion.click();
     }
   }
@@ -276,6 +330,7 @@ export class ComplaintPage extends BasePage {
 
   async verifyOTPResult(): Promise<void> {
     try {
+
       await this.successMessage.waitFor({
         state: 'visible',
         timeout: 30000
@@ -284,7 +339,9 @@ export class ComplaintPage extends BasePage {
       console.log(
         await this.successMessage.textContent()
       );
+
     } catch {
+
       const toastText =
         await this.toastMessage.textContent();
 
@@ -294,6 +351,7 @@ export class ComplaintPage extends BasePage {
           toastText
         )
       ) {
+
         throw new Error(
           `Complaint submission failed due to invalid OTP: ${toastText}`
         );
@@ -313,22 +371,40 @@ export class ComplaintPage extends BasePage {
     location: string;
     message: string;
   }): Promise<void> {
+
     try {
+
+      /*
+       * Verify Complaint page.
+       */
       await this.verifyComplaintPage();
 
+      /*
+       * Enter Name.
+       */
       await this.enterName(
         data.name
       );
 
+      /*
+       * Enter Mobile.
+       */
       await this.enterMobile(
         data.mobile
       );
 
+      /*
+       * Select Incident Type
+       * and Sub Type.
+       */
       await this.selectIncident(
         data.incidentType,
         data.incidentSubType
       );
 
+      /*
+       * Upload Complaint File.
+       */
       await this.uploadComplaintFile(
         path.join(
           __dirname,
@@ -338,26 +414,42 @@ export class ComplaintPage extends BasePage {
         )
       );
 
+      /*
+       * Select Location.
+       */
       await this.selectLocation(
         data.location
       );
 
+      /*
+       * Enter Complaint Message.
+       */
       await this.enterComplaint(
         data.message
       );
 
+      /*
+       * Wait for the SECOND/LATEST CAPTCHA
+       * after all details are entered.
+       */
       await this.waitForCaptcha(
         20
       );
 
+      /*
+       * Listen for OTP API response
+       * before clicking Submit.
+       */
       const otpPromise =
         new Promise<string>(
           (resolve) => {
+
             this.page.on(
               'response',
               async (
                 response
               ) => {
+
                 if (
                   response
                     .url()
@@ -369,23 +461,31 @@ export class ComplaintPage extends BasePage {
                     .method() ===
                     'POST'
                 ) {
-                  const json =
-                    await response.json();
 
-                  const otpPayload =
-                    json?.payload;
+                  try {
 
-                  if (
-                    otpPayload
-                  ) {
-                    console.log(
-                      'Captured OTP after captcha submit:',
+                    const json =
+                      await response.json();
+
+                    const otpPayload =
+                      json?.payload;
+
+                    if (
                       otpPayload
-                    );
+                    ) {
 
-                    resolve(
-                      otpPayload
-                    );
+                      console.log(
+                        'Captured OTP after captcha submit:',
+                        otpPayload
+                      );
+
+                      resolve(
+                        otpPayload
+                      );
+                    }
+
+                  } catch {
+                    // Ignore invalid/non-JSON response
                   }
                 }
               }
@@ -393,21 +493,41 @@ export class ComplaintPage extends BasePage {
           }
         );
 
+      /*
+       * Submit Complaint.
+       */
       await this.clickSubmit();
 
+      /*
+       * Verify Toast Message.
+       */
       await this.verifyToastMessage();
 
+      /*
+       * Get OTP from API response.
+       */
       const otpPayload =
         await otpPromise;
 
+      /*
+       * Enter OTP.
+       */
       await this.otpField.fill(
         otpPayload
       );
 
+      /*
+       * Verify and Submit.
+       */
       await this.clickVerifySubmit();
 
+      /*
+       * Verify final result.
+       */
       await this.verifyOTPResult();
+
     } catch (error) {
+
       throw new Error(
         `Complaint submission failed: ${
           error instanceof Error

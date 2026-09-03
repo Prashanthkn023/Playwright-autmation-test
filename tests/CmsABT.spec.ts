@@ -29,6 +29,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .getByText('Greater Chennai Traffic Police', { exact: true })
       .first()
       .textContent();
+
   const expectedGctpDescription =
     await page
       .getByText('In 1659, when Chennai (then')
@@ -73,6 +74,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     await page
       .getByText('This photograph dates to 1929')
       .textContent();
+
+  await page.getByRole('link', { name: 'About Us' }).click();
 
   // Message from Police Commissioner
   await page
@@ -144,10 +147,14 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     .getByText('GCTP')
     .click();
 
+  // GCTP heading only
+  // This avoids the footer/host content
   const actualGctpHeading =
     await page
-      .getByText('Greater Chennai Traffic Police')
-      .nth(1)
+      .getByRole('heading', {
+        name: 'Greater Chennai Traffic Police',
+        exact: true
+      })
       .textContent();
 
   const actualGctpDescription =
