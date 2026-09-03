@@ -1,41 +1,40 @@
-import{test, expect} from '@playwright/test';
-const baseurl = "https://gctp.in/chennai-home" 
-test('verfiy the cms media page content',async({page})=> { 
- 
-    await page.goto(baseurl) 
-    await page.getByRole('link',{name:"media"}).click(); 
-    await expect(page.getByRole('navigation').getByText('media')).toBeVisible(); 
-    await expect(page.getByText('photos')).toBeVisible();  
-    await expect(page.locator('.home-hero-card-imgGTGC img.imageStyle1').first()).toBeVisible(); 
-    await expect(page.getByText('Helmet Awareness Drive')).toBeVisible(); 
-    await page.getByText('Read More').first().click(); 
-    await expect(page.getByText('Greater Chennai Traffic Police conducted a “No Helmet – No Fuel” awareness campaign at Retteri.')).toBeVisible(); 
-    await expect(page.locator('.home-hero-card-imgGTGC img.imageStyle1').nth(1)).toBeVisible(); 
-    await expect(page.getByText('Road Safety Awareness Quiz 2025')).toBeVisible(); 
-    await page.getByText('Read More').first().click(); 
-    await expect(page.getByText(/Students actively participated in the road safety awareness session by identifying traffic signs/)).toBeVisible(); 
-    await expect(page.locator('.home-hero-card-imgGTGC img.imageStyle1').nth(2)).toBeVisible(); 
-    await expect(page.getByText('Ride for Road Safety')).toBeVisible(); 
-    await page.getByText('Read More').first().click(); 
-    await expect(page.getByText(/Hundreds joined the Road Safety Cyclothon 2026 to spread awareness about safe driving./)).toBeVisible(); 
-    await page.getByText('VIDEOS').click(); 
-    const video = page.locator('video') 
-    await expect(video).toBeVisible(); 
-    await expect(page.getByText('Strap Your Helmet. Save Your Life.')).toBeVisible(); 
-    await expect(page.getByText('A loose strap is no protection-secure it every single ride.')).toBeVisible(); 
-    const iframes = page.locator('iframe'); 
-    await expect(iframes).toHaveCount(3); 
-    await expect(iframes.nth(1)).toBeVisible(); 
-    const src = await iframes.nth(1).getAttribute('src'); 
-    expect(src).toContain('youtube.com/embed'); 
-    await expect(page.getByText('Air Conditioned Helmet',{exact:true})).toBeVisible(); 
-    await expect(page.getByText('Chennai Traffic Cops Get Air Conditioned helmet to beat the heat')).toBeVisible(); 
-    await expect(iframes.nth(2)).toBeVisible(); 
-    const secondSrc = await iframes.nth(2).getAttribute('src'); 
-    expect(secondSrc).toContain('youtube.com/embed'); 
-    await expect(page.getByText('Traffic Alert')).toBeVisible(); 
-    await page.locator('.home-hero-traffic-card-des').filter({hasText:'Update on Jul 22'}).getByText('Read More').click(); 
-    await expect(page.locator('.home-hero-traffic-card-des').filter({hasText:'Update on Jul 22'})).toContainText('Nungambakkam High Road CMRL Crane Breakdown near Therasha Church'); 
-    await expect(page.locator('.home-hero-traffic-card-des').filter({hasText:'Update on Jul 22'})).toContainText('Engineers on-site'); 
- 
+import { expect, test } from '@playwright/test';
+import { CmsMediaPage } from "../pages/CmsMediaPage";
+
+test('verfiy the cms media page content', async ({ page }) => {
+        const mediaPage = new CmsMediaPage(page);
+
+        await mediaPage.openHomePage();
+        await mediaPage.openMedia();
+        await expect(mediaPage.mediaNavigationText).toBeVisible();
+        await expect(mediaPage.photosHeading).toBeVisible();
+        await expect(mediaPage.photoImages.first()).toBeVisible();
+        await expect(mediaPage.helmetAwarenessDrive).toBeVisible();
+        await mediaPage.openPhotoDetails();
+        await expect(mediaPage.helmetAwarenessDescription).toBeVisible();
+        await expect(mediaPage.photoImages.nth(1)).toBeVisible();
+        await expect(mediaPage.roadSafetyQuiz).toBeVisible();
+        await mediaPage.openPhotoDetails();
+        await expect(mediaPage.roadSafetyQuizDescription).toBeVisible();
+        await expect(mediaPage.photoImages.nth(2)).toBeVisible();
+        await expect(mediaPage.rideForRoadSafety).toBeVisible();
+        await mediaPage.openPhotoDetails();
+        await expect(mediaPage.rideForRoadSafetyDescription).toBeVisible();
+        await mediaPage.openVideos();
+        await expect(mediaPage.video).toBeVisible();
+        await expect(mediaPage.helmetVideoTitle).toBeVisible();
+        await expect(mediaPage.helmetVideoDescription).toBeVisible();
+        await expect(mediaPage.iframes).toHaveCount(3);
+        await expect(mediaPage.iframes.nth(1)).toBeVisible();
+        expect(await mediaPage.getIframeSource(1)).toContain('youtube.com/embed');
+        await expect(mediaPage.airConditionedHelmet).toBeVisible();
+        await expect(mediaPage.airConditionedHelmetDescription).toBeVisible();
+        await expect(mediaPage.iframes.nth(2)).toBeVisible();
+        expect(await mediaPage.getIframeSource(2)).toContain('youtube.com/embed');
+        await expect(mediaPage.trafficAlert).toBeVisible();
+        await mediaPage.openTrafficUpdate();
+        await expect(mediaPage.trafficUpdate).toContainText(
+            'Nungambakkam High Road CMRL Crane Breakdown near Therasha Church'
+        );
+        await expect(mediaPage.trafficUpdate).toContainText('Engineers on-site');
 });
