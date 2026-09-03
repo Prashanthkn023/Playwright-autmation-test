@@ -38,13 +38,20 @@ pipeline {
 
             steps {
 
-                bat 'npx playwright test'
+                catchError(
+                    buildResult: 'UNSTABLE',
+                    stageResult: 'UNSTABLE'
+                ) {
+
+                    bat 'npx playwright test'
+
+                }
 
             }
 
         }
 
-        stage('Publish Report') {
+        stage('Publish Playwright Report') {
 
             steps {
 
@@ -58,6 +65,20 @@ pipeline {
                 ])
 
             }
+
+        }
+
+    }
+
+    post {
+
+        always {
+
+            archiveArtifacts(
+                artifacts: 'bug-reports/**/*,test-results/**/*,playwright-report/**/*',
+                allowEmptyArchive: true,
+                fingerprint: true
+            )
 
         }
 
