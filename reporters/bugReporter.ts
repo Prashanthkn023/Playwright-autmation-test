@@ -8,10 +8,8 @@ import type {
 
 import ExcelJS from 'exceljs';
 
-declare const require: (moduleName: string) => any;
-
-const path = require('path');
-const fs = require('fs');
+import * as path from 'path';
+import * as fs from 'fs';
 
 interface FailedTest {
   bugId: string;
@@ -35,7 +33,7 @@ class BugReporter implements Reporter {
   private failedTests: FailedTest[] = [];
   private rootDir = '';
 
-  onBegin(config: FullConfig) {
+  onBegin(config: FullConfig): void {
     this.rootDir = config.rootDir;
 
     const bugReportDir = path.join(
@@ -55,9 +53,10 @@ class BugReporter implements Reporter {
     });
   }
 
-  onTestEnd(test: TestCase, result: TestResult) {
-
-    // Only report failed or timed-out tests
+  onTestEnd(
+    test: TestCase,
+    result: TestResult
+  ): void {
     if (
       result.status !== 'failed' &&
       result.status !== 'timedOut'
@@ -65,25 +64,9 @@ class BugReporter implements Reporter {
       return;
     }
 
-    let errorMessage = 'Test failed';
+    const errorMessage =
+      this.getErrorMessage(result);
 
-    if (result.error?.message) {
-      errorMessage = result.error.message;
-    } else if (
-      result.errors &&
-      result.errors.length > 0
-    ) {
-      errorMessage = result.errors
-        .map(
-          error =>
-            error.message ||
-            error.value ||
-            ''
-        )
-        .join('\n');
-    }
-
-    // Get screenshot automatically
     let screenshotPath = '';
 
     for (const attachment of result.attachments) {
@@ -98,39 +81,39 @@ class BugReporter implements Reporter {
 
     const testFile = test.location.file;
 
-    // Automatically get module from folder/file name
-    const module = this.getModuleName(testFile);
+    const module =
+      this.getModuleName(testFile);
 
     const bugId =
-      `BUG-${String(this.failedTests.length + 1).padStart(3, '0')}`;
+      `BUG-${String(
+        this.failedTests.length + 1
+      ).padStart(3, '0')}`;
 
     const bugTitle =
       `${test.title} failed`;
+
+    const expectedResult =
+      this.getExpectedResult(errorMessage);
 
     const actualResult =
       this.getActualResult(errorMessage);
 
     this.failedTests.push({
       bugId,
-
       bugTitle,
-
       module,
-
       testCase: test.title,
-
       testFile,
 
       browser:
-        test.parent.project()?.name ||
+        test.parent.project()?.name ??
         'Unknown',
 
       status: result.status,
 
       error: errorMessage,
 
-      expectedResult:
-        'Application should behave as expected without errors.',
+      expectedResult,
 
       actualResult,
 
@@ -149,73 +132,274 @@ class BugReporter implements Reporter {
     });
   }
 
+  // ==========================================
+  // GET PLAYWRIGHT ERROR MESSAGE
+  // ==========================================
+
+  private getErrorMessage(
+    result: TestResult
+  ): string {
+    if (result.error?.message) {
+      return result.error.message;
+    }
+
+    if (
+      result.errors &&
+      result.errors.length > 0
+    ) {
+      return result.errors
+        .map(
+          error =>
+            error.message ||
+            error.value ||
+            ''
+        )
+        .filter(Boolean)
+        .join('\n');
+    }
+
+    return 'Test failed';
+  }
+
+  // ==========================================
+  // GET EXPECTED RESULT
+  // ==========================================
+
+  private getExpectedResult(
+    errorMessage: string
+  ): string {
+    // Example:
+    // Expected: visible
+    const expectedMatch =
+      errorMessage.match(
+        /^\s*Expected:\s*(.+)$/im
+      );
+
+    if (expectedMatch?.[1]) {
+      return expectedMatch[1].trim();
+    }
+
+    // Playwright assertion fallback
+
+    if (
+      /toBeVisible/i.test(errorMessage)
+    ) {
+      return 'Element should be visible.';
+    }
+
+    if (
+      /toBeHidden/i.test(errorMessage)
+    ) {
+      return 'Element should be hidden.';
+    }
+
+    if (
+      /toBeEnabled/i.test(errorMessage)
+    ) {
+      return 'Element should be enabled.';
+    }
+
+    if (
+      /toBeDisabled/i.test(errorMessage)
+    ) {
+      return 'Element should be disabled.';
+    }
+
+    if (
+      /toHaveText/i.test(errorMessage)
+    ) {
+      return (
+        'Element text should match ' +
+        'the expected value.'
+      );
+    }
+
+    if (
+      /toContainText/i.test(errorMessage)
+    ) {
+      return (
+        'Element should contain ' +
+        'the expected text.'
+      );
+    }
+
+    if (
+      /toHaveValue/i.test(errorMessage)
+    ) {
+      return (
+        'Element value should match ' +
+        'the expected value.'
+      );
+    }
+
+    if (
+      /toHaveURL/i.test(errorMessage)
+    ) {
+      return (
+        'Page URL should match ' +
+        'the expected URL.'
+      );
+    }
+
+    if (
+      /toHaveTitle/i.test(errorMessage)
+    ) {
+      return (
+        'Page title should match ' +
+        'the expected title.'
+      );
+    }
+
+    return (
+      'Application should behave as expected ' +
+      'without errors.'
+    );
+  }
+
+  // ==========================================
+  // GET ACTUAL RESULT
+  // ==========================================
+
+  private getActualResult(
+    errorMessage: string
+  ): string {
+    // Example:
+    // Received: "Error"
+
+    const receivedMatch =
+      errorMessage.match(
+        /^\s*Received:\s*(.+)$/im
+      );
+
+    if (receivedMatch?.[1]) {
+      return receivedMatch[1].trim();
+    }
+
+    // Example:
+    // Actual: "Error"
+
+    const actualMatch =
+      errorMessage.match(
+        /^\s*Actual:\s*(.+)$/im
+      );
+
+    if (actualMatch?.[1]) {
+      return actualMatch[1].trim();
+    }
+
+    // Get all Error lines.
+    // Example:
+    //
+    // Error: expect(locator).toBeVisible() failed
+    // Error: element(s) not found
+
+    const errorMatches = Array.from(
+      errorMessage.matchAll(
+        /^\s*Error:\s*(.+)$/gim
+      )
+    );
+
+    const meaningfulErrors =
+      errorMatches
+        .map(match =>
+          match[1].trim()
+        )
+        .filter(
+          message =>
+            !/expect\(.*\).*failed/i.test(
+              message
+            )
+        );
+
+    if (meaningfulErrors.length > 0) {
+      return meaningfulErrors[
+        meaningfulErrors.length - 1
+      ];
+    }
+
+    // Common Playwright errors
+
+    if (
+      /element\(s\) not found/i.test(
+        errorMessage
+      )
+    ) {
+      return 'Element(s) not found.';
+    }
+
+    if (
+      /strict mode violation/i.test(
+        errorMessage
+      )
+    ) {
+      return (
+        'Multiple elements matched ' +
+        'the locator.'
+      );
+    }
+
+    if (
+      /timeout/i.test(errorMessage)
+    ) {
+      return 'Test execution timed out.';
+    }
+
+    if (
+      /locator/i.test(errorMessage)
+    ) {
+      return (
+        'Expected element was not found ' +
+        'or did not reach the required state.'
+      );
+    }
+
+    if (
+      /expect/i.test(errorMessage)
+    ) {
+      return (
+        'Actual result did not match ' +
+        'the expected result.'
+      );
+    }
+
+    return 'Test execution failed.';
+  }
+
+  // ==========================================
+  // GET MODULE NAME
+  // ==========================================
+
   private getModuleName(
     testFile: string
   ): string {
-
-    const fileName =
-      path.basename(
-        testFile,
-        path.extname(testFile)
-      );
-
-    // Example:
-    // TC_003_Complaint.spec.ts
-    // → Complaint
+    const fileName = path.basename(
+      testFile,
+      path.extname(testFile)
+    );
 
     const parts =
       fileName.split('_');
 
     if (parts.length >= 3) {
-
       return parts
         .slice(2)
         .join(' ')
-        .replace(
-          /spec$/i,
-          ''
-        )
+        .replace(/\.spec$/i, '')
+        .replace(/spec$/i, '')
         .trim();
     }
 
     return 'General';
   }
 
-  private getActualResult(
-    errorMessage: string
-  ): string {
+  // ==========================================
+  // GENERATE EXCEL REPORT
+  // ==========================================
 
-    if (
-      errorMessage
-        .toLowerCase()
-        .includes('timeout')
-    ) {
-      return 'Test execution timed out.';
-    }
-
-    if (
-      errorMessage
-        .toLowerCase()
-        .includes('locator')
-    ) {
-      return 'Expected element was not found.';
-    }
-
-    if (
-      errorMessage
-        .toLowerCase()
-        .includes('expect')
-    ) {
-      return 'Actual result did not match the expected result.';
-    }
-
-    return 'Test execution failed.';
-  }
-
-  async onEnd(result: FullResult) {
-
+  async onEnd(
+    result: FullResult
+  ): Promise<void> {
     if (this.failedTests.length === 0) {
-
       console.log(
         '\nNo failed tests. Bug report was not generated.'
       );
@@ -241,9 +425,7 @@ class BugReporter implements Reporter {
     // TITLE
     // ==============================
 
-    worksheet.mergeCells(
-      'A1:N1'
-    );
+    worksheet.mergeCells('A1:O1');
 
     const titleCell =
       worksheet.getCell('A1');
@@ -261,8 +443,7 @@ class BugReporter implements Reporter {
       vertical: 'middle',
     };
 
-    worksheet.getRow(1).height =
-      30;
+    worksheet.getRow(1).height = 30;
 
     // ==============================
     // HEADERS
@@ -302,42 +483,27 @@ class BugReporter implements Reporter {
     // FAILED TESTS
     // ==============================
 
-    this.failedTests.forEach(
-      failedTest => {
-
-        worksheet.addRow([
-          failedTest.bugId,
-
-          failedTest.bugTitle,
-
-          failedTest.module,
-
-          failedTest.testCase,
-
-          failedTest.testFile,
-
-          failedTest.browser,
-
-          failedTest.status,
-
-          failedTest.expectedResult,
-
-          failedTest.actualResult,
-
-          failedTest.error,
-
-          failedTest.severity,
-
-          failedTest.priority,
-
-          failedTest.duration,
-
-          failedTest.screenshot,
-
-          failedTest.timestamp,
-        ]);
-      }
-    );
+    for (
+      const failedTest of this.failedTests
+    ) {
+      worksheet.addRow([
+        failedTest.bugId,
+        failedTest.bugTitle,
+        failedTest.module,
+        failedTest.testCase,
+        failedTest.testFile,
+        failedTest.browser,
+        failedTest.status,
+        failedTest.expectedResult,
+        failedTest.actualResult,
+        failedTest.error,
+        failedTest.severity,
+        failedTest.priority,
+        failedTest.duration,
+        failedTest.screenshot,
+        failedTest.timestamp,
+      ]);
+    }
 
     // ==============================
     // COLUMN WIDTHS
@@ -366,16 +532,12 @@ class BugReporter implements Reporter {
     // ==============================
 
     worksheet.eachRow(row => {
-
       row.eachCell(cell => {
-
         cell.alignment = {
           vertical: 'top',
           wrapText: true,
         };
-
       });
-
     });
 
     // ==============================
@@ -388,19 +550,13 @@ class BugReporter implements Reporter {
         'bug-reports'
       );
 
-    if (
-      !fs.existsSync(
-        reportDirectory
-      )
-    ) {
-
+    if (!fs.existsSync(reportDirectory)) {
       fs.mkdirSync(
         reportDirectory,
         {
           recursive: true,
         }
       );
-
     }
 
     const reportPath =

@@ -17,6 +17,7 @@
     "pages",
     "fixtures",
     "utils",
+    "reporters",
     "*.ts"
   ]
 }

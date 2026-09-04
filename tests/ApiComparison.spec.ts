@@ -32,7 +32,7 @@ test('Validate media page APIs', async ({ page }) => {
     });
   });
 
-  await page.goto('https://gctp.in/chennai_map', {
+  await page.goto('https://gctp.in/chennai-media', {
     waitUntil: 'domcontentloaded',
   });
 
@@ -52,7 +52,7 @@ test('Validate media page APIs', async ({ page }) => {
   );
 
   if (uniqueResponses.length === 0) {
-    throw new Error('No target APIs were captured from https://gctp.in/chennai_map');
+    throw new Error('No target APIs were captured from https://gctp.in/chennai-media');
   }
 
   const failedResponses = uniqueResponses.filter(
