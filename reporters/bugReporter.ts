@@ -41,6 +41,7 @@ class BugReporter implements Reporter {
       'bug-reports'
     );
 
+    // Remove previous bug reports
     if (fs.existsSync(bugReportDir)) {
       fs.rmSync(bugReportDir, {
         recursive: true,
@@ -48,15 +49,33 @@ class BugReporter implements Reporter {
       });
     }
 
+    // Create fresh bug report directory
     fs.mkdirSync(bugReportDir, {
       recursive: true,
     });
+
+    console.log(
+      '\n======================================'
+    );
+
+    console.log(
+      ' BUG REPORTER STARTED'
+    );
+
+    console.log(
+      ' Previous bug reports cleared'
+    );
+
+    console.log(
+      '======================================\n'
+    );
   }
 
   onTestEnd(
     test: TestCase,
     result: TestResult
   ): void {
+    // Only process failed or timed out tests
     if (
       result.status !== 'failed' &&
       result.status !== 'timedOut'
@@ -67,6 +86,7 @@ class BugReporter implements Reporter {
     const errorMessage =
       this.getErrorMessage(result);
 
+    // Get screenshot automatically
     let screenshotPath = '';
 
     for (const attachment of result.attachments) {
@@ -74,12 +94,15 @@ class BugReporter implements Reporter {
         attachment.name === 'screenshot' &&
         attachment.path
       ) {
-        screenshotPath = attachment.path;
+        screenshotPath =
+          attachment.path;
+
         break;
       }
     }
 
-    const testFile = test.location.file;
+    const testFile =
+      test.location.file;
 
     const module =
       this.getModuleName(testFile);
@@ -92,36 +115,78 @@ class BugReporter implements Reporter {
     const bugTitle =
       `${test.title} failed`;
 
+    // Automatically extract Expected Result
     const expectedResult =
-      this.getExpectedResult(errorMessage);
+      this.getExpectedResult(
+        errorMessage,
+        result.status
+      );
 
+    // Automatically extract Actual Result
     const actualResult =
-      this.getActualResult(errorMessage);
+      this.getActualResult(
+        errorMessage,
+        result.status
+      );
+
+    // Debug output for Jenkins
+    console.log(
+      '\n========== BUG REPORT DEBUG =========='
+    );
+
+    console.log(
+      `Test: ${test.title}`
+    );
+
+    console.log(
+      `Status: ${result.status}`
+    );
+
+    console.log(
+      `Expected Result: ${expectedResult}`
+    );
+
+    console.log(
+      `Actual Result: ${actualResult}`
+    );
+
+    console.log(
+      '======================================\n'
+    );
 
     this.failedTests.push({
       bugId,
+
       bugTitle,
+
       module,
+
       testCase: test.title,
+
       testFile,
 
       browser:
-        test.parent.project()?.name ??
+        test.parent.project()?.name ||
         'Unknown',
 
-      status: result.status,
+      status:
+        result.status,
 
-      error: errorMessage,
+      error:
+        errorMessage,
 
       expectedResult,
 
       actualResult,
 
-      severity: 'Medium',
+      severity:
+        'Medium',
 
-      priority: 'Medium',
+      priority:
+        'Medium',
 
-      duration: result.duration,
+      duration:
+        result.duration,
 
       screenshot:
         screenshotPath ||
@@ -133,32 +198,46 @@ class BugReporter implements Reporter {
   }
 
   // ==========================================
-  // GET PLAYWRIGHT ERROR MESSAGE
+  // GET COMPLETE ERROR MESSAGE
   // ==========================================
 
   private getErrorMessage(
     result: TestResult
   ): string {
+    const errors: string[] = [];
+
     if (result.error?.message) {
-      return result.error.message;
+      errors.push(
+        result.error.message
+      );
     }
 
     if (
       result.errors &&
       result.errors.length > 0
     ) {
-      return result.errors
-        .map(
-          error =>
-            error.message ||
-            error.value ||
-            ''
-        )
-        .filter(Boolean)
-        .join('\n');
+      for (
+        const error of result.errors
+      ) {
+        const message =
+          error.message ||
+          error.value ||
+          '';
+
+        if (
+          message &&
+          !errors.includes(message)
+        ) {
+          errors.push(message);
+        }
+      }
     }
 
-    return 'Test failed';
+    if (errors.length === 0) {
+      return 'Test failed';
+    }
+
+    return errors.join('\n');
   }
 
   // ==========================================
@@ -166,10 +245,16 @@ class BugReporter implements Reporter {
   // ==========================================
 
   private getExpectedResult(
-    errorMessage: string
+    errorMessage: string,
+    status: string
   ): string {
-    // Example:
+    // ------------------------------------------
+    // PLAYWRIGHT EXPECTED VALUE
+    //
     // Expected: visible
+    // Expected: "Success"
+    // ------------------------------------------
+
     const expectedMatch =
       errorMessage.match(
         /^\s*Expected:\s*(.+)$/im
@@ -179,7 +264,42 @@ class BugReporter implements Reporter {
       return expectedMatch[1].trim();
     }
 
-    // Playwright assertion fallback
+    // ------------------------------------------
+    // MISSING ENVIRONMENT VARIABLE
+    //
+    // CMS_MODULE_URL is missing in .env
+    // ------------------------------------------
+
+    const envMatch =
+      errorMessage.match(
+        /([A-Z][A-Z0-9_]+)\s+is missing in\s+\.env/i
+      );
+
+    if (envMatch?.[1]) {
+      return (
+        `${envMatch[1]} should be configured ` +
+        'in the .env file.'
+      );
+    }
+
+    // ------------------------------------------
+    // TIMEOUT
+    // ------------------------------------------
+
+    if (
+      status === 'timedOut' ||
+      /\btimeout\b/i.test(errorMessage) ||
+      /\btimed out\b/i.test(errorMessage)
+    ) {
+      return (
+        'Test should complete successfully ' +
+        'within the configured timeout.'
+      );
+    }
+
+    // ------------------------------------------
+    // PLAYWRIGHT ASSERTIONS
+    // ------------------------------------------
 
     if (
       /toBeVisible/i.test(errorMessage)
@@ -203,6 +323,18 @@ class BugReporter implements Reporter {
       /toBeDisabled/i.test(errorMessage)
     ) {
       return 'Element should be disabled.';
+    }
+
+    if (
+      /toBeChecked/i.test(errorMessage)
+    ) {
+      return 'Checkbox should be checked.';
+    }
+
+    if (
+      /toBeUnchecked/i.test(errorMessage)
+    ) {
+      return 'Checkbox should be unchecked.';
     }
 
     if (
@@ -250,8 +382,12 @@ class BugReporter implements Reporter {
       );
     }
 
+    // ------------------------------------------
+    // GENERIC EXPECTED RESULT
+    // ------------------------------------------
+
     return (
-      'Application should behave as expected ' +
+      'Test should execute successfully ' +
       'without errors.'
     );
   }
@@ -261,10 +397,14 @@ class BugReporter implements Reporter {
   // ==========================================
 
   private getActualResult(
-    errorMessage: string
+    errorMessage: string,
+    status: string
   ): string {
-    // Example:
+    // ------------------------------------------
+    // RECEIVED VALUE
+    //
     // Received: "Error"
+    // ------------------------------------------
 
     const receivedMatch =
       errorMessage.match(
@@ -275,8 +415,11 @@ class BugReporter implements Reporter {
       return receivedMatch[1].trim();
     }
 
-    // Example:
+    // ------------------------------------------
+    // ACTUAL VALUE
+    //
     // Actual: "Error"
+    // ------------------------------------------
 
     const actualMatch =
       errorMessage.match(
@@ -287,22 +430,44 @@ class BugReporter implements Reporter {
       return actualMatch[1].trim();
     }
 
-    // Get all Error lines.
-    // Example:
+    // ------------------------------------------
+    // ENVIRONMENT VARIABLE ERROR
+    //
+    // CMS_MODULE_URL is missing in .env
+    // ------------------------------------------
+
+    const envMatch =
+      errorMessage.match(
+        /([A-Z][A-Z0-9_]+)\s+is missing in\s+\.env/i
+      );
+
+    if (envMatch?.[1]) {
+      return (
+        `${envMatch[1]} is missing in .env`
+      );
+    }
+
+    // ------------------------------------------
+    // PLAYWRIGHT ERROR LINES
     //
     // Error: expect(locator).toBeVisible() failed
     // Error: element(s) not found
+    //
+    // Return the last meaningful Error line
+    // ------------------------------------------
 
-    const errorMatches = Array.from(
-      errorMessage.matchAll(
-        /^\s*Error:\s*(.+)$/gim
-      )
-    );
+    const errorMatches =
+      Array.from(
+        errorMessage.matchAll(
+          /^\s*Error:\s*(.+)$/gim
+        )
+      );
 
     const meaningfulErrors =
       errorMatches
-        .map(match =>
-          match[1].trim()
+        .map(
+          match =>
+            match[1].trim()
         )
         .filter(
           message =>
@@ -311,13 +476,17 @@ class BugReporter implements Reporter {
             )
         );
 
-    if (meaningfulErrors.length > 0) {
+    if (
+      meaningfulErrors.length > 0
+    ) {
       return meaningfulErrors[
         meaningfulErrors.length - 1
       ];
     }
 
-    // Common Playwright errors
+    // ------------------------------------------
+    // ELEMENT NOT FOUND
+    // ------------------------------------------
 
     if (
       /element\(s\) not found/i.test(
@@ -326,6 +495,10 @@ class BugReporter implements Reporter {
     ) {
       return 'Element(s) not found.';
     }
+
+    // ------------------------------------------
+    // STRICT MODE
+    // ------------------------------------------
 
     if (
       /strict mode violation/i.test(
@@ -338,11 +511,36 @@ class BugReporter implements Reporter {
       );
     }
 
+    // ------------------------------------------
+    // TIMEOUT
+    // ------------------------------------------
+
     if (
-      /timeout/i.test(errorMessage)
+      status === 'timedOut' ||
+      /\btimeout\b/i.test(errorMessage) ||
+      /\btimed out\b/i.test(errorMessage)
     ) {
       return 'Test execution timed out.';
     }
+
+    // ------------------------------------------
+    // BROWSER CLOSED
+    // ------------------------------------------
+
+    if (
+      /target page, context or browser has been closed/i.test(
+        errorMessage
+      )
+    ) {
+      return (
+        'Page, browser context, or browser ' +
+        'was closed.'
+      );
+    }
+
+    // ------------------------------------------
+    // LOCATOR FAILURE
+    // ------------------------------------------
 
     if (
       /locator/i.test(errorMessage)
@@ -353,6 +551,10 @@ class BugReporter implements Reporter {
       );
     }
 
+    // ------------------------------------------
+    // GENERIC ASSERTION FAILURE
+    // ------------------------------------------
+
     if (
       /expect/i.test(errorMessage)
     ) {
@@ -361,6 +563,10 @@ class BugReporter implements Reporter {
         'the expected result.'
       );
     }
+
+    // ------------------------------------------
+    // GENERIC FAILURE
+    // ------------------------------------------
 
     return 'Test execution failed.';
   }
@@ -372,10 +578,11 @@ class BugReporter implements Reporter {
   private getModuleName(
     testFile: string
   ): string {
-    const fileName = path.basename(
-      testFile,
-      path.extname(testFile)
-    );
+    const fileName =
+      path.basename(
+        testFile,
+        path.extname(testFile)
+      );
 
     const parts =
       fileName.split('_');
@@ -384,8 +591,14 @@ class BugReporter implements Reporter {
       return parts
         .slice(2)
         .join(' ')
-        .replace(/\.spec$/i, '')
-        .replace(/spec$/i, '')
+        .replace(
+          /\.spec$/i,
+          ''
+        )
+        .replace(
+          /spec$/i,
+          ''
+        )
         .trim();
     }
 
@@ -399,7 +612,9 @@ class BugReporter implements Reporter {
   async onEnd(
     result: FullResult
   ): Promise<void> {
-    if (this.failedTests.length === 0) {
+    if (
+      this.failedTests.length === 0
+    ) {
       console.log(
         '\nNo failed tests. Bug report was not generated.'
       );
@@ -421,11 +636,13 @@ class BugReporter implements Reporter {
         'Bug Report'
       );
 
-    // ==============================
+    // ==========================================
     // TITLE
-    // ==============================
+    // ==========================================
 
-    worksheet.mergeCells('A1:O1');
+    worksheet.mergeCells(
+      'A1:O1'
+    );
 
     const titleCell =
       worksheet.getCell('A1');
@@ -443,11 +660,12 @@ class BugReporter implements Reporter {
       vertical: 'middle',
     };
 
-    worksheet.getRow(1).height = 30;
+    worksheet.getRow(1).height =
+      30;
 
-    // ==============================
+    // ==========================================
     // HEADERS
-    // ==============================
+    // ==========================================
 
     worksheet.addRow([
       'Bug ID',
@@ -479,12 +697,13 @@ class BugReporter implements Reporter {
       vertical: 'middle',
     };
 
-    // ==============================
-    // FAILED TESTS
-    // ==============================
+    // ==========================================
+    // ADD FAILED TESTS
+    // ==========================================
 
     for (
-      const failedTest of this.failedTests
+      const failedTest of
+      this.failedTests
     ) {
       worksheet.addRow([
         failedTest.bugId,
@@ -505,9 +724,9 @@ class BugReporter implements Reporter {
       ]);
     }
 
-    // ==============================
+    // ==========================================
     // COLUMN WIDTHS
-    // ==============================
+    // ==========================================
 
     worksheet.columns = [
       { width: 12 },
@@ -517,8 +736,8 @@ class BugReporter implements Reporter {
       { width: 55 },
       { width: 15 },
       { width: 15 },
-      { width: 45 },
-      { width: 45 },
+      { width: 50 },
+      { width: 50 },
       { width: 70 },
       { width: 12 },
       { width: 12 },
@@ -527,22 +746,26 @@ class BugReporter implements Reporter {
       { width: 25 },
     ];
 
-    // ==============================
+    // ==========================================
     // WRAP TEXT
-    // ==============================
+    // ==========================================
 
-    worksheet.eachRow(row => {
-      row.eachCell(cell => {
-        cell.alignment = {
-          vertical: 'top',
-          wrapText: true,
-        };
-      });
-    });
+    worksheet.eachRow(
+      row => {
+        row.eachCell(
+          cell => {
+            cell.alignment = {
+              vertical: 'top',
+              wrapText: true,
+            };
+          }
+        );
+      }
+    );
 
-    // ==============================
+    // ==========================================
     // SAVE REPORT
-    // ==============================
+    // ==========================================
 
     const reportDirectory =
       path.join(
@@ -550,7 +773,11 @@ class BugReporter implements Reporter {
         'bug-reports'
       );
 
-    if (!fs.existsSync(reportDirectory)) {
+    if (
+      !fs.existsSync(
+        reportDirectory
+      )
+    ) {
       fs.mkdirSync(
         reportDirectory,
         {
