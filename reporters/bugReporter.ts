@@ -31,7 +31,12 @@ interface FailedTest {
 
 class BugReporter implements Reporter {
   private failedTests: FailedTest[] = [];
+
   private rootDir = '';
+
+  // ==========================================
+  // START REPORTER
+  // ==========================================
 
   onBegin(config: FullConfig): void {
     this.rootDir = config.rootDir;
@@ -41,7 +46,7 @@ class BugReporter implements Reporter {
       'bug-reports'
     );
 
-    // Remove previous bug reports
+    // Remove previous report directory
     if (fs.existsSync(bugReportDir)) {
       fs.rmSync(bugReportDir, {
         recursive: true,
@@ -49,7 +54,7 @@ class BugReporter implements Reporter {
       });
     }
 
-    // Create fresh bug report directory
+    // Create fresh directory
     fs.mkdirSync(bugReportDir, {
       recursive: true,
     });
@@ -71,11 +76,15 @@ class BugReporter implements Reporter {
     );
   }
 
+  // ==========================================
+  // PROCESS FAILED TEST
+  // ==========================================
+
   onTestEnd(
     test: TestCase,
     result: TestResult
   ): void {
-    // Only process failed or timed out tests
+    // Only failed and timed-out tests
     if (
       result.status !== 'failed' &&
       result.status !== 'timedOut'
@@ -86,7 +95,22 @@ class BugReporter implements Reporter {
     const errorMessage =
       this.getErrorMessage(result);
 
-    // Get screenshot automatically
+    const expectedResult =
+      this.getExpectedResult(
+        errorMessage,
+        result.status
+      );
+
+    const actualResult =
+      this.getActualResult(
+        errorMessage,
+        result.status
+      );
+
+    // ==========================================
+    // GET SCREENSHOT
+    // ==========================================
+
     let screenshotPath = '';
 
     for (const attachment of result.attachments) {
@@ -115,23 +139,16 @@ class BugReporter implements Reporter {
     const bugTitle =
       `${test.title} failed`;
 
-    // Automatically extract Expected Result
-    const expectedResult =
-      this.getExpectedResult(
-        errorMessage,
-        result.status
-      );
+    // ==========================================
+    // JENKINS DEBUG
+    // ==========================================
 
-    // Automatically extract Actual Result
-    const actualResult =
-      this.getActualResult(
-        errorMessage,
-        result.status
-      );
-
-    // Debug output for Jenkins
     console.log(
       '\n========== BUG REPORT DEBUG =========='
+    );
+
+    console.log(
+      `Bug ID: ${bugId}`
     );
 
     console.log(
@@ -156,13 +173,9 @@ class BugReporter implements Reporter {
 
     this.failedTests.push({
       bugId,
-
       bugTitle,
-
       module,
-
       testCase: test.title,
-
       testFile,
 
       browser:
@@ -216,9 +229,7 @@ class BugReporter implements Reporter {
       result.errors &&
       result.errors.length > 0
     ) {
-      for (
-        const error of result.errors
-      ) {
+      for (const error of result.errors) {
         const message =
           error.message ||
           error.value ||
@@ -249,7 +260,7 @@ class BugReporter implements Reporter {
     status: string
   ): string {
     // ------------------------------------------
-    // PLAYWRIGHT EXPECTED VALUE
+    // 1. PLAYWRIGHT EXPLICIT EXPECTED VALUE
     //
     // Expected: visible
     // Expected: "Success"
@@ -265,7 +276,7 @@ class BugReporter implements Reporter {
     }
 
     // ------------------------------------------
-    // MISSING ENVIRONMENT VARIABLE
+    // 2. ENVIRONMENT VARIABLE
     //
     // CMS_MODULE_URL is missing in .env
     // ------------------------------------------
@@ -283,7 +294,88 @@ class BugReporter implements Reporter {
     }
 
     // ------------------------------------------
-    // TIMEOUT
+    // 3. GET EXPECTATION FROM CALL LOG
+    // ------------------------------------------
+
+    const callLog =
+      this.getCallLog(errorMessage);
+
+    if (callLog) {
+      const expectedFromCallLog =
+        this.getExpectedFromCallLog(
+          callLog
+        );
+
+      if (expectedFromCallLog) {
+        return expectedFromCallLog;
+      }
+    }
+
+    // ------------------------------------------
+    // 4. PLAYWRIGHT ASSERTIONS
+    // ------------------------------------------
+
+    if (/toBeVisible/i.test(errorMessage)) {
+      return 'Element should be visible.';
+    }
+
+    if (/toBeHidden/i.test(errorMessage)) {
+      return 'Element should be hidden.';
+    }
+
+    if (/toBeEnabled/i.test(errorMessage)) {
+      return 'Element should be enabled.';
+    }
+
+    if (/toBeDisabled/i.test(errorMessage)) {
+      return 'Element should be disabled.';
+    }
+
+    if (/toBeChecked/i.test(errorMessage)) {
+      return 'Checkbox should be checked.';
+    }
+
+    if (/toBeUnchecked/i.test(errorMessage)) {
+      return 'Checkbox should be unchecked.';
+    }
+
+    if (/toHaveText/i.test(errorMessage)) {
+      return (
+        'Element text should match ' +
+        'the expected value.'
+      );
+    }
+
+    if (/toContainText/i.test(errorMessage)) {
+      return (
+        'Element should contain ' +
+        'the expected text.'
+      );
+    }
+
+    if (/toHaveValue/i.test(errorMessage)) {
+      return (
+        'Element value should match ' +
+        'the expected value.'
+      );
+    }
+
+    if (/toHaveURL/i.test(errorMessage)) {
+      return (
+        'Page URL should match ' +
+        'the expected URL.'
+      );
+    }
+
+    if (/toHaveTitle/i.test(errorMessage)) {
+      return (
+        'Page title should match ' +
+        'the expected title.'
+      );
+    }
+
+    // ------------------------------------------
+    // 5. TIMEOUT
     // ------------------------------------------
 
     if (
@@ -298,98 +390,124 @@ class BugReporter implements Reporter {
     }
 
     // ------------------------------------------
-    // PLAYWRIGHT ASSERTIONS
-    // ------------------------------------------
-
-    if (
-      /toBeVisible/i.test(errorMessage)
-    ) {
-      return 'Element should be visible.';
-    }
-
-    if (
-      /toBeHidden/i.test(errorMessage)
-    ) {
-      return 'Element should be hidden.';
-    }
-
-    if (
-      /toBeEnabled/i.test(errorMessage)
-    ) {
-      return 'Element should be enabled.';
-    }
-
-    if (
-      /toBeDisabled/i.test(errorMessage)
-    ) {
-      return 'Element should be disabled.';
-    }
-
-    if (
-      /toBeChecked/i.test(errorMessage)
-    ) {
-      return 'Checkbox should be checked.';
-    }
-
-    if (
-      /toBeUnchecked/i.test(errorMessage)
-    ) {
-      return 'Checkbox should be unchecked.';
-    }
-
-    if (
-      /toHaveText/i.test(errorMessage)
-    ) {
-      return (
-        'Element text should match ' +
-        'the expected value.'
-      );
-    }
-
-    if (
-      /toContainText/i.test(errorMessage)
-    ) {
-      return (
-        'Element should contain ' +
-        'the expected text.'
-      );
-    }
-
-    if (
-      /toHaveValue/i.test(errorMessage)
-    ) {
-      return (
-        'Element value should match ' +
-        'the expected value.'
-      );
-    }
-
-    if (
-      /toHaveURL/i.test(errorMessage)
-    ) {
-      return (
-        'Page URL should match ' +
-        'the expected URL.'
-      );
-    }
-
-    if (
-      /toHaveTitle/i.test(errorMessage)
-    ) {
-      return (
-        'Page title should match ' +
-        'the expected title.'
-      );
-    }
-
-    // ------------------------------------------
-    // GENERIC EXPECTED RESULT
+    // DEFAULT
     // ------------------------------------------
 
     return (
       'Test should execute successfully ' +
       'without errors.'
     );
+  }
+
+  // ==========================================
+  // GENERATE EXPECTED RESULT FROM CALL LOG
+  // ==========================================
+
+  private getExpectedFromCallLog(
+    callLog: string
+  ): string {
+    const normalizedCallLog =
+      callLog
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    // ------------------------------------------
+    // PROCESSING API RESPONSE
+    // ------------------------------------------
+
+    if (
+      /processing api response/i.test(
+        normalizedCallLog
+      )
+    ) {
+      return (
+        'API response should be processed ' +
+        'successfully.'
+      );
+    }
+
+    // ------------------------------------------
+    // WAITING FOR API RESPONSE
+    // ------------------------------------------
+
+    if (
+      /waiting for response/i.test(
+        normalizedCallLog
+      )
+    ) {
+      return (
+        'Expected API response should be ' +
+        'received successfully.'
+      );
+    }
+
+    // ------------------------------------------
+    // WAITING FOR NAVIGATION
+    // ------------------------------------------
+
+    if (
+      /waiting for navigation/i.test(
+        normalizedCallLog
+      )
+    ) {
+      return (
+        'Page navigation should complete ' +
+        'successfully.'
+      );
+    }
+
+    // ------------------------------------------
+    // WAITING FOR URL
+    // ------------------------------------------
+
+    if (
+      /waiting for url/i.test(
+        normalizedCallLog
+      )
+    ) {
+      return (
+        'Page should navigate to the ' +
+        'expected URL successfully.'
+      );
+    }
+
+    // ------------------------------------------
+    // WAITING FOR ELEMENT / LOCATOR
+    // ------------------------------------------
+
+    const waitingMatch =
+      normalizedCallLog.match(
+        /waiting for\s+(.+)/i
+      );
+
+    if (waitingMatch?.[1]) {
+      const target =
+        waitingMatch[1]
+          .trim()
+          .replace(/^-\s*/g, '');
+
+      return (
+        `${target} should be available ` +
+        'and accessible successfully.'
+      );
+    }
+
+    // ------------------------------------------
+    // API REQUEST
+    // ------------------------------------------
+
+    if (
+      /api request/i.test(
+        normalizedCallLog
+      )
+    ) {
+      return (
+        'API request should complete ' +
+        'successfully.'
+      );
+    }
+
+    return '';
   }
 
   // ==========================================
@@ -401,7 +519,7 @@ class BugReporter implements Reporter {
     status: string
   ): string {
     // ------------------------------------------
-    // RECEIVED VALUE
+    // 1. RECEIVED VALUE
     //
     // Received: "Error"
     // ------------------------------------------
@@ -416,7 +534,7 @@ class BugReporter implements Reporter {
     }
 
     // ------------------------------------------
-    // ACTUAL VALUE
+    // 2. ACTUAL VALUE
     //
     // Actual: "Error"
     // ------------------------------------------
@@ -431,9 +549,7 @@ class BugReporter implements Reporter {
     }
 
     // ------------------------------------------
-    // ENVIRONMENT VARIABLE ERROR
-    //
-    // CMS_MODULE_URL is missing in .env
+    // 3. ENV VARIABLE ERROR
     // ------------------------------------------
 
     const envMatch =
@@ -448,71 +564,20 @@ class BugReporter implements Reporter {
     }
 
     // ------------------------------------------
-    // PLAYWRIGHT ERROR LINES
-    //
-    // Error: expect(locator).toBeVisible() failed
-    // Error: element(s) not found
-    //
-    // Return the last meaningful Error line
+    // 4. EXTRACT MAIN ERROR
     // ------------------------------------------
 
-    const errorMatches =
-      Array.from(
-        errorMessage.matchAll(
-          /^\s*Error:\s*(.+)$/gim
-        )
+    const mainError =
+      this.getMainErrorMessage(
+        errorMessage
       );
 
-    const meaningfulErrors =
-      errorMatches
-        .map(
-          match =>
-            match[1].trim()
-        )
-        .filter(
-          message =>
-            !/expect\(.*\).*failed/i.test(
-              message
-            )
-        );
-
-    if (
-      meaningfulErrors.length > 0
-    ) {
-      return meaningfulErrors[
-        meaningfulErrors.length - 1
-      ];
+    if (mainError) {
+      return mainError;
     }
 
     // ------------------------------------------
-    // ELEMENT NOT FOUND
-    // ------------------------------------------
-
-    if (
-      /element\(s\) not found/i.test(
-        errorMessage
-      )
-    ) {
-      return 'Element(s) not found.';
-    }
-
-    // ------------------------------------------
-    // STRICT MODE
-    // ------------------------------------------
-
-    if (
-      /strict mode violation/i.test(
-        errorMessage
-      )
-    ) {
-      return (
-        'Multiple elements matched ' +
-        'the locator.'
-      );
-    }
-
-    // ------------------------------------------
-    // TIMEOUT
+    // 5. TIMEOUT
     // ------------------------------------------
 
     if (
@@ -520,55 +585,100 @@ class BugReporter implements Reporter {
       /\btimeout\b/i.test(errorMessage) ||
       /\btimed out\b/i.test(errorMessage)
     ) {
-      return 'Test execution timed out.';
-    }
-
-    // ------------------------------------------
-    // BROWSER CLOSED
-    // ------------------------------------------
-
-    if (
-      /target page, context or browser has been closed/i.test(
-        errorMessage
-      )
-    ) {
       return (
-        'Page, browser context, or browser ' +
-        'was closed.'
+        'Test execution timed out.'
       );
     }
-
-    // ------------------------------------------
-    // LOCATOR FAILURE
-    // ------------------------------------------
-
-    if (
-      /locator/i.test(errorMessage)
-    ) {
-      return (
-        'Expected element was not found ' +
-        'or did not reach the required state.'
-      );
-    }
-
-    // ------------------------------------------
-    // GENERIC ASSERTION FAILURE
-    // ------------------------------------------
-
-    if (
-      /expect/i.test(errorMessage)
-    ) {
-      return (
-        'Actual result did not match ' +
-        'the expected result.'
-      );
-    }
-
-    // ------------------------------------------
-    // GENERIC FAILURE
-    // ------------------------------------------
 
     return 'Test execution failed.';
+  }
+
+  // ==========================================
+  // GET MAIN ERROR MESSAGE
+  // ==========================================
+
+  private getMainErrorMessage(
+    errorMessage: string
+  ): string {
+    const lines =
+      errorMessage
+        .split(/\r?\n/)
+        .map(
+          line => line.trim()
+        )
+        .filter(Boolean);
+
+    // ------------------------------------------
+    // STANDARD ERROR TYPES
+    // ------------------------------------------
+
+    const errorLine =
+      lines.find(
+        line =>
+          /^(Error|TimeoutError|TypeError|ReferenceError|SyntaxError|RangeError):/i.test(
+            line
+          )
+      );
+
+    if (errorLine) {
+      return errorLine;
+    }
+
+    // ------------------------------------------
+    // PLAYWRIGHT ELEMENT ERROR
+    // ------------------------------------------
+
+    const elementError =
+      lines.find(
+        line =>
+          /element\(s\) not found/i.test(
+            line
+          )
+      );
+
+    if (elementError) {
+      return elementError;
+    }
+
+    // ------------------------------------------
+    // GENERIC ERROR
+    // ------------------------------------------
+
+    const genericError =
+      lines.find(
+        line =>
+          !/^Call log:/i.test(line) &&
+          !/^-\s*/i.test(line) &&
+          !/^at\s+/i.test(line)
+      );
+
+    return genericError || '';
+  }
+
+  // ==========================================
+  // GET CALL LOG
+  // ==========================================
+
+  private getCallLog(
+    errorMessage: string
+  ): string {
+    const callLogMatch =
+      errorMessage.match(
+        /Call log:\s*([\s\S]*?)(?=\n\s*at\s+|$)/i
+      );
+
+    if (!callLogMatch?.[1]) {
+      return '';
+    }
+
+    return callLogMatch[1]
+      .trim()
+      .split(/\r?\n/)
+      .map(
+        line => line.trim()
+      )
+      .filter(Boolean)
+      .join('\n');
   }
 
   // ==========================================
@@ -736,9 +846,9 @@ class BugReporter implements Reporter {
       { width: 55 },
       { width: 15 },
       { width: 15 },
-      { width: 50 },
-      { width: 50 },
-      { width: 70 },
+      { width: 55 },
+      { width: 55 },
+      { width: 80 },
       { width: 12 },
       { width: 12 },
       { width: 18 },
