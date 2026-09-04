@@ -1,0 +1,2 @@
+[     343ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://rahulshettyacademy.com/loginpagePractise/:0
+[   17556ms] [ERROR] Failed to load resource: net::ERR_INSUFFICIENT_RESOURCES @ https://px.ads.linkedin.com/wa/?medium=fetch&fmt=g:0

@@ -17,7 +17,7 @@ export default defineConfig({
 
   retries: process.env.CI ? 2 : 0,
 
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : Number(process.env.WORKERS) || 1,
 
   reporter: [
     ['list'],
@@ -68,6 +68,14 @@ export default defineConfig({
         bypassCSP: true,
       }
     },
+
+    // {
+    //   name: 'android',
+    //   use: {
+    //     ...devices['Pixel 5'],
+    //     bypassCSP: true,
+    //   }
+    // },
 
   ],
 

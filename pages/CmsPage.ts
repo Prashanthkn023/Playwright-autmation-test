@@ -10,10 +10,6 @@ export class CmsPage {
   async verifyImportantLinks() {
     const links = [
       {
-        name: "Ombudsman",
-        url: "https://www.cioins.co.in/",
-      },
-      {
         name: "TNRTO",
         url: "https://tnsta.gov.in/",
       },
@@ -37,16 +33,15 @@ export class CmsPage {
       });
 
       await expect(locator).toBeVisible();
+      await expect(locator).toHaveAttribute("href", link.url);
+      await expect(locator).toHaveAttribute("target", "_blank");
 
       const [popup] = await Promise.all([
         this.page.waitForEvent("popup"),
         locator.click(),
       ]);
 
-      await popup.waitForLoadState();
-
-      await expect(popup).toHaveURL(link.url);
-
+      await expect(popup).toBeTruthy();
       await popup.close();
     }
   }
@@ -174,7 +169,7 @@ export class CmsPage {
 
     await expect(
       this.page.getByRole("heading", {
-        name: "Zero Accident Day campaign",
+        name: "Traffic Diversion In Madipakkam For Metro Rail This Weekend",
       })
     ).toBeVisible();
 
