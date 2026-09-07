@@ -1,0 +1,92 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e77] [cursor=pointer]
+          - generic [ref=e11]:
+            - generic [ref=e12]: Greater Chennai Traffic Police
+            - generic [ref=e13]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e20]:
+          - combobox "Search..." [ref=e21]
+          - group [aria-hidden]
+        - generic [ref=e22]:
+          - generic [ref=e25]:
+            - combobox "English" [ref=e26] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=e27] [cursor=pointer]:
+            - img "Play Store" [ref=e78]
+          - link "account of current user" [ref=e28] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e79]
+          - link "account of current user" [ref=e31] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e32]
+          - link "account of current user" [ref=e33] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e34]
+    - button "Toggle navigation" [ref=e36] [cursor=pointer]
+  - generic [ref=e207]:
+    - generic [ref=e209]:
+      - button "Go back" [ref=e210] [cursor=pointer]
+      - generic [ref=e213]:
+        - generic [ref=e214]:
+          - heading "AI enabled Traffic Junction" [level=1] [ref=e215]
+          - paragraph [ref=e216]: An AI-Enabled Traffic Junction uses advanced Artificial Intelligence, smart cameras, and real-time analytics to monitor traffic conditions and improve road safety. The system can detect vehicle density, traffic violations, and abnormal road incidents, providing valuable insights for effective traffic management. By continuously analyzing traffic patterns, it helps reduce congestion, supports quicker incident response, and enhances the overall commuting experience.
+        - img "AI enabled Traffic Junction" [ref=e218]
+    - generic [ref=e219]:
+      - button "Scroll important links left" [ref=e220] [cursor=pointer]
+      - generic [ref=e224]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e227] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e228]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e230]
+            - generic [ref=e231]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e237] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e238]:
+            - img "Parivahan" [ref=e240]
+            - generic [ref=e241]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e247] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e248]:
+            - img "TN Govt Web" [ref=e250]
+            - generic [ref=e251]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e257] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e258]:
+            - img "TNRTO" [ref=e260]
+            - generic [ref=e261]: TNRTO
+      - button "Scroll important links right" [ref=e265] [cursor=pointer]
+    - generic [ref=e268]:
+      - generic [ref=e269]:
+        - link "Feedback" [ref=e271] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e273] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e275] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=e277] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e279] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e280]:
+        - generic [ref=e281]:
+          - generic [ref=e282]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e283]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 07-09-2026 11:49:23 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e284]: "Version : Fusion V1.2"
+        - generic [ref=e285]:
+          - generic [ref=e286]:
+            - link [ref=e287] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e288]
+            - link [ref=e289] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e290]
+          - generic [ref=e291]:
+            - paragraph [ref=e292]: "Number Of Visitors : 11511"
+            - img "Group Icon" [ref=e294]

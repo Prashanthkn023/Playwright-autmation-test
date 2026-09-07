@@ -51,7 +51,7 @@ export class CmsContactUsPage extends BasePage {
   }
 
   async openHomePage() {
-    await this.navigate('https://gctp.in/');
+    await this.navigate('https://gctp.in/chennai-home');
   }
 
   async openContactUs() {

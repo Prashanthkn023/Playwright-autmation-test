@@ -13,7 +13,7 @@ function isSuccessfulStatus(status: number) {
 function isTargetApi(url: string, resourceType: string) {
   return (
     (resourceType === 'xhr' || resourceType === 'fetch') &&
-    url.includes('/api/fusion-public-facing')
+    url.includes('/api/')
   );
 }
 
@@ -32,7 +32,7 @@ test('Validate media page APIs', async ({ page }) => {
     });
   });
 
-  await page.goto('https://gctp.in/chennai-media', {
+  await page.goto('https://gctp.in/chennai-news-updates', {
     waitUntil: 'domcontentloaded',
   });
 
@@ -52,7 +52,7 @@ test('Validate media page APIs', async ({ page }) => {
   );
 
   if (uniqueResponses.length === 0) {
-    throw new Error('No target APIs were captured from https://gctp.in/chennai-media');
+    throw new Error('No target APIs were captured from https://gctp.in/chennai-news-updates');
   }
 
   const failedResponses = uniqueResponses.filter(

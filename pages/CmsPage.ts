@@ -160,18 +160,40 @@ export class CmsPage {
   }
 
   async verifyHomePageSliders() {
-    await this.page
-      .getByRole("button", {
-        name: "Read More",
-      })
-      .first()
+    const aiTrafficJunctionSlider = this.page
+      .locator("section")
+      .filter({ hasText: "AI enabled Traffic Junction" });
+
+    await expect(aiTrafficJunctionSlider).toBeVisible();
+    await aiTrafficJunctionSlider
+      .getByRole("button", { name: "Read More" })
       .click();
+
+    await expect(this.page).toHaveURL(
+      "https://gctp.in/chennai-EMPANELMENT"
+    );
 
     await expect(
       this.page.getByRole("heading", {
-        name: "Traffic Diversion In Madipakkam For Metro Rail This Weekend",
+        name: "AI enabled Traffic Junction",
       })
     ).toBeVisible();
+
+    await expect(
+      this.page.getByText(
+        "An AI-Enabled Traffic Junction uses advanced Artificial Intelligence, smart cameras, and real-time analytics to monitor traffic conditions and improve road safety. The system can detect vehicle density, traffic violations, and abnormal road incidents, providing valuable insights for effective traffic management. By continuously analyzing traffic patterns, it helps reduce congestion, supports quicker incident response, and enhances the overall commuting experience."
+      )
+    ).toBeVisible();
+
+    const trafficJunctionImage = this.page.getByRole("img", {
+      name: "AI enabled Traffic Junction",
+    });
+
+    await expect(trafficJunctionImage).toBeVisible();
+    await expect(trafficJunctionImage).toHaveAttribute(
+      "src",
+      "https://gctp.in/api/fusion-cms-web-backend/uploads/images/1788519035502-839196315-Designer (24)_1.png"
+    );
 
     await this.page
       .getByRole("button", {
