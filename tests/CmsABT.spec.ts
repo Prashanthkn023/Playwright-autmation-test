@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 
-const cmsurl = 'https://cms.gctp.in/chennai-home';
+const cmsurl = 'https://cms.gctp.in/chennai-gctp';
 const baseurl = 'https://gctp.in/chennai-home';
 
 test('verify CMS About Us content with published website', async ({ page }) => {
@@ -17,17 +18,18 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
 
   // About Us
-  await page.getByRole('link', { name: 'About Us' }).click();
+  await page.getByRole('link', { name: /About Us/i }).first().click();
 
   // GCTP
   await page
-    .getByRole('link', { name: 'Greater Chennai Traffic Police' })
-    .click();
+    .getByRole('link', { name: 'GCTP', exact: true })
+    .first()
+    .click({ force: true });
 
   const expectedGctpHeading =
     await page
       .getByText('Greater Chennai Traffic Police', { exact: true })
-      .first()
+      .last()
       .textContent();
 
   const expectedGctpDescription =
@@ -137,6 +139,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   // =====================================================
 
   await page.goto(baseurl);
+  await closeAwarenessPopup(page);
 
   // About Us
   await page.getByRole('button', { name: 'About Us' }).click();
@@ -151,10 +154,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   // This avoids the footer/host content
   const actualGctpHeading =
     await page
-      .getByRole('heading', {
-        name: 'Greater Chennai Traffic Police',
-        exact: true
-      })
+      .getByText('Greater Chennai Traffic Police', { exact: true })
+      .last()
       .textContent();
 
   const actualGctpDescription =

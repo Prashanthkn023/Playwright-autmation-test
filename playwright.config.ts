@@ -30,7 +30,7 @@ export default defineConfig({
 
     baseURL: process.env.BASE_URL || 'https://gctp.in/chennai-home',
 
-    headless: process.env.CI ? true : process.env.HEADLESS === 'true',
+    headless: process.env.CI ? true : process.env.HEADLESS === 'False',
 
     screenshot: 'only-on-failure',
 

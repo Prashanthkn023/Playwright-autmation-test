@@ -1,15 +1,30 @@
 import { test } from '../fixtures/baseTest';
+import { getTestCases } from '../utils/testData';
 
-test('TC_003 Complaint Page Submission Flow @manual', async ({ home, complaint }) => {
-  await home.openHomePage();
-  await home.openComplaint();
+const complaintCases = getTestCases<{
+  scenario: string;
+  name: string;
+  mobile: string;
+  incidentType: string;
+  incidentSubType: string;
+  location: string;
+  message: string;
+}>('testdata/complaint-cases.json');
 
-  await complaint.submitComplaint({
-    name: 'Prashanth',
-    mobile: '8861983424',
-    incidentType: 'COMPLAINT',
-    incidentSubType: 'GRIEVANCE',
-    location: 'Chennai Central',
-    message: 'Automation Testing using Playwright'
+for (const testCase of complaintCases) {
+  test(`TC_003 Complaint Page Submission Flow - ${testCase.scenario} @manual`, async ({ home, complaint }) => {
+    await home.openHomePage();
+    await home.openComplaint();
+
+    await complaint.submitComplaint({
+      name: testCase.name,
+      mobile: testCase.mobile,
+      incidentType: testCase.incidentType,
+      incidentSubType: testCase.incidentSubType,
+      location: testCase.location,
+      message: testCase.message,
+    });
+
+    await complaint.validateComplaintApiResponse();
   });
-});
+}

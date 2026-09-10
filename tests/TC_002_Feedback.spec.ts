@@ -1,23 +1,20 @@
 import { test } from '../fixtures/baseTest';
+import { getTestCases } from '../utils/testData';
 
-import feedbackData from '../testdata/feedback.json';
+const feedbackCases = getTestCases<{ scenario: string; rating: number; message: string }>(
+  'testdata/feedback-cases.json'
+);
 
-test('TC_002 Feedback Form Submission @manual', async ({ home, feedback }) => {
-
+for (const testCase of feedbackCases) {
+  test(`TC_002 Feedback Form Submission - ${testCase.scenario} @manual`, async ({ home, feedback }) => {
     await home.openHomePage();
-
     await home.openFeedback();
 
     await feedback.verifyFeedbackPage();
-
-    await feedback.selectRating(feedbackData.rating);
-
-    await feedback.enterFeedback(feedbackData.message);
-
+    await feedback.selectRating(testCase.rating);
+    await feedback.enterFeedback(testCase.message);
     await feedback.waitForCaptcha();
-
     await feedback.clickSubmit();
-
     await feedback.verifySuccess();
-
-});
+  });
+}

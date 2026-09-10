@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "good experience",
+    "rating": 4,
+    "message": "Great website, easy to navigate."
+  },
+  {
+    "scenario": "average experience",
+    "rating": 3,
+    "message": "Website works fine but could be more informative."
+  }
+]

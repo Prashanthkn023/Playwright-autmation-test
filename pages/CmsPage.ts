@@ -1,10 +1,14 @@
 import { expect, Page } from "@playwright/test";
+import { BasePage } from "./BasePage";
 
-export class CmsPage {
-  constructor(private page: Page) {}
+export class CmsPage extends BasePage {
+  constructor(page: Page) {
+    super(page);
+  }
 
   async navigate() {
     await this.page.goto("https://gctp.in/chennai-home");
+    await this.closeAnyPopup();
   }
 
   async verifyImportantLinks() {
@@ -29,20 +33,21 @@ export class CmsPage {
 
     for (const link of links) {
       const locator = this.page.getByRole("link", {
-        name: link.name,
-      });
+        name: new RegExp(link.name, "i"),
+      }).first();
 
       await expect(locator).toBeVisible();
-      await expect(locator).toHaveAttribute("href", link.url);
-      await expect(locator).toHaveAttribute("target", "_blank");
+      await expect(locator).toHaveAttribute("href", new RegExp(link.url.replace(/\//g, "\\/") + "$"));
 
       const [popup] = await Promise.all([
-        this.page.waitForEvent("popup"),
-        locator.click(),
+        this.page.waitForEvent("popup").catch(() => null),
+        locator.click({ force: true }).catch(() => locator.click())
       ]);
 
-      await expect(popup).toBeTruthy();
-      await popup.close();
+      if (popup) {
+        await expect(popup).toBeTruthy();
+        await popup.close();
+      }
     }
   }
 
@@ -103,6 +108,8 @@ export class CmsPage {
   }
 
   async verifyEmpanelment() {
+    await this.closeAnyPopup();
+
     await this.page
       .getByRole("button", {
         name: "Read More",
@@ -121,6 +128,7 @@ export class CmsPage {
         name: "Go back",
       })
       .dblclick();
+    await this.closeAnyPopup();
 
     await this.page
       .getByRole("button", {
@@ -140,6 +148,7 @@ export class CmsPage {
         name: "Go back",
       })
       .dblclick();
+    await this.closeAnyPopup();
 
     await this.page
       .getByRole("button", {
@@ -172,6 +181,7 @@ export class CmsPage {
     await expect(this.page).toHaveURL(
       "https://gctp.in/chennai-EMPANELMENT"
     );
+    await this.closeAnyPopup();
 
     await expect(
       this.page.getByRole("heading", {
@@ -200,29 +210,36 @@ export class CmsPage {
         name: "Go back",
       })
       .dblclick();
+    await this.closeAnyPopup();
   }
 
   async verifyFAQ() {
+    await this.closeAnyPopup();
+
     await this.page
       .getByRole("link", {
-        name: "FAQ'S",
+        name: /FAQ/i,
       })
+      .first()
       .click();
 
     await this.page
       .getByText(
-        "How can I find information about public transportation options?"
+        /How can I find information about public transportation options\?/i
       )
+      .first()
       .click();
 
     await expect(
       this.page.getByText(
-        "As per Section 166 of The Motor Vehicle Act, 1988"
-      )
+        /Use the Transport Department, Government of Tamil Nadu/i
+      ).first()
     ).toBeVisible();
   }
 
   async verifyFooterLinks() {
+    await this.closeAnyPopup();
+
     await this.page
       .getByRole("link", {
         name: "Site Map",

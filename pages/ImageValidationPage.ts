@@ -60,9 +60,21 @@ export class ImageValidationPage {
             return;
         }
 
-        for (let i = 0; i < count; i++) {
+        const imageDetailsList = await images.evaluateAll((elements: HTMLImageElement[]) =>
+            elements.map((img) => ({
+                src: img.getAttribute('src'),
+                naturalWidth: img.naturalWidth,
+                naturalHeight: img.naturalHeight,
+                complete: img.complete,
+                currentSrc: img.currentSrc,
+                isLoaded: img.naturalWidth > 0 && img.naturalHeight > 0 && img.complete,
+            }))
+        );
 
-            const src = await images.nth(i).getAttribute('src');
+        for (let i = 0; i < imageDetailsList.length; i++) {
+
+            const item = imageDetailsList[i];
+            const src = item?.src;
 
             if (!src) {
                 console.log(`SKIP - Image ${i + 1} - No src attribute`);
@@ -70,41 +82,19 @@ export class ImageValidationPage {
             }
 
             try {
-
-                // Scroll this specific image into view and give it a moment —
-                // some lazy-loaders only trigger once the element is actually
-                // close to/inside the viewport, not just "on the page".
-                await images.nth(i).scrollIntoViewIfNeeded({ timeout: 10000 }).catch(() => {});
+                await this.page.locator(`img[src="${src}"]`).first().scrollIntoViewIfNeeded({ timeout: 10000 }).catch(() => {});
                 await this.page.waitForTimeout(300);
 
-                // Check if image is actually loaded by verifying naturalWidth, naturalHeight, and complete state
-                const imageDetails = await images.nth(i).evaluate((img: HTMLImageElement) => {
-                    return {
-                        naturalWidth: img.naturalWidth,
-                        naturalHeight: img.naturalHeight,
-                        complete: img.complete,
-                        currentSrc: img.currentSrc,
-                        isLoaded: img.naturalWidth > 0 && img.naturalHeight > 0 && img.complete
-                    };
-                }).catch(() => null);
+                console.log(`\nImage ${i + 1}:`);
+                console.log(`   URL: ${src}`);
+                console.log(`   Dimensions: ${item.naturalWidth}x${item.naturalHeight}px`);
+                console.log(`   Complete: ${item.complete}`);
 
-                if (imageDetails) {
-                    console.log(`\nImage ${i + 1}:`);
-                    console.log(`   URL: ${src}`);
-                    console.log(`   Dimensions: ${imageDetails.naturalWidth}x${imageDetails.naturalHeight}px`);
-                    console.log(`   Complete: ${imageDetails.complete}`);
-
-                    if (imageDetails.isLoaded) {
-                        console.log(`   PASS - Image loaded successfully`);
-                        loadedImages.push(src);
-                    } else {
-                        console.log(`   FAIL - Image not loaded or has zero dimensions`);
-                        brokenImages.push(src);
-                    }
+                if (item.isLoaded) {
+                    console.log(`   PASS - Image loaded successfully`);
+                    loadedImages.push(src);
                 } else {
-                    console.log(`\nImage ${i + 1}:`);
-                    console.log(`   URL: ${src}`);
-                    console.log(`   ERROR - Could not evaluate image properties`);
+                    console.log(`   FAIL - Image not loaded or has zero dimensions`);
                     brokenImages.push(src);
                 }
 

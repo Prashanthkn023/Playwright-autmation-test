@@ -1,0 +1,20 @@
+[
+  {
+    "scenario": "valid complaint",
+    "name": "Prashanth",
+    "mobile": "8861983424",
+    "incidentType": "COMPLAINT",
+    "incidentSubType": "GRIEVANCE",
+    "location": "Chennai Central",
+    "message": "Automation Testing using Playwright."
+  },
+  {
+    "scenario": "second complaint",
+    "name": "Sathish",
+    "mobile": "9876543210",
+    "incidentType": "COMPLAINT",
+    "incidentSubType": "TRAFFIC",
+    "location": "Tambaram",
+    "message": "Need faster review of traffic issues in the area."
+  }
+]

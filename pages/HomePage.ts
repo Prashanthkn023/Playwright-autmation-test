@@ -24,6 +24,7 @@ export class HomePage extends BasePage {
     // Open Home Page
     async openHomePage() {
         await this.navigate('https://gctp.in/chennai-home');
+        await this.closeAnyPopup();
     }
 
     // Verify Home Page

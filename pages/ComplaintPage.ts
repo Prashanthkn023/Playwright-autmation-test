@@ -5,6 +5,12 @@ import Tesseract from 'tesseract.js';
 
 export class ComplaintPage extends BasePage {
 
+  private complaintApiResponse?: {
+    url: string;
+    status: number;
+    body: unknown;
+  };
+
   readonly heading: Locator;
   readonly nameInput: Locator;
   readonly mobileInput: Locator;
@@ -328,6 +334,32 @@ export class ComplaintPage extends BasePage {
     await this.verifyButton.click();
   }
 
+  async validateComplaintApiResponse(): Promise<void> {
+    expect(
+      this.complaintApiResponse,
+      'Complaint API response was not captured'
+    ).toBeDefined();
+
+    expect(
+      this.complaintApiResponse!.status,
+      `Complaint API request failed: ${this.complaintApiResponse!.url}`
+    ).toBeGreaterThanOrEqual(200);
+
+    expect(
+      this.complaintApiResponse!.status
+    ).toBeLessThan(300);
+
+    expect(
+      this.complaintApiResponse!.body,
+      'Complaint API returned an empty response body'
+    ).toBeTruthy();
+
+    console.log(
+      'Complaint API validation passed:',
+      this.complaintApiResponse
+    );
+  }
+
   async verifyOTPResult(): Promise<void> {
     try {
 
@@ -519,7 +551,34 @@ export class ComplaintPage extends BasePage {
       /*
        * Verify and Submit.
        */
+      const complaintResponsePromise =
+        this.page.waitForResponse(
+          response =>
+            response.request().method() === 'POST' &&
+            !response.url().includes('/citizen/login'),
+          {
+            timeout: 30000
+          }
+        );
+
       await this.clickVerifySubmit();
+
+      const complaintResponse =
+        await complaintResponsePromise;
+
+      let complaintResponseBody: unknown;
+
+      try {
+        complaintResponseBody = await complaintResponse.json();
+      } catch {
+        complaintResponseBody = await complaintResponse.text();
+      }
+
+      this.complaintApiResponse = {
+        url: complaintResponse.url(),
+        status: complaintResponse.status(),
+        body: complaintResponseBody
+      };
 
       /*
        * Verify final result.

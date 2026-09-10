@@ -1,50 +1,33 @@
-import { test } from "@playwright/test";
-import { CmsPage } from "../pages/CmsPage";
+import { test } from '../fixtures/baseTest';
 
-test.beforeEach(async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.navigate();
+test.beforeEach(async ({ cms }) => {
+  await cms.navigate();
 });
 
-test("Important Links", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyImportantLinks();
+test('Important Links', async ({ cms }) => {
+  await cms.verifyImportantLinks();
 });
 
-test("Helpline", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyHelpline();
+test('Helpline', async ({ cms }) => {
+  await cms.verifyHelpline();
 });
 
-test("Traffic Updates", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyTrafficUpdates();
+test('Traffic Updates', async ({ cms }) => {
+  await cms.verifyTrafficUpdates();
 });
 
-test("Empanelment", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyEmpanelment();
+test('Empanelment', async ({ cms }) => {
+  await cms.verifyEmpanelment();
 });
 
-test("Home Page Sliders", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyHomePageSliders();
+test('Home Page Sliders', async ({ cms }) => {
+  await cms.verifyHomePageSliders();
 });
 
-test("FAQ", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyFAQ();
+test('FAQ', async ({ cms }) => {
+  await cms.verifyFAQ();
 });
 
-test("Footer Links", async ({ page }) => {
-  const cmsPage = new CmsPage(page);
-
-  await cmsPage.verifyFooterLinks();
+test('Footer Links', async ({ cms }) => {
+  await cms.verifyFooterLinks();
 });

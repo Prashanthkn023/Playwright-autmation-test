@@ -4,6 +4,8 @@ import { HomePage } from '../pages/HomePage';
 import { FeedbackPage } from '../pages/FeedbackPage';
 import { ComplaintPage } from '../pages/ComplaintPage';
 import { ImageValidationPage } from '../pages/ImageValidationPage';
+import { CmsPage } from '../pages/CmsPage';
+import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 
 type PageObjects = {
 
@@ -15,9 +17,25 @@ type PageObjects = {
 
     image: ImageValidationPage;
 
+    cms: CmsPage;
+
 };
 
-export const test = base.extend<PageObjects>({
+type SharedFixtures = {
+    awarenessPopupHandler: void;
+};
+
+export const test = base.extend<PageObjects & SharedFixtures>({
+
+    awarenessPopupHandler: [async ({ page }, use) => {
+        const handlePageLoad = async () => {
+            await closeAwarenessPopup(page);
+        };
+
+        page.on('load', handlePageLoad);
+        await use();
+        page.off('load', handlePageLoad);
+    }, { auto: true }],
 
     home: async ({ page }, use) => {
 
@@ -40,6 +58,12 @@ export const test = base.extend<PageObjects>({
     image: async ({ page }, use) => {
 
         await use(new ImageValidationPage(page));
+
+    },
+
+    cms: async ({ page }, use) => {
+
+        await use(new CmsPage(page));
 
     }
 
