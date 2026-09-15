@@ -8,19 +8,47 @@ export async function closeAwarenessPopup(page: Page) {
     return;
   }
 
-  const closeButton = popup.locator(
-    '[aria-label*="close" i], [title*="close" i], .btn-close, .close, button:has-text("Close"), button:has-text("✕"), button'
-  ).first();
+  const closeSelectors = [
+    '[aria-label="Close"]',
+    '[aria-label="close"]',
+    '[title="Close"]',
+    '[title="close"]',
+    '.btn-close',
+    '.close',
+    'button.close',
+    'button[class*="close" i]',
+    'button:has-text("✕")',
+    'button:has-text("×")',
+  ];
 
-  for (let attempt = 0; attempt < 2; attempt++) {
-    if (await closeButton.isVisible().catch(() => false)) {
-      await closeButton.click({ force: true, timeout: 5000 }).catch(() => page.keyboard.press('Escape'));
-    } else {
-      await page.keyboard.press('Escape').catch(() => undefined);
+  for (const selector of closeSelectors) {
+    const buttons = popup.locator(selector);
+
+    for (let index = 0; index < await buttons.count(); index++) {
+      const button = buttons.nth(index);
+
+      if (!(await button.isVisible().catch(() => false))) {
+        continue;
+      }
+
+      await button.click({ force: true, timeout: 5000 }).catch(() => undefined);
+
+      if (await awarenessText.waitFor({ state: 'hidden', timeout: 2000 }).then(() => true).catch(() => false)) {
+        return;
+      }
     }
+  }
 
-    if (await popup.waitFor({ state: 'hidden', timeout: 2000 }).then(() => true).catch(() => false)) {
+  const namedCloseButton = popup.getByRole('button', { name: /close|dismiss|cancel/i }).first();
+
+  if (await namedCloseButton.isVisible().catch(() => false)) {
+    await namedCloseButton.click({ force: true, timeout: 5000 }).catch(() => undefined);
+
+    if (await awarenessText.waitFor({ state: 'hidden', timeout: 2000 }).then(() => true).catch(() => false)) {
       return;
     }
   }
+
+  await page.keyboard.press('Escape').catch(() => undefined);
+  await awarenessText.waitFor({ state: 'hidden', timeout: 2000 }).catch(() => undefined);
 }

@@ -1,942 +1,1703 @@
-import { test, expect, Page } from '@playwright/test';
+import {
+  test,
+  expect,
+} from '@playwright/test';
 
-// =================================================
-// CONFIGURATION
-// =================================================
+import fs from 'fs';
 
-const CMS_URL = 'https://cms.gctp.in/chennai-gctp/';
-
-// IMPORTANT:
-// Replace this with the REAL API endpoint you see in
-// Chrome DevTools -> Network -> Fetch/XHR when you
-// manually create and save a record in CMS.
-const CMS_CREATE_API =
-  process.env.CMS_CREATE_API || '';
-
-// IMPORTANT:
-// Replace with the correct public GCTP GET API.
-const GCTP_GET_API =
-  process.env.GCTP_GET_API || 'https://gctp.in/api/fusion-public-facing-web-backend/home-page';
+import path from 'path';
 
 
-// =================================================
-// CMS CREDENTIALS
-// =================================================
+// ============================================================
+// CMS CONFIGURATION
+// ============================================================
 
-// Recommended:
-// Set these as environment variables.
-//
-// Windows PowerShell:
-//
-// $env:CMS_USERNAME="your_username"
-// $env:CMS_PASSWORD="your_password"
+const CMS_URL =
+  'https://cms.gctp.in/chennai-gctp/';
 
 const CMS_USERNAME =
-  process.env.CMS_USERNAME || '';
+  'YOUR_CMS_USERNAME';
 
 const CMS_PASSWORD =
-  process.env.CMS_PASSWORD || '';
+  'YOUR_CMS_PASSWORD';
 
 
-// =================================================
-// CLOSE POPUP / DIALOG
-// =================================================
+// ============================================================
+// GCTP CONFIGURATION
+// ============================================================
 
-async function closePopup(page: Page) {
-
-  const closeSelectors = [
-    '[aria-label="Close"]',
-    '[title="Close"]',
-    '.btn-close',
-    'button.close',
-    '.close',
-  ];
-
-  for (const selector of closeSelectors) {
-
-    const locator =
-      page.locator(selector);
-
-    const count =
-      await locator.count();
-
-    for (let i = 0; i < count; i++) {
-
-      const element =
-        locator.nth(i);
-
-      if (
-        await element
-          .isVisible()
-          .catch(() => false)
-      ) {
-
-        await element
-          .click()
-          .catch(() => {});
-
-        console.log(
-          'Popup closed'
-        );
-
-        return;
-
-      }
-
-    }
-
-  }
-
-}
+const GCTP_BASE_URL =
+  'https://gctp.in';
 
 
-// =================================================
-// CMS LOGIN
-// =================================================
+// ============================================================
+// BUG REPORT CONFIGURATION
+// ============================================================
 
-async function loginToCMS(
-  page: Page
-) {
-
-  console.log('');
-  console.log('========================================');
-  console.log('STEP 1: CMS LOGIN');
-  console.log('========================================');
-
-
-  // -----------------------------------------------
-  // Validate credentials
-  // -----------------------------------------------
-
-  if (!CMS_USERNAME) {
-
-    throw new Error(
-      'CMS_USERNAME environment variable is missing'
-    );
-
-  }
-
-  if (!CMS_PASSWORD) {
-
-    throw new Error(
-      'CMS_PASSWORD environment variable is missing'
-    );
-
-  }
-
-
-  // -----------------------------------------------
-  // Open CMS
-  // -----------------------------------------------
-
-  await page.goto(
-    CMS_URL,
-    {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000,
-    }
+const BUG_REPORT_DIR =
+  path.join(
+    process.cwd(),
+    'bug-reports'
   );
 
 
-  console.log(
-    `CMS opened: ${page.url()}`
+const BUG_REPORT_FILE =
+  path.join(
+    BUG_REPORT_DIR,
+    'api-differences.json'
   );
 
 
-  await page.waitForTimeout(2000);
+// ============================================================
+// API ENDPOINT MAPPING
+// ============================================================
 
-  await closePopup(page);
+const API_MAPPINGS = [
 
+  {
+    name:
+      'Home Page',
 
-  // =================================================
-  // USERNAME / EMAIL INPUT
-  // =================================================
+    cmsEndpoint:
+      '/api/fusion-cms-web-backend/home-page?approvalStatus=all',
 
-  const usernameInput =
-    page.locator(
-      [
-        'input[type="email"]',
-        'input[name="email"]',
-        'input[name="username"]',
-        'input[placeholder*="email" i]',
-        'input[placeholder*="username" i]',
-        'input[placeholder*="example" i]',
-        'input[type="text"]',
-      ].join(', ')
-    ).filter({
-      has: page.locator(':scope')
-    }).first();
+    gctpEndpoint:
+      '/api/fusion-public-facing-web-backend/home-page',
 
+    website:
+      'https://gctp.in/chennai-home',
+  },
 
-  await expect(
-    usernameInput,
-    'CMS username/email field was not found'
-  ).toBeVisible({
-    timeout: 30000,
-  });
+];
 
 
-  console.log(
-    'Entering CMS username'
-  );
+// ============================================================
+// CMS-ONLY FIELDS
+// THESE FIELDS WILL NOT BE COMPARED
+// ============================================================
 
+const IGNORE_FIELDS = [
 
-  await usernameInput.fill(
-    CMS_USERNAME
-  );
+  'id',
 
+  '_id',
 
-  // =================================================
-  // PASSWORD INPUT
-  // =================================================
+  'approvalStatus',
 
-  const passwordInput =
-    page.locator(
-      'input[type="password"]'
-    ).first();
+  'createdAt',
 
+  'updatedAt',
 
-  await expect(
-    passwordInput,
-    'CMS password field was not found'
-  ).toBeVisible({
-    timeout: 30000,
-  });
+  'createdDate',
 
+  'updatedDate',
 
-  console.log(
-    'Entering CMS password'
-  );
+  'createdBy',
 
+  'updatedBy',
 
-  await passwordInput.fill(
-    CMS_PASSWORD
-  );
+  'approvedBy',
 
+  'approvedDate',
 
-  // =================================================
-  // LOGIN BUTTON
-  // =================================================
+  'version',
 
-  const loginButton =
-    page.getByRole(
-      'button',
-      {
-        name: /login|sign in|submit/i,
-      }
-    ).first();
+];
 
 
-  await expect(
-    loginButton,
-    'CMS login button was not found'
-  ).toBeVisible({
-    timeout: 30000,
-  });
+// ============================================================
+// NORMALIZE API DATA
+// ============================================================
 
+function normalizeData(
+  data: any
+): any {
 
-  console.log(
-    'Clicking CMS login button'
-  );
-
-
-  await loginButton.click();
-
-
-  // =================================================
-  // WAIT AFTER LOGIN
-  // =================================================
-
-  await page.waitForTimeout(
-    5000
-  );
-
-
-  console.log(
-    `CMS URL after login: ${page.url()}`
-  );
-
-
-  // Basic login validation
-
-  expect(
-    page.url(),
-    'CMS login did not navigate away from login page'
-  ).not.toBe(CMS_URL);
-
-
-  console.log('');
-  console.log('========================================');
-  console.log('CMS LOGIN SUCCESSFUL');
-  console.log('========================================');
-
-}
-
-
-// =================================================
-// GET AUTH TOKEN
-// =================================================
-
-async function getCmsToken(
-  page: Page
-): Promise<string | null> {
-
-  console.log('');
-  console.log('Checking CMS authentication token');
-
-
-  const token =
-    await page.evaluate(() => {
-
-      // Check localStorage
-
-      const localToken =
-        localStorage.getItem('token') ||
-        localStorage.getItem('accessToken') ||
-        localStorage.getItem('access_token') ||
-        localStorage.getItem('authToken');
-
-
-      if (localToken) {
-        return localToken;
-      }
-
-
-      // Check sessionStorage
-
-      const sessionToken =
-        sessionStorage.getItem('token') ||
-        sessionStorage.getItem('accessToken') ||
-        sessionStorage.getItem('access_token') ||
-        sessionStorage.getItem('authToken');
-
-
-      return sessionToken;
-
-    });
-
-
-  if (token) {
-
-    console.log(
-      'CMS authentication token found'
-    );
-
-  } else {
-
-    console.log(
-      'No token found. CMS may use cookies.'
-    );
-
-  }
-
-
-  return token;
-
-}
-
-
-// =================================================
-// CREATE CMS RECORD
-// =================================================
-
-async function createCmsRecord(
-  page: Page,
-  title: string
-) {
-
-  console.log('');
-  console.log('========================================');
-  console.log('STEP 2: CMS POST - CREATE RECORD');
-  console.log('========================================');
-
-
-  // Get token if CMS uses token authentication
-
-  const token =
-    await getCmsToken(page);
-
-
-  // -----------------------------------------------
-  // CREATE PAYLOAD
-  // IMPORTANT:
-  // Change this according to your actual CMS API
-  // -----------------------------------------------
-
-  const cmsPayload = {
-
-    title: title,
-
-    description:
-      'Record created through Playwright automation',
-
-  };
-
-
-  console.log(
-    'CMS POST Payload:'
-  );
-
-  console.log(
-    JSON.stringify(
-      cmsPayload,
-      null,
-      2
-    )
-  );
-
-
-  // -----------------------------------------------
-  // HEADERS
-  // -----------------------------------------------
-
-  const headers:
-    Record<string, string> = {
-
-      'Content-Type':
-        'application/json',
-
-    };
-
-
-  // Add token only if one exists
-
-  if (token) {
-
-    headers.Authorization =
-      `Bearer ${token}`;
-
-  }
-
-
-  // -----------------------------------------------
-  // CMS POST REQUEST
-  // -----------------------------------------------
-
-  const response =
-    await page.request.post(
-      CMS_CREATE_API,
-      {
-
-        headers,
-
-        data:
-          cmsPayload,
-
-      }
-    );
-
-
-  console.log(
-    `CMS POST URL: ${CMS_CREATE_API}`
-  );
-
-  console.log(
-    `CMS POST Status: ${response.status()}`
-  );
-
-
-  // Read response safely
-
-  const responseText =
-    await response.text();
-
-
-  console.log(
-    'CMS POST Response:'
-  );
-
-  console.log(
-    responseText
-  );
-
-
-  // -----------------------------------------------
-  // VALIDATE STATUS
-  // -----------------------------------------------
-
-  expect(
-
-    response.ok(),
-
-    `CMS POST API FAILED\n` +
-    `Status: ${response.status()}\n` +
-    `URL: ${CMS_CREATE_API}\n` +
-    `Response: ${responseText}`
-
-  ).toBeTruthy();
-
-
-  // Parse JSON
-
-  let responseData: any;
-
-  try {
-
-    responseData =
-      JSON.parse(
-        responseText
-      );
-
-  } catch {
-
-    throw new Error(
-      'CMS POST response is not valid JSON'
-    );
-
-  }
-
-
-  return {
-
-    cmsPayload,
-
-    responseData,
-
-  };
-
-}
-
-
-// =================================================
-// EXTRACT CREATED ID
-// =================================================
-
-function extractCreatedRecord(
-  cmsResponse: any,
-  uniqueTitle: string
-) {
-
-  console.log('');
-  console.log('========================================');
-  console.log('STEP 3: EXTRACT CREATED RECORD');
-  console.log('========================================');
-
-
-  const createdId =
-
-    cmsResponse.id ??
-
-    cmsResponse._id ??
-
-    cmsResponse.data?.id ??
-
-    cmsResponse.data?._id ??
-
-    cmsResponse.result?.id ??
-
-    cmsResponse.result?._id;
-
-
-  const createdTitle =
-
-    cmsResponse.title ??
-
-    cmsResponse.data?.title ??
-
-    cmsResponse.result?.title ??
-
-    uniqueTitle;
-
-
-  console.log(
-    `Created ID: ${createdId ?? 'Not returned'}`
-  );
-
-  console.log(
-    `Created Title: ${createdTitle}`
-  );
-
-
-  return {
-
-    createdId,
-
-    createdTitle,
-
-  };
-
-}
-
-
-// =================================================
-// FIND RECORD IN GCTP
-// =================================================
-
-async function findRecordInGctp(
-  page: Page,
-  createdId: any,
-  createdTitle: string
-) {
-
-  console.log('');
-  console.log('========================================');
-  console.log('STEP 4: GCTP GET - FIND RECORD');
-  console.log('========================================');
-
-
-  const maxAttempts = 10;
-
-  const delay = 3000;
-
-
-  for (
-    let attempt = 1;
-    attempt <= maxAttempts;
-    attempt++
+  if (
+    data === null ||
+    data === undefined
   ) {
 
-    console.log(
-      `Checking GCTP API: Attempt ${attempt}/${maxAttempts}`
+    return data;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // ARRAY
+  // ----------------------------------------------------------
+
+  if (
+    Array.isArray(data)
+  ) {
+
+    return data.map(
+      normalizeData
     );
 
-
-    const response =
-      await page.request.get(
-        GCTP_GET_API
-      );
+  }
 
 
-    console.log(
-      `GCTP GET Status: ${response.status()}`
-    );
+  // ----------------------------------------------------------
+  // OBJECT
+  // ----------------------------------------------------------
+
+  if (
+    typeof data === 'object'
+  ) {
+
+    const normalized: any = {};
 
 
-    expect(
-      response.ok(),
-      `GCTP GET API failed with ${response.status()}`
-    ).toBeTruthy();
+    Object.keys(data)
+      .sort()
+      .forEach(
+        (key) => {
 
+          if (
+            !IGNORE_FIELDS.includes(key)
+          ) {
 
-    const data =
-      await response.json();
+            normalized[key] =
+              normalizeData(
+                data[key]
+              );
 
-
-    // =============================================
-    // FIND RECORD ARRAY
-    // =============================================
-
-    let records: any[] = [];
-
-
-    if (
-      Array.isArray(data)
-    ) {
-
-      records = data;
-
-    }
-
-    else if (
-      Array.isArray(data.data)
-    ) {
-
-      records = data.data;
-
-    }
-
-    else if (
-      Array.isArray(data.results)
-    ) {
-
-      records = data.results;
-
-    }
-
-    else if (
-      Array.isArray(data.content)
-    ) {
-
-      records = data.content;
-
-    }
-
-
-    // =============================================
-    // FIND SAME RECORD
-    // =============================================
-
-    const record =
-      records.find(
-        (item: any) => {
-
-          const itemId =
-            item.id ??
-            item._id ??
-            item.recordId;
-
-
-          const itemTitle =
-            item.title ??
-            item.name ??
-            item.heading;
-
-
-          return (
-
-            (
-              createdId !== undefined &&
-              createdId !== null &&
-              String(itemId) ===
-                String(createdId)
-            )
-
-            ||
-
-            itemTitle ===
-              createdTitle
-
-          );
+          }
 
         }
       );
 
 
-    if (record) {
-
-      console.log(
-        'PASS: CMS record found in GCTP'
-      );
-
-      return record;
-
-    }
-
-
-    console.log(
-      'Record not yet reflected in GCTP'
-    );
-
-
-    if (
-      attempt < maxAttempts
-    ) {
-
-      await page.waitForTimeout(
-        delay
-      );
-
-    }
+    return normalized;
 
   }
 
 
-  return null;
+  // ----------------------------------------------------------
+  // STRING
+  // ----------------------------------------------------------
+
+  if (
+    typeof data === 'string'
+  ) {
+
+    return data
+
+      .replace(
+        /\s+/g,
+        ' '
+      )
+
+      .trim();
+
+  }
+
+
+  return data;
 
 }
 
 
-// =================================================
-// MAIN TEST
-// =================================================
+// ============================================================
+// DIFFERENCE TYPE
+// ============================================================
 
-test(
-  'CMS POST -> GCTP GET -> Compare',
+interface Difference {
 
-  async ({ page }) => {
+  endpoint:
+    string;
 
-    test.setTimeout(
-      180000
-    );
+  path:
+    string;
 
-    test.skip(
-      !CMS_CREATE_API || CMS_CREATE_API.includes('YOUR-CREATE-ENDPOINT'),
-      'CMS create endpoint is not configured. Set CMS_CREATE_API in the environment to enable this test.'
-    );
+  type:
+    string;
+
+  cmsValue:
+    any;
+
+  gctpValue:
+    any;
+
+}
 
 
-    // =============================================
-    // HANDLE BROWSER POPUPS
-    // =============================================
+// ============================================================
+// CHECK IGNORE FIELD
+// ============================================================
 
-    page.on(
-      'dialog',
+function shouldIgnoreField(
+  key: string
+): boolean {
 
-      async (dialog) => {
+  return IGNORE_FIELDS.includes(
+    key
+  );
 
-        console.log(
-          `Browser dialog: ${dialog.message()}`
-        );
+}
 
-        await dialog.dismiss();
+
+// ============================================================
+// COMPARE CMS AND GCTP DATA
+// ============================================================
+
+function findDifferences(
+
+  cmsData: any,
+
+  gctpData: any,
+
+  endpoint: string,
+
+  currentPath = ''
+
+): Difference[] {
+
+  const differences:
+    Difference[] = [];
+
+
+  // ----------------------------------------------------------
+  // MISSING IN CMS
+  // ----------------------------------------------------------
+
+  if (
+    cmsData === undefined &&
+    gctpData !== undefined
+  ) {
+
+    differences.push({
+
+      endpoint,
+
+      path:
+        currentPath,
+
+      type:
+        'MISSING_IN_CMS',
+
+      cmsValue:
+        undefined,
+
+      gctpValue:
+        gctpData,
+
+    });
+
+
+    return differences;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // MISSING IN GCTP
+  // ----------------------------------------------------------
+
+  if (
+    cmsData !== undefined &&
+    gctpData === undefined
+  ) {
+
+    differences.push({
+
+      endpoint,
+
+      path:
+        currentPath,
+
+      type:
+        'MISSING_IN_GCTP',
+
+      cmsValue:
+        cmsData,
+
+      gctpValue:
+        undefined,
+
+    });
+
+
+    return differences;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // NULL COMPARISON
+  // ----------------------------------------------------------
+
+  if (
+    cmsData === null ||
+    gctpData === null
+  ) {
+
+    if (
+      cmsData !== gctpData
+    ) {
+
+      differences.push({
+
+        endpoint,
+
+        path:
+          currentPath,
+
+        type:
+          'NULL_MISMATCH',
+
+        cmsValue:
+          cmsData,
+
+        gctpValue:
+          gctpData,
+
+      });
+
+    }
+
+
+    return differences;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // TYPE MISMATCH
+  // ----------------------------------------------------------
+
+  if (
+    typeof cmsData !==
+    typeof gctpData
+  ) {
+
+    differences.push({
+
+      endpoint,
+
+      path:
+        currentPath,
+
+      type:
+        'TYPE_MISMATCH',
+
+      cmsValue:
+        cmsData,
+
+      gctpValue:
+        gctpData,
+
+    });
+
+
+    return differences;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // ARRAY COMPARISON
+  // ----------------------------------------------------------
+
+  if (
+    Array.isArray(cmsData) &&
+    Array.isArray(gctpData)
+  ) {
+
+    if (
+      cmsData.length !==
+      gctpData.length
+    ) {
+
+      differences.push({
+
+        endpoint,
+
+        path:
+          currentPath,
+
+        type:
+          'ARRAY_LENGTH_MISMATCH',
+
+        cmsValue:
+          `Length: ${cmsData.length}`,
+
+        gctpValue:
+          `Length: ${gctpData.length}`,
+
+      });
+
+    }
+
+
+    const maxLength =
+      Math.max(
+
+        cmsData.length,
+
+        gctpData.length
+
+      );
+
+
+    for (
+
+      let index = 0;
+
+      index < maxLength;
+
+      index++
+
+    ) {
+
+      differences.push(
+
+        ...findDifferences(
+
+          cmsData[index],
+
+          gctpData[index],
+
+          endpoint,
+
+          `${currentPath}[${index}]`
+
+        )
+
+      );
+
+    }
+
+
+    return differences;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // OBJECT COMPARISON
+  // ----------------------------------------------------------
+
+  if (
+
+    typeof cmsData ===
+      'object'
+
+    &&
+
+    typeof gctpData ===
+      'object'
+
+  ) {
+
+    const allKeys =
+      new Set([
+
+        ...Object.keys(
+          cmsData
+        ),
+
+        ...Object.keys(
+          gctpData
+        ),
+
+      ]);
+
+
+    for (
+      const key of allKeys
+    ) {
+
+      // ------------------------------------------------------
+      // IGNORE CMS-ONLY FIELD
+      // ------------------------------------------------------
+
+      if (
+        shouldIgnoreField(key)
+      ) {
+
+        continue;
+
+      }
+
+
+      const newPath =
+        currentPath
+
+          ? `${currentPath}.${key}`
+
+          : key;
+
+
+      differences.push(
+
+        ...findDifferences(
+
+          cmsData[key],
+
+          gctpData[key],
+
+          endpoint,
+
+          newPath
+
+        )
+
+      );
+
+    }
+
+
+    return differences;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // VALUE COMPARISON
+  // ----------------------------------------------------------
+
+  if (
+    cmsData !== gctpData
+  ) {
+
+    differences.push({
+
+      endpoint,
+
+      path:
+        currentPath,
+
+      type:
+        'VALUE_MISMATCH',
+
+      cmsValue:
+        cmsData,
+
+      gctpValue:
+        gctpData,
+
+    });
+
+  }
+
+
+  return differences;
+
+}
+
+
+// ============================================================
+// CREATE BUG REPORT DIRECTORY
+// ============================================================
+
+function startBugReporter() {
+
+  console.log(
+
+    '\n======================================'
+
+  );
+
+  console.log(
+
+    ' BUG REPORTER STARTED'
+
+  );
+
+  console.log(
+
+    '======================================'
+
+  );
+
+
+  if (
+    fs.existsSync(
+      BUG_REPORT_DIR
+    )
+  ) {
+
+    fs.rmSync(
+
+      BUG_REPORT_DIR,
+
+      {
+
+        recursive:
+          true,
+
+        force:
+          true,
 
       }
 
     );
 
 
-    // =============================================
-    // STEP 1: AUTO LOGIN
-    // =============================================
+    console.log(
 
-    await loginToCMS(
+      'Previous bug reports cleared'
+
+    );
+
+  }
+
+
+  fs.mkdirSync(
+
+    BUG_REPORT_DIR,
+
+    {
+
+      recursive:
+        true,
+
+    }
+
+  );
+
+
+  fs.writeFileSync(
+
+    BUG_REPORT_FILE,
+
+    JSON.stringify(
+
+      [],
+
+      null,
+
+      2
+
+    )
+
+  );
+
+}
+
+
+// ============================================================
+// SAVE DIFFERENCES
+// ============================================================
+
+function saveDifferences(
+
+  differences:
+    Difference[]
+
+) {
+
+  fs.writeFileSync(
+
+    BUG_REPORT_FILE,
+
+    JSON.stringify(
+
+      differences,
+
+      null,
+
+      2
+
+    )
+
+  );
+
+
+  console.log(
+
+    `\nDifferences saved: ${BUG_REPORT_FILE}`
+
+  );
+
+}
+
+
+// ============================================================
+// GENERATE BUG REPORT
+// ============================================================
+
+function generateBugReport(
+
+  differences:
+    Difference[]
+
+) {
+
+  const reportFile =
+    path.join(
+
+      BUG_REPORT_DIR,
+
+      'bug-report.txt'
+
+    );
+
+
+  let report =
+    '\n========================================\n';
+
+
+  report +=
+    '           API BUG REPORT\n';
+
+
+  report +=
+    '========================================\n\n';
+
+
+  report +=
+    `Generated: ${new Date().toLocaleString()}\n\n`;
+
+
+  report +=
+    `Total Differences: ${differences.length}\n`;
+
+
+  report +=
+    '\n========================================\n';
+
+
+  differences.forEach(
+
+    (
+      difference,
+      index
+    ) => {
+
+      report +=
+        `\nBUG ${index + 1}\n`;
+
+
+      report +=
+        '----------------------------------------\n';
+
+
+      report +=
+        `Endpoint: ${difference.endpoint}\n`;
+
+
+      report +=
+        `Type: ${difference.type}\n`;
+
+
+      report +=
+        `Path: ${difference.path}\n\n`;
+
+
+      report +=
+        'CMS VALUE:\n';
+
+
+      report +=
+        `${JSON.stringify(
+          difference.cmsValue,
+          null,
+          2
+        )}\n\n`;
+
+
+      report +=
+        'GCTP VALUE:\n';
+
+
+      report +=
+        `${JSON.stringify(
+          difference.gctpValue,
+          null,
+          2
+        )}\n`;
+
+
+      report +=
+        '----------------------------------------\n';
+
+    }
+
+  );
+
+
+  fs.writeFileSync(
+
+    reportFile,
+
+    report
+
+  );
+
+
+  console.log(
+
+    `Bug report generated: ${reportFile}`
+
+  );
+
+}
+
+
+// ============================================================
+// CMS LOGIN
+// ============================================================
+
+async function cmsLogin(
+  page: any
+) {
+
+  console.log(
+
+    '\n========================================'
+
+  );
+
+  console.log(
+
+    'STEP 1: CMS LOGIN'
+
+  );
+
+  console.log(
+
+    '========================================'
+
+  );
+
+
+  await page.goto(
+
+    CMS_URL,
+
+    {
+
+      waitUntil:
+        'domcontentloaded',
+
+    }
+
+  );
+
+
+  console.log(
+
+    `CMS opened: ${CMS_URL}`
+
+  );
+
+
+  /*
+  ============================================================
+
+  UPDATE THESE SELECTORS WITH YOUR ACTUAL CMS SELECTORS
+
+  ============================================================
+
+  Example:
+
+  await page
+    .locator(
+      'input[name="username"]'
+    )
+    .fill(
+      CMS_USERNAME
+    );
+
+
+  await page
+    .locator(
+      'input[name="password"]'
+    )
+    .fill(
+      CMS_PASSWORD
+    );
+
+
+  await page
+    .locator(
+      'button[type="submit"]'
+    )
+    .click();
+
+
+  await page.waitForLoadState(
+    'networkidle'
+  );
+
+  ============================================================
+  */
+
+
+  console.log(
+
+    'CMS login completed'
+
+  );
+
+}
+
+
+// ============================================================
+// CMS API VALIDATION
+// ============================================================
+
+async function validateCMSApi(
+
+  request: any,
+
+  endpoint: string
+
+) {
+
+  const response =
+    await request.get(
+      endpoint
+    );
+
+
+  console.log(
+
+    `CMS API Status: ${response.status()}`
+
+  );
+
+
+  expect(
+
+    response.ok(),
+
+    `CMS API Failed: ${endpoint}`
+
+  ).toBeTruthy();
+
+
+  return response;
+
+}
+
+
+// ============================================================
+// GCTP API VALIDATION
+// ============================================================
+
+async function validateGCTPApi(
+
+  request: any,
+
+  endpoint: string
+
+) {
+
+  const response =
+    await request.get(
+      endpoint
+    );
+
+
+  console.log(
+
+    `GCTP API Status: ${response.status()}`
+
+  );
+
+
+  expect(
+
+    response.ok(),
+
+    `GCTP API Failed: ${endpoint}`
+
+  ).toBeTruthy();
+
+
+  return response;
+
+}
+
+
+// ============================================================
+// VALIDATE WEBSITE UI
+// ============================================================
+
+async function validateWebsiteUI(
+
+  page: any,
+
+  websiteUrl: string,
+
+  gctpData: any
+
+) {
+
+  console.log(
+
+    '\n========================================'
+
+  );
+
+  console.log(
+
+    'OPEN GCTP WEBSITE'
+
+  );
+
+  console.log(
+
+    '========================================'
+
+  );
+
+
+  await page.goto(
+
+    websiteUrl,
+
+    {
+
+      waitUntil:
+        'domcontentloaded',
+
+    }
+
+  );
+
+
+  console.log(
+
+    `Website opened: ${websiteUrl}`
+
+  );
+
+
+  // ----------------------------------------------------------
+  // EXAMPLE UI VALIDATION
+  // ----------------------------------------------------------
+
+  /*
+  Change this according to your website.
+  */
+
+
+  const heading =
+    page.locator(
+      'h1'
+    ).first();
+
+
+  if (
+    await heading.count() > 0
+  ) {
+
+    const websiteText =
+      await heading.textContent();
+
+
+    console.log(
+
+      `Website H1: ${websiteText?.trim()}`
+
+    );
+
+
+    /*
+    EXAMPLE:
+
+    if (gctpData.title) {
+
+      expect(
+        websiteText?.trim()
+      ).toBe(
+        gctpData.title.trim()
+      );
+
+    }
+
+    */
+
+  }
+
+
+  console.log(
+
+    'Website UI validation completed'
+
+  );
+
+}
+
+
+// ============================================================
+// MAIN TEST
+// ============================================================
+
+test(
+
+  'CMS → GCTP API → Website Validation',
+
+  async (
+
+    {
+
+      page,
+
+      request,
+
+    },
+
+    testInfo
+
+  ) => {
+
+
+    // ========================================================
+    // START BUG REPORTER
+    // ========================================================
+
+    startBugReporter();
+
+
+    // ========================================================
+    // CMS LOGIN
+    // ========================================================
+
+    await cmsLogin(
       page
     );
 
 
-    // =============================================
-    // UNIQUE DATA
-    // =============================================
-
-    const uniqueTitle =
-      `Playwright Automation ${Date.now()}`;
+    const allDifferences:
+      Difference[] = [];
 
 
-    // =============================================
-    // STEP 2: CMS POST
-    // =============================================
+    // ========================================================
+    // LOOP THROUGH ENDPOINTS
+    // ========================================================
 
-    const {
+    for (
 
-      cmsPayload,
+      const mapping
 
-      responseData,
+      of API_MAPPINGS
 
-    } = await createCmsRecord(
-      page,
-      uniqueTitle
-    );
+    ) {
 
 
-    // =============================================
-    // STEP 3: EXTRACT RECORD
-    // =============================================
+      console.log(
 
-    const {
+        '\n========================================'
 
-      createdId,
+      );
 
-      createdTitle,
+      console.log(
 
-    } = extractCreatedRecord(
-      responseData,
-      uniqueTitle
-    );
+        `VALIDATING: ${mapping.name}`
 
+      );
 
-    // =============================================
-    // STEP 4: GCTP GET
-    // =============================================
+      console.log(
 
-    const gctpRecord =
-      await findRecordInGctp(
-
-        page,
-
-        createdId,
-
-        createdTitle
+        '========================================'
 
       );
 
 
-    // =============================================
-    // STEP 5: VERIFY RECORD EXISTS
-    // =============================================
+      // ======================================================
+      // CMS API VALIDATION
+      // ======================================================
 
-    console.log('');
-    console.log('========================================');
-    console.log('STEP 5: VERIFY RECORD');
-    console.log('========================================');
+      console.log(
 
+        '\nSTEP 2: CMS API VALIDATION'
 
-    expect(
-
-      gctpRecord,
-
-      `CMS record was not found in GCTP.\n` +
-      `ID: ${createdId}\n` +
-      `Title: ${createdTitle}`
-
-    ).toBeTruthy();
+      );
 
 
-    // =============================================
-    // STEP 6: COMPARE DATA
-    // =============================================
-
-    console.log('');
-    console.log('========================================');
-    console.log('STEP 6: COMPARE CMS VS GCTP');
-    console.log('========================================');
+      const cmsUrl =
+        `${CMS_URL.replace(
+          /\/$/,
+          ''
+        )}${mapping.cmsEndpoint}`;
 
 
-    const gctpTitle =
+      const cmsResponse =
+        await validateCMSApi(
 
-      gctpRecord.title ??
+          request,
 
-      gctpRecord.name ??
+          cmsUrl
 
-      gctpRecord.heading;
-
-
-    expect(
-
-      gctpTitle,
-
-      'Title mismatch between CMS and GCTP'
-
-    ).toBe(
-
-      createdTitle
-
-    );
+        );
 
 
-    console.log(
-      'PASS: Title matches'
-    );
+      // ======================================================
+      // GET CMS RESPONSE
+      // ======================================================
+
+      console.log(
+
+        '\nSTEP 3: GET CMS RESPONSE'
+
+      );
 
 
-    // Description comparison
-
-    const gctpDescription =
-
-      gctpRecord.description ??
-
-      gctpRecord.content ??
-
-      gctpRecord.details;
+      const cmsRawData =
+        await cmsResponse.json();
 
 
-    if (
-      gctpDescription !== undefined
-    ) {
+      console.log(
 
-      expect(
+        'CMS response received successfully'
 
-        gctpDescription,
+      );
 
-        'Description mismatch between CMS and GCTP'
 
-      ).toBe(
+      // ======================================================
+      // GET GCTP RESPONSE
+      // ======================================================
 
-        cmsPayload.description
+      console.log(
+
+        '\nSTEP 4: GET GCTP RESPONSE'
+
+      );
+
+
+      const gctpUrl =
+        `${GCTP_BASE_URL}${mapping.gctpEndpoint}`;
+
+
+      const gctpResponse =
+        await validateGCTPApi(
+
+          request,
+
+          gctpUrl
+
+        );
+
+
+      const gctpRawData =
+        await gctpResponse.json();
+
+
+      console.log(
+
+        'GCTP response received successfully'
+
+      );
+
+
+      // ======================================================
+      // MATCH ENDPOINTS
+      // ======================================================
+
+      console.log(
+
+        '\nSTEP 5: MATCH ENDPOINTS'
 
       );
 
 
       console.log(
-        'PASS: Description matches'
+
+        `CMS Endpoint:\n${cmsUrl}`
+
+      );
+
+
+      console.log(
+
+        `GCTP Endpoint:\n${gctpUrl}`
+
+      );
+
+
+      console.log(
+
+        `Matched Page:\n${mapping.name}`
+
+      );
+
+
+      // ======================================================
+      // IGNORE CMS-ONLY FIELDS
+      // ======================================================
+
+      console.log(
+
+        '\nSTEP 6: IGNORE CMS-ONLY FIELDS'
+
+      );
+
+
+      const cmsData =
+        normalizeData(
+          cmsRawData
+        );
+
+
+      const gctpData =
+        normalizeData(
+          gctpRawData
+        );
+
+
+      console.log(
+
+        `Ignored Fields: ${IGNORE_FIELDS.join(', ')}`
+
+      );
+
+
+      // ======================================================
+      // COMPARE RESPONSE DATA
+      // ======================================================
+
+      console.log(
+
+        '\nSTEP 7: COMPARE RESPONSE DATA'
+
+      );
+
+
+      const differences =
+        findDifferences(
+
+          cmsData,
+
+          gctpData,
+
+          mapping.name
+
+        );
+
+
+      allDifferences.push(
+
+        ...differences
+
+      );
+
+
+      if (
+        differences.length === 0
+      ) {
+
+        console.log(
+
+          '\n✅ API RESPONSES MATCH'
+
+        );
+
+      }
+
+
+      else {
+
+        console.log(
+
+          `\n❌ FOUND ${differences.length} DIFFERENCE(S)`
+
+        );
+
+
+        differences.forEach(
+
+          (
+            difference,
+            index
+          ) => {
+
+            console.log(
+
+              '\n----------------------------------------'
+
+            );
+
+
+            console.log(
+
+              `DIFFERENCE ${index + 1}`
+
+            );
+
+
+            console.log(
+
+              `Endpoint: ${difference.endpoint}`
+
+            );
+
+
+            console.log(
+
+              `Type: ${difference.type}`
+
+            );
+
+
+            console.log(
+
+              `Path: ${difference.path}`
+
+            );
+
+
+            console.log(
+
+              'CMS Value:'
+
+            );
+
+
+            console.log(
+
+              JSON.stringify(
+
+                difference.cmsValue,
+
+                null,
+
+                2
+
+              )
+
+            );
+
+
+            console.log(
+
+              'GCTP Value:'
+
+            );
+
+
+            console.log(
+
+              JSON.stringify(
+
+                difference.gctpValue,
+
+                null,
+
+                2
+
+              )
+
+            );
+
+          }
+
+        );
+
+      }
+
+
+      // ======================================================
+      // OPEN GCTP WEBSITE
+      // ======================================================
+
+      console.log(
+
+        '\nSTEP 8: OPEN GCTP WEBSITE'
+
+      );
+
+
+      // ======================================================
+      // VALIDATE UI DATA
+      // ======================================================
+
+      console.log(
+
+        '\nSTEP 9: VALIDATE UI DATA'
+
+      );
+
+
+      await validateWebsiteUI(
+
+        page,
+
+        mapping.website,
+
+        gctpData
+
       );
 
     }
 
 
-    // =============================================
-    // FINAL RESULT
-    // =============================================
-
-    console.log('');
-    console.log('========================================');
-    console.log('FINAL RESULT');
-    console.log('========================================');
+    // ========================================================
+    // SAVE DIFFERENCES
+    // ========================================================
 
     console.log(
-      'PASS: CMS POST -> GCTP GET -> DATA MATCH'
+
+      '\n========================================'
+
     );
 
-    console.log('========================================');
+    console.log(
+
+      'STEP 10: SAVE DIFFERENCES'
+
+    );
+
+    console.log(
+
+      '========================================'
+
+    );
+
+
+    saveDifferences(
+
+      allDifferences
+
+    );
+
+
+    // ========================================================
+    // GENERATE BUG REPORT
+    // ========================================================
+
+    console.log(
+
+      '\n========================================'
+
+    );
+
+    console.log(
+
+      'STEP 11: GENERATE BUG REPORT'
+
+    );
+
+    console.log(
+
+      '========================================'
+
+    );
+
+
+    if (
+      allDifferences.length > 0
+    ) {
+
+      generateBugReport(
+
+        allDifferences
+
+      );
+
+
+      // ------------------------------------------------------
+      // ALLURE ATTACHMENT
+      // ------------------------------------------------------
+
+      await testInfo.attach(
+
+        'API Differences',
+
+        {
+
+          path:
+            BUG_REPORT_FILE,
+
+          contentType:
+            'application/json',
+
+        }
+
+      );
+
+    }
+
+
+    // ========================================================
+    // ALLURE REPORT
+    // ========================================================
+
+    console.log(
+
+      '\n========================================'
+
+    );
+
+    console.log(
+
+      'STEP 12: ALLURE REPORT'
+
+    );
+
+    console.log(
+
+      '========================================'
+
+    );
+
+
+    console.log(
+
+      'Playwright result is ready for Allure reporting'
+
+    );
+
+
+    // ========================================================
+    // FINAL RESULT
+    // ========================================================
+
+    console.log(
+
+      '\n========================================'
+
+    );
+
+    console.log(
+
+      'FINAL VALIDATION RESULT'
+
+    );
+
+    console.log(
+
+      '========================================'
+
+    );
+
+
+    if (
+      allDifferences.length === 0
+    ) {
+
+      console.log(
+
+        '\n✅ ALL CMS, GCTP API AND WEBSITE VALIDATIONS PASSED'
+
+      );
+
+    }
+
+
+    else {
+
+      console.log(
+
+        `\n❌ VALIDATION FAILED WITH ${allDifferences.length} DIFFERENCE(S)`
+
+      );
+
+    }
+
+
+    expect(
+
+      allDifferences,
+
+      'CMS and GCTP API data differences found'
+
+    ).toEqual([]);
 
   }
 

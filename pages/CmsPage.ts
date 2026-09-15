@@ -7,7 +7,12 @@ export class CmsPage extends BasePage {
   }
 
   async navigate() {
-    await this.page.goto("https://gctp.in/chennai-home");
+    await this.page.goto("https://gctp.in/chennai-home", {
+      waitUntil: "networkidle",
+      timeout: 120000,
+    }).catch(() => undefined);
+    await this.closeAnyPopup();
+    await this.page.waitForTimeout(1000);
     await this.closeAnyPopup();
   }
 
@@ -110,12 +115,20 @@ export class CmsPage extends BasePage {
   async verifyEmpanelment() {
     await this.closeAnyPopup();
 
-    await this.page
-      .getByRole("button", {
-        name: "Read More",
-      })
-      .nth(1)
-      .click();
+    const openEmpanelment = async (title: string) => {
+      const card = this.page
+        .locator(".card-container")
+        .filter({ hasText: title });
+
+      await expect(card).toBeVisible();
+      await this.closeAnyPopup();
+
+      await card
+        .getByRole("button", { name: "Read More" })
+        .click({ force: true });
+    };
+
+    await openEmpanelment("Smart Traffic Management");
 
     await expect(
       this.page.getByText(
@@ -130,12 +143,7 @@ export class CmsPage extends BasePage {
       .dblclick();
     await this.closeAnyPopup();
 
-    await this.page
-      .getByRole("button", {
-        name: "Read More",
-      })
-      .nth(2)
-      .click();
+    await openEmpanelment("GCTP – Ensuring Safe");
 
     await expect(
       this.page.getByText(
@@ -150,12 +158,7 @@ export class CmsPage extends BasePage {
       .dblclick();
     await this.closeAnyPopup();
 
-    await this.page
-      .getByRole("button", {
-        name: "Read More",
-      })
-      .nth(3)
-      .click();
+    await openEmpanelment("Road Safety Awareness");
 
     await expect(
       this.page.getByText("Road Safety Awareness")
@@ -174,9 +177,10 @@ export class CmsPage extends BasePage {
       .filter({ hasText: "AI enabled Traffic Junction" });
 
     await expect(aiTrafficJunctionSlider).toBeVisible();
+    await this.closeAnyPopup();
     await aiTrafficJunctionSlider
       .getByRole("button", { name: "Read More" })
-      .click();
+      .click({ force: true });
 
     await expect(this.page).toHaveURL(
       "https://gctp.in/chennai-EMPANELMENT"
@@ -223,18 +227,32 @@ export class CmsPage extends BasePage {
       .first()
       .click();
 
-    await this.page
-      .getByText(
-        /How can I find information about public transportation options\?/i
-      )
-      .first()
-      .click();
+    await this.page.waitForURL(/chennai-FAQs/i);
+    await this.closeAnyPopup();
 
-    await expect(
-      this.page.getByText(
-        /Use the Transport Department, Government of Tamil Nadu/i
-      ).first()
-    ).toBeVisible();
+    const faqs = [
+      {
+        question: /How can I find information about public transportation options\?/i,
+        answer: /Use the Transport Department, Government of Tamil Nadu/i,
+      },
+      {
+        question: /Where can I find information about road closures and construction\?/i,
+        answer: /Road closures and construction notices come from Tamil Nadu Police/i,
+      },
+      {
+        question: /How do I apply for a parking permit\?/i,
+        answer: /Visit your local city or council website/i,
+      },
+      {
+        question: /What are the penalties for different traffic violation\?/i,
+        answer: /Minor traffic violations, such as jumping a red signal/i,
+      },
+    ];
+
+    for (const faq of faqs) {
+      await this.page.getByText(faq.question).first().click();
+      await expect(this.page.getByText(faq.answer).first()).toBeVisible();
+    }
   }
 
   async verifyFooterLinks() {
@@ -249,6 +267,8 @@ export class CmsPage extends BasePage {
     await expect(this.page).toHaveURL(
       "https://gctp.in/chennai-sitemap"
     );
+
+    await this.closeAnyPopup();
 
     await this.page
       .getByRole("link", {

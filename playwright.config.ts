@@ -30,7 +30,7 @@ export default defineConfig({
 
     baseURL: process.env.BASE_URL || 'https://gctp.in/chennai-home',
 
-    headless: process.env.CI ? true : process.env.HEADLESS === 'False',
+    headless: process.env.CI ? true : process.env.HEADLESS === 'false',
 
     screenshot: 'only-on-failure',
 
@@ -76,6 +76,22 @@ export default defineConfig({
     //     bypassCSP: true,
     //   }
     // },
+//     {
+//       name: 'firefox',
+//       use: {
+//         ...devices['Desktop Firefox'],
+//         bypassCSP: true,
+//       }
+//     },
+    
+// {
+//       name: 'webkit',
+//       use: {
+//         ...devices['Desktop WebKit'],
+//         bypassCSP: true,
+//       }
+//     },
+
 
   ],
 

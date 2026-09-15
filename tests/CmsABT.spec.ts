@@ -18,13 +18,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
 
   // About Us
-  await page.getByRole('link', { name: /About Us/i }).first().click();
-
-  // GCTP
-  await page
-    .getByRole('link', { name: 'GCTP', exact: true })
-    .first()
-    .click({ force: true });
+  await page.getByRole('link', { name: /About Us/i }).first().hover();
 
   const expectedGctpHeading =
     await page
@@ -149,6 +143,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     .getByRole('navigation')
     .getByText('GCTP')
     .click();
+  await page.mouse.move(0, 0);
 
   // GCTP heading only
   // This avoids the footer/host content

@@ -453,6 +453,20 @@ async function navigateToNormalModule(
 
 ): Promise<void> {
 
+  await page.goto(
+    homeUrl,
+
+    {
+      waitUntil:
+        'domcontentloaded',
+    }
+  );
+
+
+  await page.waitForTimeout(
+    1500
+  );
+
   await closeAwarenessPopup(
     page
   );
@@ -469,6 +483,20 @@ async function navigateToNormalModule(
           true,
       }
     );
+
+
+  await linkLocator
+    .first()
+    .waitFor(
+      {
+        state:
+          'visible',
+
+        timeout:
+          30000,
+      }
+    )
+    .catch(() => {});
 
 
   const visibleLink:

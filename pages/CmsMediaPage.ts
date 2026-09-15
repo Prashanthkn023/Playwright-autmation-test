@@ -23,7 +23,12 @@ export class CmsMediaPage extends BasePage {
   }
 
   async openMedia() {
+    await this.closeAnyPopup();
     await this.mediaLink.click();
+
+    await this.page.waitForLoadState('networkidle', {
+      timeout: 30000
+    }).catch(() => undefined);
   }
 
   async openVideos() {
