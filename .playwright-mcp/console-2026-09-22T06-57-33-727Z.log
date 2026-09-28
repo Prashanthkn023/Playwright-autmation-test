@@ -1,0 +1,7 @@
+[      56ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/plugins/plotly.js:0
+[      76ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/chennai-gctp/plot.min.js:0
+[      79ms] [ERROR] Unrecognized Content-Security-Policy directive 'strict-origin-when-cross-origin'. @ https://cms.gctp.in/chennai-gctp/:0
+[      82ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/static/js/main.024e1cf5.js:0
+[      95ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/chennai-gctp/index.css:0
+[      99ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/chennai-gctp/popper.min.js:0
+[     120ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/chennai-gctp/bootstap.min.js:0

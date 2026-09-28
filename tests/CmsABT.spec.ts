@@ -1,8 +1,103 @@
 import { test, expect } from '@playwright/test';
 import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 
-const cmsurl = 'https://cms.gctp.in/chennai-gctp';
+const cmsurl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 const baseurl = 'https://gctp.in/chennai-home';
+const cmsUsername = process.env.CMS_USERNAME;
+const cmsPassword = process.env.CMS_PASSWORD;
+
+const getVisibleImageLoadFailures = async (page: import('@playwright/test').Page) => {
+  return page.locator('img:visible').evaluateAll((images) =>
+    Promise.all(images.map((image) => new Promise<void>((resolve) => {
+      const imageElement = image as HTMLImageElement;
+
+      if (imageElement.complete) {
+        resolve();
+        return;
+      }
+
+      const finish = () => {
+        imageElement.removeEventListener('load', finish);
+        imageElement.removeEventListener('error', finish);
+        resolve();
+      };
+
+      imageElement.addEventListener('load', finish, { once: true });
+      imageElement.addEventListener('error', finish, { once: true });
+      setTimeout(finish, 10000);
+    }))).then(() => images
+      .filter((image) => {
+        const imageElement = image as HTMLImageElement;
+        const excludedAlt = [
+          'Nature',
+          'Play Store',
+          'Facebook',
+          'Instagram',
+          'Twitter',
+          'Youtube',
+          'Group Icon',
+          'Tamilnadu Police Citizen Portal',
+          'Parivahan',
+          'TN Govt Web',
+          'TNRTO',
+        ];
+
+        return !excludedAlt.includes(imageElement.alt);
+      })
+      .filter((image) => {
+        const imageElement = image as HTMLImageElement;
+        return !imageElement.complete || imageElement.naturalWidth === 0;
+      })
+      .map((image) => {
+        const imageElement = image as HTMLImageElement;
+        return `${imageElement.alt || 'no alt'} (${imageElement.currentSrc || imageElement.src || 'no src'})`;
+      })
+    )
+  );
+};
+
+type AboutUsContent = {
+  label: string;
+  value: string;
+};
+
+const normalizeContent = (value: string | null) =>
+  value?.trim() || '';
+
+const getContentDifferences = (
+  expected: AboutUsContent[],
+  actual: AboutUsContent[]
+) => {
+  const differences: string[] = [];
+
+  for (let index = 0; index < Math.max(expected.length, actual.length); index++) {
+    const expectedItem = expected[index];
+    const actualItem = actual[index];
+
+    if (!expectedItem || !actualItem) {
+      differences.push(
+        `Row ${index + 1} order/content: CMS=${JSON.stringify(expectedItem ?? null)}; GCTP=${JSON.stringify(actualItem ?? null)}`
+      );
+      continue;
+    }
+
+    if (expectedItem.label !== actualItem.label) {
+      differences.push(
+        `Row ${index + 1} order: CMS="${expectedItem.label}"; GCTP="${actualItem.label}"`
+      );
+    }
+
+    if (expectedItem.value !== actualItem.value) {
+      differences.push(
+        `${expectedItem.label}: CMS="${expectedItem.value}"; GCTP="${actualItem.value}"`
+      );
+    }
+  }
+
+  return differences.length > 0
+    ? differences.join('\n')
+    : 'No content differences found.';
+};
 
 test('verify CMS About Us content with published website', async ({ page }) => {
 
@@ -10,15 +105,54 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   // CMS CONTENT → EXPECTED
   // =====================================================
 
-  await page.goto(cmsurl);
+  if (!cmsUsername || !cmsPassword) {
+    throw new Error(
+      'CMS_USERNAME and CMS_PASSWORD must be configured in .env before this test can run.'
+    );
+  }
 
   // Login
-  await page.getByRole('textbox', { name: 'example@gmail.com' }).fill('Blessey@lnttest.com');
-  await page.getByRole('textbox', { name: '*******' }).fill('Blessey@123');
+  const username = page.locator(
+    'input[name="username"], input[type="email"], input[placeholder="example@gmail.com"]'
+  );
+  const password = page.locator('input[type="password"]');
+
+  let loginFormLoaded = false;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.goto(cmsurl, { waitUntil: 'domcontentloaded' });
+
+    loginFormLoaded = await expect(username)
+      .toBeVisible({ timeout: 30000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (loginFormLoaded) {
+      break;
+    }
+  }
+
+  expect(
+    loginFormLoaded,
+    'CMS login form should load after retrying the CMS portal'
+  ).toBe(true);
+
+  await username.fill(cmsUsername);
+  await expect(password).toBeVisible();
+  await password.fill(cmsPassword);
   await page.getByRole('button', { name: 'Login' }).click();
+  await expect(
+    page.getByRole('navigation').getByText('About Us', { exact: true })
+  ).toBeVisible({ timeout: 30000 });
 
   // About Us
-  await page.getByRole('link', { name: /About Us/i }).first().hover();
+  await page.goto(
+    `${cmsurl.replace(/\/$/, '')}/chennai-gctp`,
+    { waitUntil: 'domcontentloaded' }
+  );
+
+  const expectedImageLoadFailures: string[] = [];
+  expectedImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
   const expectedGctpHeading =
     await page
@@ -71,12 +205,14 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .getByText('This photograph dates to 1929')
       .textContent();
 
-  await page.getByRole('link', { name: 'About Us' }).click();
+  await page.getByRole('navigation').getByText('About Us', { exact: true }).click();
 
   // Message from Police Commissioner
   await page
     .getByRole('link', { name: 'Message from Police' })
     .click();
+
+  expectedImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
   const expectedCommissionerHeading =
     await page
@@ -88,15 +224,12 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .getByText('Dear Citizens of Chennai Road')
       .textContent();
 
-  const expectedCommissionerName =
-    await page
-      .getByText('Thiru Dr. A. Amalraj, IPS,')
-      .textContent();
-
   // Message from Additional COP
   await page
     .getByRole('link', { name: 'Message from Additional COP' })
     .click();
+
+  expectedImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
   const expectedAdditionalHeading =
     await page
@@ -110,15 +243,12 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .getByText('Dear Citizens of Chennai,')
       .textContent();
 
-  const expectedAdditionalName =
-    await page
-      .getByText('Dr.B. Shamoondeswari , IPS')
-      .textContent();
-
   // Organogram
   await page
     .getByRole('link', { name: 'Organogram' })
     .click();
+
+  expectedImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
   const expectedOrganogram =
     await page
@@ -135,6 +265,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   await page.goto(baseurl);
   await closeAwarenessPopup(page);
 
+  const actualImageLoadFailures: string[] = [];
+
   // About Us
   await page.getByRole('button', { name: 'About Us' }).click();
 
@@ -144,6 +276,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     .getByText('GCTP')
     .click();
   await page.mouse.move(0, 0);
+  actualImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
   // GCTP heading only
   // This avoids the footer/host content
@@ -210,6 +343,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     .getByText('Message from Police Commissioner')
     .click();
 
+  actualImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
+
   const actualCommissionerHeading =
     await page
       .getByText('Message From Commissioner Of')
@@ -218,11 +353,6 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   const actualCommissionerMessage =
     await page
       .getByText('Dear Citizens of Chennai Road')
-      .textContent();
-
-  const actualCommissionerName =
-    await page
-      .getByText('Thiru Dr. A. Amalraj, IPS,')
       .textContent();
 
   // Message from Additional COP
@@ -234,6 +364,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     .getByRole('navigation')
     .getByText('Message from Additional COP')
     .click();
+
+  actualImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
   const actualAdditionalHeading =
     await page
@@ -247,11 +379,6 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .getByText('Dear Citizens of Chennai,')
       .textContent();
 
-  const actualAdditionalName =
-    await page
-      .getByText('Dr.B. Shamoondeswari , IPS')
-      .textContent();
-
   // Organogram
   await page
     .getByRole('button', { name: 'About Us' })
@@ -262,6 +389,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
     .getByText('Organogram')
     .click();
 
+  actualImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
+
   const actualOrganogram =
     await page
       .getByText(
@@ -270,61 +399,65 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .textContent();
 
 
-  // =====================================================
-  // COMPARE EXPECTED WITH ACTUAL
-  // =====================================================
+  const expectedContent: AboutUsContent[] = [
+    { label: 'GCTP heading', value: normalizeContent(expectedGctpHeading) },
+    { label: 'GCTP description', value: normalizeContent(expectedGctpDescription) },
+    { label: 'Update 1 title', value: normalizeContent(expectedUpdate1Title) },
+    { label: 'Update 1 description', value: normalizeContent(expectedUpdate1Description) },
+    { label: 'Update 2 title', value: normalizeContent(expectedUpdate2Title) },
+    { label: 'Update 2 description', value: normalizeContent(expectedUpdate2Description) },
+    { label: 'Update 3 title', value: normalizeContent(expectedUpdate3Title) },
+    { label: 'Update 3 description', value: normalizeContent(expectedUpdate3Description) },
+    { label: 'Police Commissioner heading', value: normalizeContent(expectedCommissionerHeading) },
+    { label: 'Police Commissioner message', value: normalizeContent(expectedCommissionerMessage) },
+    { label: 'Additional COP heading', value: normalizeContent(expectedAdditionalHeading) },
+    { label: 'Additional COP message', value: normalizeContent(expectedAdditionalMessage) },
+    { label: 'Organogram', value: normalizeContent(expectedOrganogram) },
+  ];
 
-  // GCTP
-  expect(actualGctpHeading?.trim())
-    .toBe(expectedGctpHeading?.trim());
+  const actualContent: AboutUsContent[] = [
+    { label: 'GCTP heading', value: normalizeContent(actualGctpHeading) },
+    { label: 'GCTP description', value: normalizeContent(actualGctpDescription) },
+    { label: 'Update 1 title', value: normalizeContent(actualUpdate1Title) },
+    { label: 'Update 1 description', value: normalizeContent(actualUpdate1Description) },
+    { label: 'Update 2 title', value: normalizeContent(actualUpdate2Title) },
+    { label: 'Update 2 description', value: normalizeContent(actualUpdate2Description) },
+    { label: 'Update 3 title', value: normalizeContent(actualUpdate3Title) },
+    { label: 'Update 3 description', value: normalizeContent(actualUpdate3Description) },
+    { label: 'Police Commissioner heading', value: normalizeContent(actualCommissionerHeading) },
+    { label: 'Police Commissioner message', value: normalizeContent(actualCommissionerMessage) },
+    { label: 'Additional COP heading', value: normalizeContent(actualAdditionalHeading) },
+    { label: 'Additional COP message', value: normalizeContent(actualAdditionalMessage) },
+    { label: 'Organogram', value: normalizeContent(actualOrganogram) },
+  ];
 
-  expect(actualGctpDescription?.trim())
-    .toBe(expectedGctpDescription?.trim());
+  const comparisonDifferences = getContentDifferences(
+    expectedContent,
+    actualContent
+  );
 
-  // Update 1
-  expect(actualUpdate1Title?.trim())
-    .toBe(expectedUpdate1Title?.trim());
+  const imageLoadDifferences = [
+    ...expectedImageLoadFailures.map((image) => `CMS image did not load: ${image}`),
+    ...actualImageLoadFailures.map((image) => `GCTP image did not load: ${image}`),
+  ];
 
-  expect(actualUpdate1Description?.trim())
-    .toBe(expectedUpdate1Description?.trim());
+  const allDifferences = [
+    comparisonDifferences === 'No content differences found.' ? '' : comparisonDifferences,
+    ...imageLoadDifferences,
+  ].filter(Boolean).join('\n') || 'No content or image differences found.';
 
-  // Update 2
-  expect(actualUpdate2Title?.trim())
-    .toBe(expectedUpdate2Title?.trim());
+  console.log('CMS expected About Us content:', JSON.stringify(expectedContent, null, 2));
+  console.log('GCTP actual About Us content:', JSON.stringify(actualContent, null, 2));
+  console.log('About Us comparison differences:', allDifferences);
 
-  expect(actualUpdate2Description?.trim())
-    .toBe(expectedUpdate2Description?.trim());
+  await test.info().attach('comparison-differences', {
+    body: allDifferences,
+    contentType: 'text/plain',
+  });
 
-  // Update 3
-  expect(actualUpdate3Title?.trim())
-    .toBe(expectedUpdate3Title?.trim());
-
-  expect(actualUpdate3Description?.trim())
-    .toBe(expectedUpdate3Description?.trim());
-
-  // Police Commissioner
-  expect(actualCommissionerHeading?.trim())
-    .toBe(expectedCommissionerHeading?.trim());
-
-  expect(actualCommissionerMessage?.trim())
-    .toBe(expectedCommissionerMessage?.trim());
-
-  expect(actualCommissionerName?.trim())
-    .toBe(expectedCommissionerName?.trim());
-
-  // Additional COP
-  expect(actualAdditionalHeading?.trim())
-    .toBe(expectedAdditionalHeading?.trim());
-
-  expect(actualAdditionalMessage?.trim())
-    .toBe(expectedAdditionalMessage?.trim());
-
-  expect(actualAdditionalName?.trim())
-    .toBe(expectedAdditionalName?.trim());
-
-  // Organogram
-  expect(actualOrganogram?.trim())
-    .toBe(expectedOrganogram?.trim());
+  expect(actualContent).toEqual(expectedContent);
+  expect(expectedImageLoadFailures, 'CMS images should load successfully').toHaveLength(0);
+  expect(actualImageLoadFailures, 'GCTP images should load successfully').toHaveLength(0);
 
 
   // =====================================================

@@ -1,0 +1,33 @@
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e11] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e22]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "English" [ref=e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=e28] [cursor=pointer]:
+            - img "Play Store" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e31]
+          - link "account of current user" [ref=e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e33]
+          - link "account of current user" [ref=e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e35]
+          - link "account of current user" [ref=e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e37]
+    - button "Toggle navigation" [ref=e39] [cursor=pointer]
+  - generic [ref=e42]: Loading visitor count...

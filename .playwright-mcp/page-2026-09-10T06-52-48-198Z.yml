@@ -1,0 +1,17 @@
+- generic [ref=f11e8]:
+  - generic [ref=f11e10]:
+    - paragraph [ref=f11e12]: GREATER CHENNAI TRAFFIC POLICE
+    - paragraph [ref=f11e13]: YOUR SAFETY IS OUR PRIORITY
+  - generic [ref=f11e14]:
+    - textbox "example@gmail.com" [ref=f11e21]
+    - generic [ref=f11e24]:
+      - textbox "*******" [ref=f11e28]
+      - button "toggle password visibility" [ref=f11e30] [cursor=pointer]
+    - button "Login" [ref=f11e34] [cursor=pointer]
+    - button "Forgot password ?" [ref=f11e36] [cursor=pointer]
+    - generic:
+      - paragraph
+  - paragraph [ref=f11e38]: Designed, Developed & Hosted By
+  - generic [ref=f11e41]:
+    - paragraph [ref=f11e43]: Contact Us
+    - paragraph [ref=f11e47]: Copyrights Reserved

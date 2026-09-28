@@ -28,15 +28,15 @@ export default defineConfig({
 
   use: {
 
-    baseURL: process.env.BASE_URL || 'https://gctp.in/chennai-home',
+    baseURL: process.env.BASE_URL || 'https://gctp.in',
 
     headless: process.env.CI ? true : process.env.HEADLESS === 'false',
 
     screenshot: 'only-on-failure',
 
-    video: 'retain-on-failure',
+    video: 'off',
 
-    trace: 'retain-on-failure',
+    trace: 'off',
 
     actionTimeout: 60000,
 

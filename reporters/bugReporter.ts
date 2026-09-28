@@ -22,6 +22,7 @@ interface FailedTest {
   error: string;
   expectedResult: string;
   actualResult: string;
+  comparisonDifferences: string;
   severity: string;
   priority: string;
   duration: number;
@@ -48,10 +49,16 @@ class BugReporter implements Reporter {
 
     // Remove previous report directory
     if (fs.existsSync(bugReportDir)) {
-      fs.rmSync(bugReportDir, {
-        recursive: true,
-        force: true,
-      });
+      try {
+        fs.rmSync(bugReportDir, {
+          recursive: true,
+          force: true,
+        });
+      } catch (error) {
+        console.warn(
+          `Could not clear previous bug reports; existing files may be open. ${error}`
+        );
+      }
     }
 
     // Create fresh directory
@@ -106,6 +113,9 @@ class BugReporter implements Reporter {
         errorMessage,
         result.status
       );
+
+    const comparisonDifferences =
+      this.getComparisonDifferences(result);
 
     // ==========================================
     // GET SCREENSHOT
@@ -168,6 +178,10 @@ class BugReporter implements Reporter {
     );
 
     console.log(
+      `Comparison Differences: ${comparisonDifferences}`
+    );
+
+    console.log(
       '======================================\n'
     );
 
@@ -191,6 +205,8 @@ class BugReporter implements Reporter {
       expectedResult,
 
       actualResult,
+
+      comparisonDifferences,
 
       severity:
         'Medium',
@@ -593,6 +609,28 @@ class BugReporter implements Reporter {
     return 'Test execution failed.';
   }
 
+  private getComparisonDifferences(
+    result: TestResult
+  ): string {
+    const attachment = result.attachments.find(
+      item => item.name === 'comparison-differences'
+    );
+
+    if (!attachment) {
+      return 'Not provided.';
+    }
+
+    if (attachment.body) {
+      return attachment.body.toString('utf8');
+    }
+
+    if (attachment.path && fs.existsSync(attachment.path)) {
+      return fs.readFileSync(attachment.path, 'utf8');
+    }
+
+    return 'Not provided.';
+  }
+
   // ==========================================
   // GET MAIN ERROR MESSAGE
   // ==========================================
@@ -751,7 +789,7 @@ class BugReporter implements Reporter {
     // ==========================================
 
     worksheet.mergeCells(
-      'A1:O1'
+      'A1:P1'
     );
 
     const titleCell =
@@ -787,6 +825,7 @@ class BugReporter implements Reporter {
       'Status',
       'Expected Result',
       'Actual Result',
+      'Comparison Differences',
       'Error / Failure Reason',
       'Severity',
       'Priority',
@@ -825,6 +864,7 @@ class BugReporter implements Reporter {
         failedTest.status,
         failedTest.expectedResult,
         failedTest.actualResult,
+        failedTest.comparisonDifferences,
         failedTest.error,
         failedTest.severity,
         failedTest.priority,
@@ -848,6 +888,7 @@ class BugReporter implements Reporter {
       { width: 15 },
       { width: 55 },
       { width: 55 },
+      { width: 80 },
       { width: 80 },
       { width: 12 },
       { width: 12 },
@@ -896,15 +937,21 @@ class BugReporter implements Reporter {
       );
     }
 
-    const reportPath =
+    let reportPath =
       path.join(
         reportDirectory,
         'Automation_Bug_Report.xlsx'
       );
 
-    await workbook.xlsx.writeFile(
-      reportPath
-    );
+    try {
+      await workbook.xlsx.writeFile(reportPath);
+    } catch {
+      reportPath = path.join(
+        reportDirectory,
+        `Automation_Bug_Report_${Date.now()}.xlsx`
+      );
+      await workbook.xlsx.writeFile(reportPath);
+    }
 
     console.log(
       '\n======================================'

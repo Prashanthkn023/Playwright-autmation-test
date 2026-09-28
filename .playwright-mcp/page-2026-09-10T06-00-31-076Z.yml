@@ -1,0 +1,107 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e11] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e22]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "English" [ref=e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=e28] [cursor=pointer]:
+            - img "Play Store" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e31]
+          - link "account of current user" [ref=e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e33]
+          - link "account of current user" [ref=e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e35]
+          - link "account of current user" [ref=e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e37]
+    - button "Toggle navigation" [active] [ref=e39] [cursor=pointer]
+  - generic [ref=e245]:
+    - generic [ref=e248]:
+      - generic [ref=e252]:
+        - generic [ref=e253]: Greater Chennai Traffic Police
+        - paragraph [ref=e255]:
+          - paragraph [ref=e256]: In 1659, when Chennai (then called Madras) was just a group of fishing villages, Pedda Naik formed a group of peons to guard the town. By 1780 the post of Superintendent of Police was created to manage the markets. After the Indian Rebellion of 1857, the British Raj in India formed the modern Madras Police as part of its reforms. In the due course the Government had to realize the need of improving the Traffic Department by increasing its staff strength. Thus a seed was sown for creating a separate 'Traffic' Police. In the year 1929, the entire organization was recast and remodeled on 'Functional Division' as designed by Sir Charles Cunningham, the then Commissioner of Police. With effect from 1st September 1929, Policing was divided into three divisions namely L&O, Crime and Traffic. The year 1929 is a landmark in the history of Madras City Traffic Police. As the prevailing system of work and the territorial division.
+      - heading "Updates" [level=1] [ref=e261]
+      - generic [ref=e262]:
+        - generic [ref=e265]:
+          - generic [ref=e266]: "Traffic Police: A Century of Service and Safety"
+          - generic [ref=e268]:
+            - text: Madras was among the first Indian cities to recognise traffic as a specialised policing function. By...
+            - generic [ref=e269]: Read More
+        - generic [ref=e273]:
+          - generic [ref=e274]: First traffic police station in Chennai
+          - generic [ref=e276]:
+            - text: The 1929 "Functional Division" Reform and overhaul was designed by Sir Charles Banks Cunningham, the...
+            - generic [ref=e277]: Read More
+        - generic [ref=e281]:
+          - generic [ref=e282]: Establishment of the Chennai City Traffic Police
+          - generic [ref=e284]:
+            - text: This photograph dates to 1929, during the late British period in India, when Madras (now Chennai) wa...
+            - generic [ref=e285]: Read More
+    - generic [ref=e287]:
+      - button "Scroll important links left" [ref=e288] [cursor=pointer]
+      - generic [ref=e292]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e295] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e296]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e298]
+            - generic [ref=e299]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e305] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e306]:
+            - img "Parivahan" [ref=e308]
+            - generic [ref=e309]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e315] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e316]:
+            - img "TN Govt Web" [ref=e318]
+            - generic [ref=e319]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e325] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e326]:
+            - img "TNRTO" [ref=e328]
+            - generic [ref=e329]: TNRTO
+      - button "Scroll important links right" [ref=e333] [cursor=pointer]
+    - generic [ref=e336]:
+      - generic [ref=e337]:
+        - link "Feedback" [ref=e339] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e341] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e343] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=e345] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e347] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e348]:
+        - generic [ref=e349]:
+          - generic [ref=e350]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e351]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 10-09-2026 11:25:33 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e352]: "Version : Fusion V1.2"
+        - generic [ref=e353]:
+          - generic [ref=e354]:
+            - link [ref=e355] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e356]
+            - link [ref=e357] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e358]
+          - generic [ref=e359]:
+            - paragraph [ref=e360]: "Number Of Visitors : 12257"
+            - img "Group Icon" [ref=e362]

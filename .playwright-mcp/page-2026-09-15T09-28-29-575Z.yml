@@ -1,0 +1,82 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - banner [ref=f2e6]:
+        - generic [ref=f2e8]:
+          - generic [ref=f2e10]:
+            - img [ref=f2e136] [cursor=pointer]
+            - generic [ref=f2e12]:
+              - generic [ref=f2e13]: Greater Chennai Traffic Police
+              - generic [ref=f2e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=f2e21]:
+            - combobox [ref=f2e137]
+            - group [aria-hidden]
+          - generic [ref=f2e23]:
+            - generic [ref=f2e26]:
+              - combobox [expanded] [ref=f2e138] [cursor=pointer]: English
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button [ref=f2e139] [cursor=pointer]
+            - link [ref=f2e141] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - link [ref=f2e143] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - link [ref=f2e145] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+            - link [ref=f2e147] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+      - button [ref=f2e149] [cursor=pointer]
+    - generic [ref=f2e43]:
+      - generic [ref=f2e50]:
+        - generic [ref=f2e51]: Message From Commissioner Of Police
+        - paragraph [ref=f2e53]:
+          - paragraph [ref=f2e54]: "Dear Citizens of Chennai Road safety is a shared responsibility. Every day, thousands of vehicles move across our city's roads, and it is our collective duty to ensure that these roads remain safe for everyone. As the Commissioner of Police, I urge all road users to practice discipline, patience, and caution when driving or commuting. Here are a few critical reminders: Follow Traffic Rules: Always adhere to traffic signals, speed limits, and road signs. These rules are in place to ensure smooth and safe traffic flow. Avoid Using Mobile Phones: Using a mobile phone while driving, even for a few seconds, can result in disastrous consequences. Stay focused on the road. Wear Helmets and Seatbelts: Helmets for two-wheeler riders and seatbelts for car occupants are essential for your safety. Please ensure they are always used properly. Respect Pedestrians: Always yield to pedestrians at crosswalks and be mindful of their right of way. Pedestrians are an integral part of our traffic system. Do Not Drink and Drive: Driving under the influence is one of the leading causes of fatal accidents. If you consume alcohol, ensure you have a designated driver or use public transportation. Avoid Over speeding and Rash Driving: Speed thrills, but it also kills. Stay within the prescribed speed limits and drive responsibly to protect yourself and others. Use Public Transport and Carpooling: To reduce congestion and pollution, consider using public transportation or carpooling whenever possible. Thank you for your cooperation."
+        - paragraph [ref=f2e55]: Thiru Dr. A. Amalraj, IPS, Commissioner of Police
+      - generic [ref=f2e60]:
+        - button [ref=f2e150] [cursor=pointer]
+        - generic [ref=f2e65]:
+          - link [ref=f2e151] [cursor=pointer]:
+            - /url: https://www.police.tn.gov.in/citizenportal
+            - generic [ref=f2e69]: Tamilnadu Police Citizen Portal
+          - link [ref=f2e153] [cursor=pointer]:
+            - /url: https://parivahan.gov.in/
+            - generic [ref=f2e79]: Parivahan
+          - link [ref=f2e155] [cursor=pointer]:
+            - /url: https://www.tn.gov.in/
+            - generic [ref=f2e89]: TN Govt Web
+          - link [ref=f2e157] [cursor=pointer]:
+            - /url: https://tnsta.gov.in/
+            - generic [ref=f2e99]: TNRTO
+        - button [ref=f2e159] [cursor=pointer]
+      - generic [ref=f2e109]:
+        - generic [ref=f2e110]:
+          - link [ref=f2e160] [cursor=pointer]:
+            - /url: /chennai-feedback
+            - text: Feedback
+          - link [ref=f2e161] [cursor=pointer]:
+            - /url: /chennai-sitemap
+            - text: Site Map
+          - link [ref=f2e162] [cursor=pointer]:
+            - /url: /chennai-PRIVATEPOLICY
+            - text: Privacy Policy
+          - link [ref=f2e163] [cursor=pointer]:
+            - /url: /chennai-complaints
+            - text: Complaints
+          - link [ref=f2e164] [cursor=pointer]:
+            - /url: /chennai-FAQs
+            - text: FAQ'S
+        - generic [ref=f2e121]:
+          - generic [ref=f2e122]:
+            - generic [ref=f2e123]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+            - generic [ref=f2e124]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS) Last Updated: 15-09-2026 12:26:15 Best Viewed: Google Chrome, Firefox"
+            - generic [ref=f2e125]: "Version : Fusion V1.2"
+          - generic [ref=f2e126]:
+            - generic [ref=f2e127]:
+              - link [ref=f2e165] [cursor=pointer]:
+                - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - link [ref=f2e167] [cursor=pointer]:
+                - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+            - paragraph [ref=f2e133]: "Number Of Visitors : 12822"
+  - listbox [ref=f2e172]:
+    - option "English" [active] [selected] [ref=f2e173] [cursor=pointer]
+    - option "தமிழ்" [ref=f2e174] [cursor=pointer]

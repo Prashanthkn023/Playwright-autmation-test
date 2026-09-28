@@ -13,7 +13,7 @@ import path from 'path';
 // ============================================================
 
 const CMS_URL =
-  'https://cms.gctp.in/chennai-gctp/';
+  'https://cms.gctp.in';
 
 const CMS_USERNAME =
   'YOUR_CMS_USERNAME';

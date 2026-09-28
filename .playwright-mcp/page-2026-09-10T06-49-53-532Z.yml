@@ -1,0 +1,55 @@
+- generic [ref=f4e3]:
+  - generic [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - banner [ref=f4e6]:
+        - generic [ref=f4e8]:
+          - generic [ref=f4e10]:
+            - img "Nature" [ref=f4e11] [cursor=pointer]
+            - generic [ref=f4e12]:
+              - generic [ref=f4e13]: Greater Chennai Traffic Police
+              - generic [ref=f4e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=f4e21]:
+            - combobox "Search..." [ref=f4e22]
+            - group [aria-hidden]
+          - generic [ref=f4e23]:
+            - generic [ref=f4e26]:
+              - combobox "English" [ref=f4e27] [cursor=pointer]
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button [ref=f4e28] [cursor=pointer]:
+              - img "Play Store" [ref=f4e29]
+            - link "account of current user" [ref=f4e30] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+              - img "Facebook" [ref=f4e31]
+            - link "account of current user" [ref=f4e32] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+              - img "Instagram" [ref=f4e33]
+            - link "account of current user" [ref=f4e34] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+              - img "Twitter" [ref=f4e35]
+            - link "account of current user" [ref=f4e36] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+              - img "Youtube" [ref=f4e37]
+      - button "Toggle navigation" [ref=f4e39] [cursor=pointer]
+    - generic [ref=f4e43]:
+      - heading "TOP ATTRACTIONS" [level=1] [ref=f4e47]
+      - generic [ref=f4e48]:
+        - button "Scroll important links left" [ref=f4e49] [cursor=pointer]
+        - button "Scroll important links right" [ref=f4e53] [cursor=pointer]
+      - generic [ref=f4e57]:
+        - generic [ref=f4e58]:
+          - generic [ref=f4e59]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=f4e60]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 10-09-2026 12:10:25 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=f4e61]: "Version : Fusion V1.2"
+        - generic [ref=f4e62]:
+          - generic [ref=f4e63]:
+            - link [ref=f4e64] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f4e65]
+            - link [ref=f4e66] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f4e67]
+          - generic [ref=f4e68]:
+            - paragraph [ref=f4e69]: "Number Of Visitors : 12374"
+            - img "Group Icon" [ref=f4e71]
+  - generic [ref=f4e72]: Loading visitor count...

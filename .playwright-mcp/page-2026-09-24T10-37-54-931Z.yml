@@ -1,0 +1,127 @@
+- generic [ref=f1e4]:
+  - generic [ref=f1e5]:
+    - banner [ref=f1e6]:
+      - generic [ref=f1e8]:
+        - generic [ref=f1e10]:
+          - img "Nature" [ref=f1e11] [cursor=pointer]
+          - generic [ref=f1e12]:
+            - generic [ref=f1e13]: Greater Chennai Traffic Police
+            - generic [ref=f1e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=f1e21]:
+          - combobox "Search..." [ref=f1e22]
+          - group [aria-hidden]
+        - generic [ref=f1e23]:
+          - generic [ref=f1e26]:
+            - combobox "English" [ref=f1e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=f1e28] [cursor=pointer]:
+            - img "Play Store" [ref=f1e29]
+          - link "account of current user" [ref=f1e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=f1e31]
+          - link "account of current user" [ref=f1e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=f1e33]
+          - link "account of current user" [ref=f1e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=f1e35]
+          - link "account of current user" [ref=f1e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=f1e37]
+    - navigation [ref=f1e39]:
+      - link "Home" [ref=f1e41] [cursor=pointer]:
+        - /url: /chennai-home
+      - button "About Us" [ref=f1e43] [cursor=pointer]
+      - link "City Profile" [ref=f1e47] [cursor=pointer]:
+        - /url: /city-profile
+      - link "City Map" [ref=f1e49] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "Media" [ref=f1e51] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "News" [ref=f1e53] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "Vehicle Challan" [ref=f1e55] [cursor=pointer]
+      - link "Tamil Nadu Police" [ref=f1e60] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "Contact Us" [ref=f1e62] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=f1e64]:
+    - generic [ref=f1e65]:
+      - generic [ref=f1e66]:
+        - button "PHOTOS" [ref=f1e67] [cursor=pointer]
+        - button "VIDEOS" [ref=f1e68] [cursor=pointer]
+      - generic [ref=f1e69]:
+        - generic [ref=f1e70]:
+          - img "Helmet Awareness Drive" [ref=f1e73] [cursor=pointer]
+          - generic [ref=f1e74]:
+            - generic [ref=f1e75]: Helmet Awareness Drive
+            - generic [ref=f1e79]:
+              - text: Greater Chennai Traffic Police conducted a “No Helmet – No Fuel” awareness campaign at Retteri. The...
+              - generic [ref=f1e80]: Read More
+        - generic [ref=f1e82]:
+          - img "Road Safety Awareness Quiz 2025" [ref=f1e85] [cursor=pointer]
+          - generic [ref=f1e86]:
+            - generic [ref=f1e87]: Road Safety Awareness Quiz 2025
+            - generic [ref=f1e91]:
+              - text: Students actively participated in the road safety awareness session by identifying traffic signs and...
+              - generic [ref=f1e92]: Read More
+        - generic [ref=f1e94]:
+          - img "Ride for Road Safety" [ref=f1e97] [cursor=pointer]
+          - generic [ref=f1e98]:
+            - generic [ref=f1e99]: Ride for Road Safety
+            - generic [ref=f1e103]:
+              - text: Hundreds joined the Road Safety Cyclothon 2026 to spread awareness about safe driving. The event en...
+              - generic [ref=f1e104]: Read More
+    - generic [ref=f1e106]:
+      - button "Scroll important links left" [ref=f1e107] [cursor=pointer]
+      - generic [ref=f1e111]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=f1e114] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=f1e115]:
+            - img "Tamilnadu Police Citizen Portal" [ref=f1e117]
+            - generic [ref=f1e118]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=f1e124] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=f1e125]:
+            - img "Parivahan" [ref=f1e127]
+            - generic [ref=f1e128]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=f1e134] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=f1e135]:
+            - img "TN Govt Web" [ref=f1e137]
+            - generic [ref=f1e138]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=f1e144] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=f1e145]:
+            - img "TNRTO" [ref=f1e147]
+            - generic [ref=f1e148]: TNRTO
+      - button "Scroll important links right" [ref=f1e152] [cursor=pointer]
+    - generic [ref=f1e155]:
+      - generic [ref=f1e156]:
+        - link "Feedback" [ref=f1e158] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=f1e160] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=f1e162] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=f1e164] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=f1e166] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=f1e167]:
+        - generic [ref=f1e168]:
+          - generic [ref=f1e169]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=f1e170]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 24-09-2026 12:46:37 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=f1e171]: "Version : Fusion V1.2"
+        - generic [ref=f1e172]:
+          - generic [ref=f1e173]:
+            - link [ref=f1e174] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f1e175]
+            - link [ref=f1e176] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f1e177]
+          - generic [ref=f1e178]:
+            - paragraph [ref=f1e179]: "Number Of Visitors : 13847"
+            - img "Group Icon" [ref=f1e181]

@@ -1,0 +1,148 @@
+- generic [ref=f2e4]:
+  - generic [ref=f2e5]:
+    - banner [ref=f2e6]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e10]:
+          - img "Nature" [ref=f2e11] [cursor=pointer]
+          - generic [ref=f2e12]:
+            - generic [ref=f2e13]: Greater Chennai Traffic Police
+            - generic [ref=f2e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=f2e21]:
+          - combobox "Search..." [ref=f2e22]
+          - group [aria-hidden]
+        - generic [ref=f2e23]:
+          - generic [ref=f2e26]:
+            - combobox "English" [ref=f2e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=f2e28] [cursor=pointer]:
+            - img "Play Store" [ref=f2e29]
+          - link "account of current user" [ref=f2e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=f2e31]
+          - link "account of current user" [ref=f2e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=f2e33]
+          - link "account of current user" [ref=f2e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=f2e35]
+          - link "account of current user" [ref=f2e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=f2e37]
+    - button "Toggle navigation" [ref=f2e39] [cursor=pointer]
+  - generic [ref=f2e42]:
+    - generic [ref=f2e44]:
+      - button "✕" [ref=f2e45] [cursor=pointer]
+      - heading "AWARENESS" [level=2] [ref=f2e46]
+      - img "AWARENESS" [ref=f2e48]
+    - generic [ref=f2e49]:
+      - generic [ref=f2e50]:
+        - generic [ref=f2e54] [cursor=pointer]:
+          - img "AI enabled Traffic Junction" [ref=f2e55]
+          - generic [ref=f2e57]:
+            - generic [ref=f2e58]: AI enabled Traffic Junction
+            - button "Read More" [ref=f2e60]
+            - generic [ref=f2e61]: 1/1
+        - generic [ref=f2e63]:
+          - generic [ref=f2e64]: Traffic Updates
+          - generic [ref=f2e65]:
+            - generic [ref=f2e66]:
+              - img "Wear Helmet" [ref=f2e68]
+              - generic [ref=f2e69]:
+                - generic [ref=f2e70]: Wear Helmet
+                - generic [ref=f2e71]: Wearing a helmet is mandatory in Chennai for all two-wheeler riders or else you will be fined.
+            - generic [ref=f2e73]:
+              - img "Safer Pedestrian Walk" [ref=f2e75]
+              - generic [ref=f2e76]:
+                - generic [ref=f2e77]: Safer Pedestrian Walk
+                - generic [ref=f2e79]:
+                  - text: To ensure safer pedestrian walks in Chennai, it's crucial to prioritize visibility, awareness, and d...
+                  - generic [ref=f2e80]: Read More
+      - generic [ref=f2e83]:
+        - generic [ref=f2e84]: Helpline
+        - generic [ref=f2e85]:
+          - generic [ref=f2e86]: COP SMS - 9500099100
+          - generic [ref=f2e87]: Bandham - 94499957575
+          - generic [ref=f2e88]: Kaaval karangal - 9444717100
+          - generic [ref=f2e89]: Women Helpline - 1091
+          - generic [ref=f2e90]: Senior Citizen - 1253
+      - generic [ref=f2e91]:
+        - button "Previous" [ref=f2e92] [cursor=pointer]
+        - button "Next" [ref=f2e95] [cursor=pointer]
+        - generic [ref=f2e98]:
+          - generic [ref=f2e99]:
+            - paragraph [ref=f2e101]: Smart Traffic Management & Technology in Chennai
+            - generic [ref=f2e102]:
+              - generic [ref=f2e103]: Smart Traffic Management & Technology in Chennai
+              - generic [ref=f2e104]: To leverage modern technology for efficient, data-driven traffic management and congestion reduction...
+              - button "Read More" [ref=f2e106] [cursor=pointer]
+          - generic [ref=f2e108]:
+            - paragraph [ref=f2e110]: GCTP – Ensuring Safe and Seamless Mobility
+            - generic [ref=f2e111]:
+              - generic [ref=f2e112]: GCTP – Ensuring Safe and Seamless Mobility
+              - generic [ref=f2e113]: To enforce traffic laws, reduce violations, and maintain discipline on roads. E‑Challan System Aut...
+              - button "Read More" [ref=f2e115] [cursor=pointer]
+          - generic [ref=f2e117]:
+            - paragraph [ref=f2e119]: Road Safety Awareness
+            - generic [ref=f2e120]:
+              - generic [ref=f2e121]: Road Safety Awareness
+              - generic [ref=f2e122]: To reduce accidents and promote responsible road usage among all citizens. Helmet & Seatbelt – Ma...
+              - button "Read More" [ref=f2e124] [cursor=pointer]
+          - generic [ref=f2e126]:
+            - paragraph [ref=f2e128]: Traffic Hand Signals
+            - generic [ref=f2e129]:
+              - generic [ref=f2e130]: Traffic Hand Signals
+              - generic [ref=f2e131]: To ensure smooth and safe movement of vehicles and pedestrians, especially at junctions where signal...
+              - button "Read More" [ref=f2e133] [cursor=pointer]
+      - generic [ref=f2e135]:
+        - button "Scroll important links left" [ref=f2e136] [cursor=pointer]
+        - generic [ref=f2e140]:
+          - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=f2e143] [cursor=pointer]:
+            - /url: https://www.police.tn.gov.in/citizenportal
+            - generic [ref=f2e144]:
+              - img "Tamilnadu Police Citizen Portal" [ref=f2e146]
+              - generic [ref=f2e147]: Tamilnadu Police Citizen Portal
+          - link "Parivahan Parivahan" [ref=f2e153] [cursor=pointer]:
+            - /url: https://parivahan.gov.in/
+            - generic [ref=f2e154]:
+              - img "Parivahan" [ref=f2e156]
+              - generic [ref=f2e157]: Parivahan
+          - link "TN Govt Web TN Govt Web" [ref=f2e163] [cursor=pointer]:
+            - /url: https://www.tn.gov.in/
+            - generic [ref=f2e164]:
+              - img "TN Govt Web" [ref=f2e166]
+              - generic [ref=f2e167]: TN Govt Web
+          - link "TNRTO TNRTO" [ref=f2e173] [cursor=pointer]:
+            - /url: https://tnsta.gov.in/
+            - generic [ref=f2e174]:
+              - img "TNRTO" [ref=f2e176]
+              - generic [ref=f2e177]: TNRTO
+        - button "Scroll important links right" [ref=f2e181] [cursor=pointer]
+      - generic [ref=f2e184]:
+        - generic [ref=f2e185]:
+          - link "Feedback" [ref=f2e187] [cursor=pointer]:
+            - /url: /chennai-feedback
+          - link "Site Map" [ref=f2e189] [cursor=pointer]:
+            - /url: /chennai-sitemap
+          - link "Privacy Policy" [ref=f2e191] [cursor=pointer]:
+            - /url: /chennai-PRIVATEPOLICY
+          - link "Complaints" [ref=f2e193] [cursor=pointer]:
+            - /url: /chennai-complaints
+          - link "FAQ'S" [ref=f2e195] [cursor=pointer]:
+            - /url: /chennai-FAQs
+        - generic [ref=f2e196]:
+          - generic [ref=f2e197]:
+            - generic [ref=f2e198]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+            - generic [ref=f2e199]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 10-09-2026 12:01:29 Best Viewed: Google Chrome, Firefox"
+            - generic [ref=f2e200]: "Version : Fusion V1.2"
+          - generic [ref=f2e201]:
+            - generic [ref=f2e202]:
+              - link [ref=f2e203] [cursor=pointer]:
+                - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+                - img "Get it on Google Play" [ref=f2e204]
+              - link [ref=f2e205] [cursor=pointer]:
+                - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+                - img "Get it on Apple store" [ref=f2e206]
+            - generic [ref=f2e207]:
+              - paragraph [ref=f2e208]: "Number Of Visitors : 12297"
+              - img "Group Icon" [ref=f2e210]

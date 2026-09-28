@@ -1,0 +1,144 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e11] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e22]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "English" [ref=e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=e28] [cursor=pointer]:
+            - img "Play Store" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e31]
+          - link "account of current user" [ref=e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e33]
+          - link "account of current user" [ref=e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e35]
+          - link "account of current user" [ref=e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e37]
+    - button "Toggle navigation" [active] [ref=e39] [cursor=pointer]
+  - generic [ref=e231]:
+    - generic [ref=e234]:
+      - generic [ref=e235]: GCTP CONTACT DETAILS
+      - table "customized table" [ref=e237]:
+        - rowgroup [ref=e238]:
+          - row [ref=e239]:
+            - columnheader "S.No." [ref=e240]
+            - columnheader "Officer Name" [ref=e241]
+            - columnheader "Designation" [ref=e242]
+            - columnheader "Office Phone Numbers" [ref=e243]
+            - columnheader "Email ID" [ref=e244]
+        - rowgroup [ref=e245]:
+          - row [ref=e246]:
+            - rowheader "1" [ref=e247]
+            - cell "Dr. A. AMALRAJ, I.P.S" [ref=e248]
+            - cell "Commissioner Of Police" [ref=e249]
+            - cell "044-23452320" [ref=e250]
+            - cell "tncopchennai@gmail.com" [ref=e251]
+          - row [ref=e252]:
+            - rowheader "2" [ref=e253]
+            - cell "DR. B. SHAMOONDESWARI, I.P.S" [ref=e254]
+            - cell "Additional Commissioner Of Police Traffic" [ref=e255]
+            - cell "044-25615081" [ref=e256]
+            - cell "addlcop.traffic@gmail.com" [ref=e257]
+          - row [ref=e258]:
+            - rowheader "3" [ref=e259]
+            - cell "TR. P. PAKALAVAN, I.P.S" [ref=e260]
+            - cell "Joint Commissioner Of Police - Traffic (South)" [ref=e261]
+            - cell "044-2345266" [ref=e262]
+            - cell "jcop2011traffic@gmail.com" [ref=e263]
+          - row [ref=e264]:
+            - rowheader "4" [ref=e265]
+            - cell "VACANT" [ref=e266]
+            - cell "Joint Commissioner Of Police - Traffic (North)" [ref=e267]
+            - cell "044-2345262" [ref=e268]
+            - cell "jcop.trnorth@gmail.com" [ref=e269]
+          - row [ref=e270]:
+            - rowheader "5" [ref=e271]
+            - cell "TR.K.K. FEROZE KHAN ABDULLAH, I.P.S" [ref=e272]
+            - cell "DCoP - Traffic (West)" [ref=e273]
+            - cell "9498133663" [ref=e274]
+            - cell "dcoptrafficwest@gmail.com" [ref=e275]
+          - row [ref=e276]:
+            - rowheader "6" [ref=e277]
+            - cell "TR.P. BALAJI" [ref=e278]
+            - cell "DCoP - Traffic (North)" [ref=e279]
+            - cell "044-2345270" [ref=e280]
+            - cell "dcpnorthtraffic@gmail.com" [ref=e281]
+          - row [ref=e282]:
+            - rowheader "7" [ref=e283]
+            - cell "TR. MUTHUKUMAR" [ref=e284]
+            - cell "DCoP - Traffic (South)" [ref=e285]
+            - cell "044-2345264" [ref=e286]
+            - cell "dcpsouthtraffic@gmail.com" [ref=e287]
+          - row [ref=e288]:
+            - rowheader "8" [ref=e289]
+            - cell "TMT. MEGALINA IDEN" [ref=e290]
+            - cell "DCoP - Traffic (East)" [ref=e291]
+            - cell "044-2345434" [ref=e292]
+            - cell "dcpeasttraffic@gmail.com" [ref=e293]
+    - generic [ref=e294]:
+      - button "Scroll important links left" [ref=e295] [cursor=pointer]
+      - generic [ref=e299]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e302] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e303]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e305]
+            - generic [ref=e306]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e312] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e313]:
+            - img "Parivahan" [ref=e315]
+            - generic [ref=e316]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e322] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e323]:
+            - img "TN Govt Web" [ref=e325]
+            - generic [ref=e326]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e332] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e333]:
+            - img "TNRTO" [ref=e335]
+            - generic [ref=e336]: TNRTO
+      - button "Scroll important links right" [ref=e340] [cursor=pointer]
+    - generic [ref=e343]:
+      - generic [ref=e344]:
+        - link "Feedback" [ref=e346] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e348] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e350] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=e352] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e354] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e355]:
+        - generic [ref=e356]:
+          - generic [ref=e357]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e358]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 10-09-2026 11:22:03 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e359]: "Version : Fusion V1.2"
+        - generic [ref=e360]:
+          - generic [ref=e361]:
+            - link [ref=e362] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e363]
+            - link [ref=e364] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e365]
+          - generic [ref=e366]:
+            - paragraph [ref=e367]: "Number Of Visitors : 12248"
+            - img "Group Icon" [ref=e369]

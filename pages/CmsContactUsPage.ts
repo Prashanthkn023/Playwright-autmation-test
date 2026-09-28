@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class CmsContactUsPage extends BasePage {
@@ -52,6 +52,98 @@ export class CmsContactUsPage extends BasePage {
 
   async openHomePage() {
     await this.navigate('https://gctp.in/chennai-home');
+  }
+
+  async loginToCms(cmsUrl: string, username: string, password: string) {
+    const usernameInput = this.page.locator(
+      'input[name="username"], input[type="email"], input[placeholder="example@gmail.com"]'
+    );
+    const passwordInput = this.page.locator('input[type="password"]');
+
+    let loginFormLoaded = false;
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await this.page.goto(cmsUrl, { waitUntil: 'domcontentloaded' });
+
+      loginFormLoaded = await usernameInput
+        .isVisible({ timeout: 10000 })
+        .catch(() => false);
+
+      if (!loginFormLoaded) {
+        const loginTrigger = this.page.getByText('LOGIN', { exact: true });
+        if (await loginTrigger.isVisible().catch(() => false)) {
+          await loginTrigger.click().catch(() => undefined);
+          loginFormLoaded = await usernameInput
+            .isVisible({ timeout: 10000 })
+            .catch(() => false);
+        }
+      }
+
+      if (loginFormLoaded) {
+        break;
+      }
+    }
+
+    expect(loginFormLoaded, 'CMS login form should load').toBe(true);
+    await usernameInput.fill(username);
+    await passwordInput.fill(password);
+    await this.page.getByRole('button', { name: 'Login' }).click();
+    await expect(this.page.getByRole('navigation')).toBeVisible({ timeout: 30000 });
+  }
+
+  async openCmsContactUs() {
+    const cmsContactUsText = this.page
+      .getByRole('navigation')
+      .getByText('Contact Us', { exact: true });
+
+    await expect(cmsContactUsText).toBeVisible({ timeout: 30000 });
+    await cmsContactUsText.click();
+    await this.page.waitForLoadState('domcontentloaded');
+    await expect(this.page.locator('table').first()).toBeVisible({
+      timeout: 30000,
+    });
+  }
+
+  async getContactRecords(source: 'cms' | 'public') {
+    const rows = this.page.locator('table').first().locator('tbody tr');
+    const records: Array<{
+      name: string;
+      designation: string;
+      phone: string;
+    }> = [];
+
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
+
+    for (let index = 0; index < await rows.count(); index++) {
+      const cells = await rows.nth(index).locator('td').allTextContents();
+      const normalizedCells = cells.map((cell) => cell.replace(/\s+/g, ' ').trim());
+
+      if (source === 'cms') {
+        if (normalizedCells.includes('APPROVED')) {
+          records.push({
+            name: normalizedCells[1],
+            designation: normalizedCells[2],
+            phone: normalizedCells[5],
+          });
+        } else if (normalizedCells.length >= 3) {
+          records.push({
+            name: normalizedCells[0],
+            designation: normalizedCells[1],
+            phone: normalizedCells[2],
+          });
+        }
+
+        continue;
+      }
+
+      records.push({
+        name: normalizedCells[0],
+        designation: normalizedCells[1],
+        phone: normalizedCells[2],
+      });
+    }
+
+    return records;
   }
 
   async openContactUs() {

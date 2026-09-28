@@ -28,7 +28,7 @@ jobs:
         env:
           HEADLESS: "true"
           CI: "true"
-        run: npx playwright test -g "TC_001 Validate Home Page Images"
+        run: npx playwright test 
 
       - name: Check Generated Files
         if: always()
