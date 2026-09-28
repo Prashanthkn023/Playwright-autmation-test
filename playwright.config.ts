@@ -34,9 +34,9 @@ export default defineConfig({
 
     screenshot: 'only-on-failure',
 
-    video: 'off',
+    video: 'retain-on-failure',
 
-    trace: 'off',
+    trace: 'retain-on-failure',
 
     actionTimeout: 60000,
 
