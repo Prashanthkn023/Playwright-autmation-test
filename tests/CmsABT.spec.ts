@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
+import {
+  loginToConfiguredCms,
+  openCmsAboutUsDropdown,
+  openCmsAboutUsGctp,
+} from '../utils/cmsLogin';
 
 const cmsurl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 const baseurl = 'https://gctp.in/chennai-home';
-const cmsUsername = process.env.CMS_USERNAME;
-const cmsPassword = process.env.CMS_PASSWORD;
 
 const getVisibleImageLoadFailures = async (page: import('@playwright/test').Page) => {
   return page.locator('img:visible').evaluateAll((images) =>
@@ -105,51 +108,8 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   // CMS CONTENT → EXPECTED
   // =====================================================
 
-  if (!cmsUsername || !cmsPassword) {
-    throw new Error(
-      'CMS_USERNAME and CMS_PASSWORD must be configured in .env before this test can run.'
-    );
-  }
-
-  // Login
-  const username = page.locator(
-    'input[name="username"], input[type="email"], input[placeholder="example@gmail.com"]'
-  );
-  const password = page.locator('input[type="password"]');
-
-  let loginFormLoaded = false;
-
-  for (let attempt = 0; attempt < 3; attempt++) {
-    await page.goto(cmsurl, { waitUntil: 'domcontentloaded' });
-
-    loginFormLoaded = await expect(username)
-      .toBeVisible({ timeout: 30000 })
-      .then(() => true)
-      .catch(() => false);
-
-    if (loginFormLoaded) {
-      break;
-    }
-  }
-
-  expect(
-    loginFormLoaded,
-    'CMS login form should load after retrying the CMS portal'
-  ).toBe(true);
-
-  await username.fill(cmsUsername);
-  await expect(password).toBeVisible();
-  await password.fill(cmsPassword);
-  await page.getByRole('button', { name: 'Login' }).click();
-  await expect(
-    page.getByRole('navigation').getByText('About Us', { exact: true })
-  ).toBeVisible({ timeout: 30000 });
-
-  // About Us
-  await page.goto(
-    `${cmsurl.replace(/\/$/, '')}/chennai-gctp`,
-    { waitUntil: 'domcontentloaded' }
-  );
+  await loginToConfiguredCms(page, cmsurl);
+  await openCmsAboutUsGctp(page);
 
   const expectedImageLoadFailures: string[] = [];
   expectedImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
@@ -205,7 +165,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .getByText('This photograph dates to 1929')
       .textContent();
 
-  await page.getByRole('navigation').getByText('About Us', { exact: true }).click();
+  await openCmsAboutUsDropdown(page);
 
   // Message from Police Commissioner
   await page
@@ -244,6 +204,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
       .textContent();
 
   // Organogram
+  await openCmsAboutUsDropdown(page);
   await page
     .getByRole('link', { name: 'Organogram' })
     .click();
