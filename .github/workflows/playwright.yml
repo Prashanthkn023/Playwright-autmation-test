@@ -32,9 +32,6 @@ jobs:
         env:
           CI: true
           HEADLESS: true
-          BASE_URL: ${{ secrets.BASE_URL || 'https://gctp.in' }}
-          CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
-          CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
         run: npm test
 
       - name: Upload Allure results
