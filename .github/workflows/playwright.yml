@@ -28,6 +28,8 @@ jobs:
         env:
           HEADLESS: "true"
           CI: "true"
+          CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
+          CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
         run: npx playwright test 
 
       - name: Check Generated Files
