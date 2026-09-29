@@ -2,13 +2,12 @@ import { defineConfig, devices } from '@playwright/test';
 import 'dotenv/config';
 
 export default defineConfig({
-
   testDir: './tests',
 
-  timeout: Number(process.env.TIMEOUT) || 600000, // Increased to 10 minutes
+  timeout: Number(process.env.TIMEOUT) || 600000,
 
   expect: {
-    timeout: 30000, // Increased expectation timeout
+    timeout: 30000,
   },
 
   fullyParallel: true,
@@ -19,15 +18,13 @@ export default defineConfig({
 
   workers: process.env.CI ? 1 : Number(process.env.WORKERS) || 1,
 
+  // Excel report + terminal output
   reporter: [
     ['list'],
-    ['allure-playwright'],
-    ['junit', { outputFile: 'test-results/results.xml' }],
-    ['./reporters/bugReporter.ts']
+    ['./reporters/bugReporter.ts'],
   ],
 
   use: {
-
     baseURL: process.env.BASE_URL || 'https://gctp.in',
 
     headless: process.env.CI ? true : process.env.HEADLESS === 'false',
@@ -40,61 +37,33 @@ export default defineConfig({
 
     actionTimeout: 60000,
 
-    navigationTimeout: 120000, // Increased navigation timeout
+    navigationTimeout: 120000,
 
     ignoreHTTPSErrors: true,
 
     viewport: {
       width: 1366,
-      height: 768
+      height: 768,
     },
 
     launchOptions: {
       slowMo: 200,
       args: [
         '--disable-blink-features=AutomationControlled',
-        '--disable-blink-features=BlockCredentialedSubresources' // Allow loading images without CORS issues
-      ]
-    }
-
+        '--disable-blink-features=BlockCredentialedSubresources',
+      ],
+    },
   },
 
   projects: [
-
     {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
         bypassCSP: true,
-      }
+      },
     },
-
-    // {
-    //   name: 'android',
-    //   use: {
-    //     ...devices['Pixel 5'],
-    //     bypassCSP: true,
-    //   }
-    // },
-//     {
-//       name: 'firefox',
-//       use: {
-//         ...devices['Desktop Firefox'],
-//         bypassCSP: true,
-//       }
-//     },
-    
-// {
-//       name: 'webkit',
-//       use: {
-//         ...devices['Desktop WebKit'],
-//         bypassCSP: true,
-//       }
-//     },
-
-
   ],
 
   outputDir: 'test-results/',
-
 });

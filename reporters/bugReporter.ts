@@ -11,6 +11,18 @@ import ExcelJS from 'exceljs';
 import * as path from 'path';
 import * as fs from 'fs';
 
+interface TestRecord {
+  testCase: string;
+  testFile: string;
+  module: string;
+  browser: string;
+  status: string;
+  duration: number;
+  error: string;
+  screenshot: string;
+  timestamp: string;
+}
+
 interface FailedTest {
   bugId: string;
   bugTitle: string;
@@ -31,9 +43,10 @@ interface FailedTest {
 }
 
 class BugReporter implements Reporter {
+  private allTests: TestRecord[] = [];
   private failedTests: FailedTest[] = [];
-
   private rootDir = '';
+  private startedAt = 0;
 
   // ==========================================
   // START REPORTER
@@ -41,6 +54,9 @@ class BugReporter implements Reporter {
 
   onBegin(config: FullConfig): void {
     this.rootDir = config.rootDir;
+    this.startedAt = Date.now();
+    this.allTests = [];
+    this.failedTests = [];
 
     const bugReportDir = path.join(
       this.rootDir,
@@ -91,16 +107,42 @@ class BugReporter implements Reporter {
     test: TestCase,
     result: TestResult
   ): void {
-    // Only failed and timed-out tests
+    // Record every test result, including passed and skipped tests.
+    const testFile = test.location.file;
+    const module = this.getModuleName(testFile);
+    const browser = test.parent.project()?.name || 'Unknown';
+    const errorMessage =
+      result.status === 'failed' || result.status === 'timedOut'
+        ? this.getErrorMessage(result)
+        : '';
+
+    let screenshotPath = '';
+    for (const attachment of result.attachments) {
+      if (attachment.name === 'screenshot' && attachment.path) {
+        screenshotPath = attachment.path;
+        break;
+      }
+    }
+
+    this.allTests.push({
+      testCase: test.title,
+      testFile,
+      module,
+      browser,
+      status: result.status,
+      duration: result.duration,
+      error: errorMessage,
+      screenshot: screenshotPath || 'Not available',
+      timestamp: new Date().toLocaleString(),
+    });
+
+    // The detailed Bug Report sheet contains only failures/timeouts.
     if (
       result.status !== 'failed' &&
       result.status !== 'timedOut'
     ) {
       return;
     }
-
-    const errorMessage =
-      this.getErrorMessage(result);
 
     const expectedResult =
       this.getExpectedResult(
@@ -116,30 +158,6 @@ class BugReporter implements Reporter {
 
     const comparisonDifferences =
       this.getComparisonDifferences(result);
-
-    // ==========================================
-    // GET SCREENSHOT
-    // ==========================================
-
-    let screenshotPath = '';
-
-    for (const attachment of result.attachments) {
-      if (
-        attachment.name === 'screenshot' &&
-        attachment.path
-      ) {
-        screenshotPath =
-          attachment.path;
-
-        break;
-      }
-    }
-
-    const testFile =
-      test.location.file;
-
-    const module =
-      this.getModuleName(testFile);
 
     const bugId =
       `BUG-${String(
@@ -192,9 +210,7 @@ class BugReporter implements Reporter {
       testCase: test.title,
       testFile,
 
-      browser:
-        test.parent.project()?.name ||
-        'Unknown',
+      browser,
 
       status:
         result.status,
@@ -217,9 +233,7 @@ class BugReporter implements Reporter {
       duration:
         result.duration,
 
-      screenshot:
-        screenshotPath ||
-        'Screenshot not available',
+      screenshot: screenshotPath || 'Screenshot not available',
 
       timestamp:
         new Date().toLocaleString(),
@@ -760,16 +774,6 @@ class BugReporter implements Reporter {
   async onEnd(
     result: FullResult
   ): Promise<void> {
-    if (
-      this.failedTests.length === 0
-    ) {
-      console.log(
-        '\nNo failed tests. Bug report was not generated.'
-      );
-
-      return;
-    }
-
     const workbook =
       new ExcelJS.Workbook();
 
@@ -778,6 +782,79 @@ class BugReporter implements Reporter {
 
     workbook.created =
       new Date();
+
+    const totalTests = this.allTests.length;
+    const passedTests = this.allTests.filter(
+      test => test.status === 'passed'
+    ).length;
+    const failedTests = this.allTests.filter(
+      test => test.status === 'failed'
+    ).length;
+    const timedOutTests = this.allTests.filter(
+      test => test.status === 'timedOut'
+    ).length;
+    const skippedTests = this.allTests.filter(
+      test => test.status === 'skipped'
+    ).length;
+    const executionTimeMs = Date.now() - this.startedAt;
+
+    // Summary sheet
+    const summarySheet = workbook.addWorksheet('Summary');
+    summarySheet.addRow(['PLAYWRIGHT TEST SUMMARY']);
+    summarySheet.mergeCells('A1:B1');
+    summarySheet.getCell('A1').font = { bold: true, size: 16 };
+    summarySheet.getCell('A1').alignment = { horizontal: 'center' };
+    summarySheet.addRow(['Metric', 'Count / Value']);
+    summarySheet.addRows([
+      ['Total Tests', totalTests],
+      ['Passed', passedTests],
+      ['Failed', failedTests],
+      ['Timed Out', timedOutTests],
+      ['Skipped', skippedTests],
+      ['Execution Time (minutes)', Number((executionTimeMs / 60000).toFixed(2))],
+      ['Overall Result', result.status],
+    ]);
+    summarySheet.getRow(2).font = { bold: true };
+    summarySheet.columns = [{ width: 30 }, { width: 28 }];
+
+    // All test results sheet
+    const allResultsSheet = workbook.addWorksheet('All Test Results');
+    allResultsSheet.addRow([
+      'Test Case',
+      'Module',
+      'Test File',
+      'Browser / Project',
+      'Status',
+      'Duration (ms)',
+      'Error / Failure Reason',
+      'Screenshot',
+      'Date & Time',
+    ]);
+    allResultsSheet.getRow(1).font = { bold: true };
+    allResultsSheet.addRows(
+      this.allTests.map(test => [
+        test.testCase,
+        test.module,
+        test.testFile,
+        test.browser,
+        test.status,
+        test.duration,
+        test.error,
+        test.screenshot,
+        test.timestamp,
+      ])
+    );
+    allResultsSheet.columns = [
+      { width: 45 },
+      { width: 25 },
+      { width: 55 },
+      { width: 20 },
+      { width: 16 },
+      { width: 16 },
+      { width: 80 },
+      { width: 70 },
+      { width: 25 },
+    ];
 
     const worksheet =
       workbook.addWorksheet(
@@ -901,18 +978,30 @@ class BugReporter implements Reporter {
     // WRAP TEXT
     // ==========================================
 
-    worksheet.eachRow(
-      row => {
-        row.eachCell(
-          cell => {
-            cell.alignment = {
-              vertical: 'top',
-              wrapText: true,
-            };
-          }
-        );
+    for (const sheet of [summarySheet, allResultsSheet, worksheet]) {
+      sheet.eachRow(row => {
+        row.eachCell(cell => {
+          cell.alignment = {
+            vertical: 'top',
+            wrapText: true,
+          };
+        });
+      });
+    }
+
+    // Make test statuses easy to scan in Excel.
+    allResultsSheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const statusCell = row.getCell(5);
+      const status = String(statusCell.value || '').toLowerCase();
+      if (status === 'passed') {
+        statusCell.font = { color: { argb: 'FF008000' }, bold: true };
+      } else if (status === 'failed' || status === 'timedout') {
+        statusCell.font = { color: { argb: 'FFFF0000' }, bold: true };
+      } else if (status === 'skipped') {
+        statusCell.font = { color: { argb: 'FF808080' }, bold: true };
       }
-    );
+    });
 
     // ==========================================
     // SAVE REPORT
@@ -958,7 +1047,7 @@ class BugReporter implements Reporter {
     );
 
     console.log(
-      ' AUTOMATION BUG REPORT GENERATED'
+      ' PLAYWRIGHT EXCEL REPORT GENERATED'
     );
 
     console.log(
@@ -966,7 +1055,7 @@ class BugReporter implements Reporter {
     );
 
     console.log(
-      `Failed Tests: ${this.failedTests.length}`
+      `Total Tests: ${this.allTests.length}\nPassed: ${passedTests}\nFailed: ${failedTests}\nTimed Out: ${timedOutTests}\nSkipped: ${skippedTests}`
     );
 
     console.log(

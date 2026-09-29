@@ -3,21 +3,18 @@
   "version": "1.0.0",
   "scripts": {
     "test": "playwright test",
+    "test:excel": "playwright test",
     "android-test": "playwright test tests/AndroidWebsite.spec.ts --project=android",
     "image-test": "playwright test tests/TC_001_ImageValidation.spec.ts",
-    "image-report": "playwright test tests/TC_001_ImageValidation.spec.ts && playwright show-report",
-    "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "allure open allure-report",
-    "allure:report": "npm run allure:generate && npm run allure:open"
+    "image-report": "playwright test tests/TC_001_ImageValidation.spec.ts"
   },
   "devDependencies": {
     "@playwright/mcp": "^0.0.80",
     "@playwright/test": "^1.63.0",
     "@types/node": "^26.4.1",
-    "allure-commandline": "^2.43.0",
-    "allure-playwright": "^3.12.2",
     "dotenv": "^17.4.2",
-    "exceljs": "^4.4.0"
+    "exceljs": "^4.4.0",
+    "tsx": "^4.23.15"
   },
   "dependencies": {
     "tesseract.js": "^7.0.0"
