@@ -6,6 +6,7 @@ import {
 import fs from 'fs';
 
 import path from 'path';
+import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 
 
 // ============================================================
@@ -14,13 +15,6 @@ import path from 'path';
 
 const CMS_URL =
   'https://cms.gctp.in';
-
-const CMS_USERNAME =
-  'YOUR_CMS_USERNAME';
-
-const CMS_PASSWORD =
-  'YOUR_CMS_PASSWORD';
-
 
 // ============================================================
 // GCTP CONFIGURATION

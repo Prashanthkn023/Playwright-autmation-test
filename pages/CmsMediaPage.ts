@@ -43,7 +43,7 @@ export class CmsMediaPage extends BasePage {
   }
 
   async openCmsMediaPage() {
-    await this.navigate('https://cms.gctp.in/chennai-media');
+    await this.navigate('https://cms.gctp.in/chennai-media-Cms');
   }
 
   async openPhotos() {
@@ -60,6 +60,17 @@ export class CmsMediaPage extends BasePage {
     await this.cmsLoginPasswordInput.fill(password);
     await this.cmsLoginSubmitButton.click();
     await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => undefined);
+  }
+
+  async clickMediaText() {
+    const mediaText = this.page
+      .getByRole('navigation')
+      .getByText('Media', { exact: true })
+      .first();
+    await expect(mediaText).toBeVisible({ timeout: 30000 });
+    await mediaText.click({ force: true });
+    await this.page.waitForLoadState('domcontentloaded');
+    await this.closeAnyPopup();
   }
 
   async expectPhotoTitlesVisible(titles: string[]) {

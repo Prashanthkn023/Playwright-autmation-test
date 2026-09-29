@@ -1,5 +1,7 @@
 import { expect, Page, test } from '@playwright/test';
 import { CmsMediaPage } from '../pages/CmsMediaPage';
+import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
+import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 
 const expectedPhotoTitles = [
   'Helmet Awareness Drive',
@@ -13,19 +15,86 @@ const expandedTextContent = [
   'Hundreds joined the Road Safety Cyclothon 2026',
 ];
 
-async function getVisibleTitles(page: Page, titles: string[]) {
-  const found: string[] = [];
+type MediaRecord = {
+  title: string;
+  imageName: string;
+  content: string;
+};
 
-  for (const title of titles) {
-    const locator = page.getByText(title, { exact: true }).first();
-    await expect(locator).toBeVisible({ timeout: 15000 });
-    found.push(title);
-  }
+type VideoRecord = {
+  providerId: string;
+  title: string;
+};
 
-  return found;
+async function getVisibleMediaRecords(page: Page): Promise<MediaRecord[]> {
+  const excludedImageAlts = new Set([
+    'Nature',
+    'Play Store',
+    'Facebook',
+    'Instagram',
+    'Twitter',
+    'Youtube',
+    'Group Icon',
+    'Tamilnadu Police Citizen Portal',
+    'Parivahan',
+    'TN Govt Web',
+    'TNRTO',
+    'Get it on Google Play',
+    'Get it on Apple store',
+  ]);
+
+  return page.locator('img[alt]:visible').evaluateAll(
+    (images, excludedAlts) => images
+      .map((image) => {
+        const imageElement = image as HTMLImageElement;
+        const title = imageElement.alt.trim();
+        const card = imageElement.parentElement;
+        const source = imageElement.currentSrc || imageElement.src;
+        const imageName = source.split('/').pop()?.split('?')[0] || source;
+
+        return {
+          title,
+          imageName,
+          content: card?.innerText?.replace(/\s+/g, ' ').trim() || title,
+        };
+      })
+      .filter((record) => record.title && !excludedAlts.includes(record.title)),
+    [...excludedImageAlts]
+  );
 }
 
-async function checkReadMoreAndBackNavigation(page: Page, title: string, index: number, expandedText: string) {
+async function getVisibleVideoRecords(page: Page): Promise<VideoRecord[]> {
+  return page.locator('iframe:visible').evaluateAll((iframes) =>
+    iframes.map((iframe) => {
+      const iframeElement = iframe as HTMLIFrameElement;
+      const source = iframe.getAttribute('src') || '';
+      const providerId = source.match(/(?:embed\/|youtu\.be\/)([^?&#/]+)/i)?.[1] || source;
+      let ancestor = iframe.parentElement;
+      let title = '';
+
+      for (let level = 0; level < 6 && ancestor; level++, ancestor = ancestor.parentElement) {
+        const text = ancestor.innerText?.replace(/\s+/g, ' ').trim() || '';
+        if (text && text !== iframeElement.title) {
+          title = text;
+          break;
+        }
+      }
+
+      return {
+        providerId,
+        title: title || iframeElement.title || providerId,
+      };
+    })
+  );
+}
+
+async function checkReadMoreAndBackNavigation(
+  page: Page,
+  mediaPage: CmsMediaPage,
+  title: string,
+  index: number,
+  expandedText: string
+) {
   const readMore = page.locator('text=Read More').nth(index);
   await expect(readMore).toBeVisible({ timeout: 15000 });
   await readMore.click();
@@ -33,9 +102,9 @@ async function checkReadMoreAndBackNavigation(page: Page, title: string, index: 
   await expect(page.locator('text=Read Less').first()).toBeVisible({ timeout: 15000 });
   await expect(page.getByText(expandedText, { exact: false }).first()).toBeVisible({ timeout: 15000 });
 
-  await page.goBack();
+  await mediaPage.openMediaPage();
 
-  await expect(page).toHaveURL(/chennai-media/i, { timeout: 15000 });
+  await expect(page).toHaveURL(/gctp\.in\/chennai-media/i, { timeout: 15000 });
   await expect(page.locator(`text=${title}`).first()).toBeVisible({ timeout: 15000 });
 }
 
@@ -56,38 +125,41 @@ async function expectVideoEmbedsVisible(page: Page) {
 
 test('verify CMS media content matches the public website', async ({ page }) => {
   const mediaPage = new CmsMediaPage(page);
-  const username = process.env.CMS_USERNAME;
-  const password = process.env.CMS_PASSWORD;
 
-  test.skip(!username || !password, 'CMS_USERNAME and CMS_PASSWORD must be configured for CMS parity checks.');
-
-  await mediaPage.openCmsMediaPage();
-  await expect(page).toHaveURL(/cms\.gctp\.in\/chennai-media|login/i);
-  await expect(mediaPage.cmsLoginEmailInput).toBeVisible();
-
-  await mediaPage.cmsLoginEmailInput.fill(username!);
-  await mediaPage.cmsLoginPasswordInput.fill(password!);
-  await mediaPage.cmsLoginSubmitButton.click();
-  await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => undefined);
-
-  await page.waitForURL(/cms\.gctp\.in\/chennai-media/i, { timeout: 30000 }).catch(() => undefined);
+  await mediaPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
+  await closeAwarenessPopup(page);
+  await mediaPage.clickMediaText();
+  await expect(page).toHaveURL(/cms\.gctp\.in\/chennai-media(?:-Cms)?(?:$|\/)/i, { timeout: 30000 });
   await mediaPage.openPhotos();
 
-  const cmsPhotoTitles = await getVisibleTitles(page, expectedPhotoTitles);
-  expect(cmsPhotoTitles).toEqual(expectedPhotoTitles);
+  const cmsMediaRecords = await getVisibleMediaRecords(page);
+  expect(cmsMediaRecords.length).toBeGreaterThan(0);
+
+  await mediaPage.openVideos();
+  await expect(page.locator('iframe').first()).toBeVisible({ timeout: 30000 });
+  const cmsVideoRecords = await getVisibleVideoRecords(page);
+  expect(cmsVideoRecords.length).toBeGreaterThan(0);
 
   await mediaPage.openMediaPage();
   await mediaPage.openPhotos();
-  const publicPhotoTitles = await getVisibleTitles(page, expectedPhotoTitles);
-  expect(publicPhotoTitles).toEqual(expectedPhotoTitles);
+  const publicMediaRecords = await getVisibleMediaRecords(page);
+  expect(publicMediaRecords.length).toBeGreaterThan(0);
 
   for (let index = 0; index < expectedPhotoTitles.length; index++) {
-    await checkReadMoreAndBackNavigation(page, expectedPhotoTitles[index], index, expandedTextContent[index]);
+    await checkReadMoreAndBackNavigation(
+      page,
+      mediaPage,
+      expectedPhotoTitles[index],
+      index,
+      expandedTextContent[index]
+    );
   }
 
   await mediaPage.openVideos();
   await page.waitForTimeout(1500);
   await expectVideoEmbedsVisible(page);
+  const publicVideoRecords = await getVisibleVideoRecords(page);
 
-  expect(publicPhotoTitles).toEqual(cmsPhotoTitles);
+  expect(publicMediaRecords).toEqual(cmsMediaRecords);
+  expect(publicVideoRecords).toEqual(cmsVideoRecords);
 });

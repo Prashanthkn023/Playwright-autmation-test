@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { CmsCityPage } from '../pages/CmsCityPage';
 import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
+import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 
 const cmsurl =
   process.env.CMS_BASE_URL ||
@@ -8,13 +9,6 @@ const cmsurl =
 
 const baseurl =
   'https://gctp.in/chennai-home';
-
-const cmsUsername =
-  process.env.CMS_USERNAME;
-
-const cmsPassword =
-  process.env.CMS_PASSWORD;
-
 
 test(
   'verify CMS City Profile content with published website',
@@ -28,22 +22,14 @@ test(
     // CMS CONTENT → EXPECTED
     // =====================================================
 
-    if (!cmsUsername || !cmsPassword) {
-
-      throw new Error(
-        'CMS_USERNAME and CMS_PASSWORD must be configured in .env before this test can run.'
-      );
-    }
-
-
     // =====================================================
     // CMS LOGIN
     // =====================================================
 
     await cityPage.loginToCms(
       cmsurl,
-      cmsUsername,
-      cmsPassword
+      CMS_USERNAME,
+      CMS_PASSWORD
     );
 
 

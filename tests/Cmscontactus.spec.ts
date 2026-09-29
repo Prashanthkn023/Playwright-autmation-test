@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { CmsContactUsPage } from '../pages/CmsContactUsPage';
+import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
-const cmsUsername = process.env.CMS_USERNAME;
-const cmsPassword = process.env.CMS_PASSWORD;
 
 type ContactRecord = {
     name: string;
@@ -52,13 +51,7 @@ const getComparisonDifferences = (
 test('verify CMS Contact Us page', async ({ page }) => {
     const contactUsPage = new CmsContactUsPage(page);
 
-    if (!cmsUsername || !cmsPassword) {
-        throw new Error(
-            'CMS_USERNAME and CMS_PASSWORD must be configured in .env before this test can run.'
-        );
-    }
-
-    await contactUsPage.loginToCms(cmsUrl, cmsUsername, cmsPassword);
+    await contactUsPage.loginToCms(cmsUrl, CMS_USERNAME, CMS_PASSWORD);
     await contactUsPage.openCmsContactUs();
 
     const expectedContactDetails = await contactUsPage.getContactRecords('cms');

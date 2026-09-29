@@ -1,19 +1,13 @@
 import { expect, Page } from '@playwright/test';
 
+export const CMS_USERNAME = 'Prashanth@gctp.in';
+export const CMS_PASSWORD = 'Prashanth@123';
+
 export async function loginToConfiguredCms(
   page: Page,
   cmsUrl: string
 ) {
-  const username = process.env.CMS_USERNAME;
-  const password = process.env.CMS_PASSWORD;
-
-  if (!username || !password) {
-    throw new Error(
-      'CMS_USERNAME and CMS_PASSWORD must be configured in the environment.'
-    );
-  }
-
-  await loginToCms(page, cmsUrl, username, password);
+  await loginToCms(page, cmsUrl, CMS_USERNAME, CMS_PASSWORD);
 }
 
 export async function loginToCms(
