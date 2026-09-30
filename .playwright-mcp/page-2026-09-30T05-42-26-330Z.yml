@@ -1,0 +1,162 @@
+- generic [ref=f2e4]:
+  - generic [ref=f2e5]:
+    - banner [ref=f2e6]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e10]:
+          - img "Nature" [ref=f2e289] [cursor=pointer]
+          - generic [ref=f2e12]:
+            - generic [ref=f2e13]: Greater Chennai Traffic Police
+            - generic [ref=f2e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=f2e21]:
+          - combobox "Search..." [ref=f2e290]
+          - group [aria-hidden]
+        - generic [ref=f2e23]:
+          - generic [ref=f2e26]:
+            - combobox "தமிழ்" [ref=f2e291] [cursor=pointer]
+            - textbox [aria-hidden]: tl
+            - group [aria-hidden]
+          - button [ref=f2e292] [cursor=pointer]:
+            - img "Play Store" [ref=f2e293]
+          - link "account of current user" [ref=f2e294] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=f2e295]
+          - link "account of current user" [ref=f2e296] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=f2e297]
+          - link "account of current user" [ref=f2e298] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=f2e299]
+          - link "account of current user" [ref=f2e300] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=f2e301]
+    - navigation [ref=f2e39]:
+      - link "முகப்பு" [ref=f2e302] [cursor=pointer]:
+        - /url: /chennai-home
+      - button "துறை பற்றி" [ref=f2e303] [cursor=pointer]
+      - link "நகர சுயவிவரம்" [ref=f2e304] [cursor=pointer]:
+        - /url: /city-profile
+      - link "நகர வரைபடம்" [ref=f2e305] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "ஊடகம்" [ref=f2e306] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "செய்திகள்" [ref=f2e307] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "வாகன சலன்" [ref=f2e308] [cursor=pointer]
+      - link "தமிழ்நாடு காவல்துறை" [ref=f2e309] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "தொடர்பு" [ref=f2e310] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=f2e535]:
+    - generic [ref=f2e537]:
+      - generic [ref=f2e538]: அமைப்பியல்
+      - list [ref=f2e543]:
+        - listitem [ref=f2e544]:
+          - generic "துணை காவல் ஆணையர் (போக்குவரத்து) – கிழக்கு" [ref=f2e545]
+          - list [ref=f2e547]:
+            - listitem [ref=f2e548]:
+              - generic "கூடுதல் காவல் ஆணையர், போக்குவரத்து" [ref=f2e549]
+              - list [ref=f2e551]:
+                - listitem [ref=f2e552]:
+                  - generic "காவல் இணை ஆணையர், போக்குவரத்து வடக்கு" [ref=f2e553]
+                  - list [ref=f2e555]:
+                    - listitem [ref=f2e556]:
+                      - generic "டிசி போக்குவரத்து (வடக்கு)" [ref=f2e557]
+                      - list [ref=f2e559]:
+                        - listitem [ref=f2e560]:
+                          - generic "ஏ.சி (மலர் பஜார்)" [ref=f2e561]
+                        - listitem [ref=f2e563]:
+                          - generic "ஏ.சி (வாஷர்மென்பேட்டை)" [ref=f2e564]
+                        - listitem [ref=f2e566]:
+                          - generic "ஏ.சி (புளியந்தோப்பு)" [ref=f2e567]
+                        - listitem [ref=f2e569]:
+                          - generic "ஏசி TW வடக்கு" [ref=f2e570]
+                    - listitem [ref=f2e572]:
+                      - generic "ஏசி திட்டமிடல்" [ref=f2e573]
+                    - listitem [ref=f2e575]:
+                      - generic "டிசி போக்குவரத்து (மேற்கு)" [ref=f2e576]
+                      - list [ref=f2e578]:
+                        - listitem [ref=f2e579]:
+                          - generic "ஏ.சி (கொளத்தூர்)" [ref=f2e580]
+                        - listitem [ref=f2e582]:
+                          - generic "ஏ.சி (அண்ணா நகர்)" [ref=f2e583]
+                        - listitem [ref=f2e585]:
+                          - generic "ஏ.சி (கோயம்பேடு)" [ref=f2e586]
+                        - listitem [ref=f2e588]:
+                          - generic "ஏசி TIW மேற்கு" [ref=f2e589]
+                - listitem [ref=f2e591]:
+                  - generic "காவல் இணை ஆணையர், போக்குவரத்து தெற்கு" [ref=f2e592]
+                  - list [ref=f2e594]:
+                    - listitem [ref=f2e595]:
+                      - generic "டிசி போக்குவரத்து (கிழக்கு)" [ref=f2e596]
+                      - list [ref=f2e598]:
+                        - listitem [ref=f2e599]:
+                          - generic "ஏசி (டிரிப்ளிகேன்)" [ref=f2e600]
+                        - listitem [ref=f2e602]:
+                          - generic "ஏ.சி (கில்பாக்)" [ref=f2e603]
+                        - listitem [ref=f2e605]:
+                          - generic "ஏ.சி (மைலாப்பூர்)" [ref=f2e606]
+                        - listitem [ref=f2e608]:
+                          - generic "ஏசி TIW கிழக்கு" [ref=f2e609]
+                    - listitem [ref=f2e611]:
+                      - generic "டிசி போக்குவரத்து (தெற்கு)" [ref=f2e612]
+                      - list [ref=f2e614]:
+                        - listitem [ref=f2e615]:
+                          - generic "ஏ.சி (திநகர்)" [ref=f2e616]
+                        - listitem [ref=f2e618]:
+                          - generic "ஏ.சி (மவுண்ட்t)" [ref=f2e619]
+                        - listitem [ref=f2e621]:
+                          - generic "ஏ.சி (அடையார்)" [ref=f2e622]
+                        - listitem [ref=f2e624]:
+                          - generic "ஏசி TW தெற்கு" [ref=f2e625]
+    - generic [ref=f2e627]:
+      - button "Scroll important links left" [ref=f2e628] [cursor=pointer]
+      - generic [ref=f2e632]:
+        - link "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம் தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=f2e635] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=f2e636]:
+            - img "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=f2e638]
+            - generic [ref=f2e639]: தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்
+        - link "பரிவு பரிவு" [ref=f2e645] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=f2e646]:
+            - img "பரிவு" [ref=f2e648]
+            - generic [ref=f2e649]: பரிவு
+        - link "TN அரசு இணையம் TN அரசு இணையம்" [ref=f2e655] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=f2e656]:
+            - img "TN அரசு இணையம்" [ref=f2e658]
+            - generic [ref=f2e659]: TN அரசு இணையம்
+        - link "டிஎன் ஆர்டிஓ டிஎன் ஆர்டிஓ" [ref=f2e665] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=f2e666]:
+            - img "டிஎன் ஆர்டிஓ" [ref=f2e668]
+            - generic [ref=f2e669]: டிஎன் ஆர்டிஓ
+      - button "Scroll important links right" [ref=f2e673] [cursor=pointer]
+    - generic [ref=f2e676]:
+      - generic [ref=f2e677]:
+        - link "பின்னூட்டம்" [ref=f2e679] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "தள வரைபடம்" [ref=f2e681] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "தனியுரிமைக் கொள்கை" [ref=f2e683] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "புகார்கள்" [ref=f2e685] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "அடிக்கடி கேட்கப்படும் கேள்விகள்" [ref=f2e687] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=f2e688]:
+        - generic [ref=f2e689]:
+          - generic [ref=f2e690]: "இணையதள உள்ளடக்கம் உருவாக்கப்பட்டது, நிர்வகிக்கப்பட்டது மற்றும் உள்ளடக்க உரிமை: சென்னை பெருநகர போக்குவரத்து காவல் துறை"
+          - generic [ref=f2e691]: "வடிவமைக்கப்பட்டது, உருவாக்கப்பட்டது மற்றும் வழங்கப்பட்டது: எல் & டி டெக்னாலஜி சர்வீசஸ் (LTTS)இறுதியாக புதுப்பிக்கப்பட்டது: 29-09-2026 14:47:57 சிறந்த பார்வை: Google Chrome, Firefox"
+          - generic [ref=f2e692]: "பதிப்பு : ஃப்யூஷன் வி1.2"
+        - generic [ref=f2e693]:
+          - generic [ref=f2e694]:
+            - link [ref=f2e695] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f2e696]
+            - link [ref=f2e697] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f2e698]
+          - generic [ref=f2e699]:
+            - paragraph [ref=f2e700]: "வருகையாளர் எண்ணிக்கை : 14832"
+            - img "Group Icon" [ref=f2e702]

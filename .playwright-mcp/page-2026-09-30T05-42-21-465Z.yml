@@ -1,0 +1,112 @@
+- generic [ref=f2e4]:
+  - generic [ref=f2e5]:
+    - banner [ref=f2e6]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e10]:
+          - img "Nature" [ref=f2e289] [cursor=pointer]
+          - generic [ref=f2e12]:
+            - generic [ref=f2e13]: Greater Chennai Traffic Police
+            - generic [ref=f2e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=f2e21]:
+          - combobox "Search..." [ref=f2e290]
+          - group [aria-hidden]
+        - generic [ref=f2e23]:
+          - generic [ref=f2e26]:
+            - combobox "தமிழ்" [ref=f2e291] [cursor=pointer]
+            - textbox [aria-hidden]: tl
+            - group [aria-hidden]
+          - button [ref=f2e292] [cursor=pointer]:
+            - img "Play Store" [ref=f2e293]
+          - link "account of current user" [ref=f2e294] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=f2e295]
+          - link "account of current user" [ref=f2e296] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=f2e297]
+          - link "account of current user" [ref=f2e298] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=f2e299]
+          - link "account of current user" [ref=f2e300] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=f2e301]
+    - navigation [ref=f2e39]:
+      - link "முகப்பு" [ref=f2e302] [cursor=pointer]:
+        - /url: /chennai-home
+      - generic [ref=f2e42]:
+        - button "துறை பற்றி" [ref=f2e303] [cursor=pointer]
+        - generic [ref=f2e343]:
+          - generic [ref=f2e344]: பெருநகர சென்னை போக்குவரத்து காவல் துறை
+          - generic [ref=f2e345]: காவல்துறை ஆணையரிடமிருந்து செய்தி
+          - generic [ref=f2e346]: கூடுதல் காவல்துறை ஆணையரிடமிருந்து செய்தி
+          - generic [ref=f2e347]: கட்டமைப்பு
+      - link "நகர சுயவிவரம்" [ref=f2e304] [cursor=pointer]:
+        - /url: /city-profile
+      - link "நகர வரைபடம்" [ref=f2e305] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "ஊடகம்" [ref=f2e306] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "செய்திகள்" [ref=f2e307] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "வாகன சலன்" [ref=f2e308] [cursor=pointer]
+      - link "தமிழ்நாடு காவல்துறை" [ref=f2e309] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "தொடர்பு" [ref=f2e310] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=f2e441]:
+    - generic [ref=f2e448]:
+      - generic [ref=f2e449]: கூடுதல் காவல் ஆணையரின் செய்தி-போக்குவரத்து
+      - paragraph [ref=f2e451]:
+        - paragraph [ref=f2e452]: "அன்புள்ள சென்னை குடிமக்களே, சாலை பாதுகாப்பு என்பது பகிரப்பட்ட பொறுப்பு. ஒவ்வொரு நாளும், ஆயிரக்கணக்கான வாகனங்கள் எங்கள் நகரத்தின் சாலைகளில் செல்கின்றன, மேலும் இந்த சாலைகள் அனைவருக்கும் பாதுகாப்பாக இருப்பதை உறுதி செய்வது எங்கள் கூட்டுக் கடமையாகும். காவல் ஆணையர் என்ற முறையில், வாகனம் ஓட்டும் போது அல்லது பயணத்தின் போது ஒழுக்கம், பொறுமை மற்றும் எச்சரிக்கையுடன் பழகுமாறு அனைத்து சாலைப் பயணிகளையும் கேட்டுக் கொள்கிறேன். சில முக்கியமான நினைவூட்டல்கள் இங்கே: போக்குவரத்து விதிகளை பின்பற்றவும்: போக்குவரத்து சிக்னல்கள், வேக வரம்புகள் மற்றும் சாலை அடையாளங்களை எப்போதும் கடைபிடிக்கவும். சீரான மற்றும் பாதுகாப்பான போக்குவரத்தை உறுதி செய்வதற்காக இந்த விதிகள் உள்ளன. மொபைல் போன்களைப் பயன்படுத்துவதைத் தவிர்க்கவும்: வாகனம் ஓட்டும் போது மொபைல் போனைப் பயன்படுத்தினால், சில நொடிகள் கூட, பேரழிவு விளைவுகளை ஏற்படுத்தலாம். சாலையில் கவனம் செலுத்துங்கள். ஹெல்மெட் மற்றும் சீட் பெல்ட் அணியுங்கள்: இரு சக்கர வாகன ஓட்டிகளுக்கு ஹெல்மெட் மற்றும் காரில் செல்பவர்கள் சீட் பெல்ட் உங்கள் பாதுகாப்பிற்கு அவசியம். அவை எப்போதும் சரியாகப் பயன்படுத்தப்படுவதை உறுதிப்படுத்திக் கொள்ளவும். பாதசாரிகளை மதிக்கவும்: குறுக்குவழிகளில் எப்போதும் பாதசாரிகளுக்கு அடிபணியுங்கள் மற்றும் அவர்களின் உரிமையை கவனத்தில் கொள்ளுங்கள். பாதசாரிகள் எங்கள் போக்குவரத்து அமைப்பின் ஒருங்கிணைந்த பகுதியாகும். மது அருந்திவிட்டு வாகனம் ஓட்டாதீர்கள்: போதையில் வாகனம் ஓட்டுவது விபத்துக்களுக்கு முக்கிய காரணங்களில் ஒன்றாகும். நீங்கள் மது அருந்தினால், உங்களிடம் நியமிக்கப்பட்ட ஓட்டுனர் இருப்பதை உறுதிப்படுத்தவும் அல்லது பொது போக்குவரத்தைப் பயன்படுத்தவும். அதிக வேகம் மற்றும் அவசரமாக வாகனம் ஓட்டுவதைத் தவிர்க்கவும்: வேகம் சிலிர்க்க வைக்கிறது, ஆனால் அது கொல்லும். பரிந்துரைக்கப்பட்ட வேக வரம்புகளுக்குள் இருங்கள் மற்றும் உங்களையும் மற்றவர்களையும் பாதுகாக்க பொறுப்புடன் வாகனம் ஓட்டவும். பொதுப் போக்குவரத்து மற்றும் கார்பூலிங் பயன்படுத்தவும்: நெரிசல் மற்றும் மாசுபாட்டைக் குறைக்க, முடிந்தவரை பொதுப் போக்குவரத்து அல்லது கார்பூலிங்கைப் பயன்படுத்தவும்."
+      - paragraph [ref=f2e453]: டாக்டர் பி. ஷமூந்திரேச்வரி, ஐபிஎஸ்
+    - generic [ref=f2e458]:
+      - button "Scroll important links left" [ref=f2e459] [cursor=pointer]
+      - generic [ref=f2e463]:
+        - link "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம் தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=f2e466] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=f2e467]:
+            - img "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=f2e469]
+            - generic [ref=f2e470]: தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்
+        - link "பரிவு பரிவு" [ref=f2e476] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=f2e477]:
+            - img "பரிவு" [ref=f2e479]
+            - generic [ref=f2e480]: பரிவு
+        - link "TN அரசு இணையம் TN அரசு இணையம்" [ref=f2e486] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=f2e487]:
+            - img "TN அரசு இணையம்" [ref=f2e489]
+            - generic [ref=f2e490]: TN அரசு இணையம்
+        - link "டிஎன் ஆர்டிஓ டிஎன் ஆர்டிஓ" [ref=f2e496] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=f2e497]:
+            - img "டிஎன் ஆர்டிஓ" [ref=f2e499]
+            - generic [ref=f2e500]: டிஎன் ஆர்டிஓ
+      - button "Scroll important links right" [ref=f2e504] [cursor=pointer]
+    - generic [ref=f2e507]:
+      - generic [ref=f2e508]:
+        - link "பின்னூட்டம்" [ref=f2e510] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "தள வரைபடம்" [ref=f2e512] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "தனியுரிமைக் கொள்கை" [ref=f2e514] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "புகார்கள்" [ref=f2e516] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "அடிக்கடி கேட்கப்படும் கேள்விகள்" [ref=f2e518] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=f2e519]:
+        - generic [ref=f2e520]:
+          - generic [ref=f2e521]: "இணையதள உள்ளடக்கம் உருவாக்கப்பட்டது, நிர்வகிக்கப்பட்டது மற்றும் உள்ளடக்க உரிமை: சென்னை பெருநகர போக்குவரத்து காவல் துறை"
+          - generic [ref=f2e522]: "வடிவமைக்கப்பட்டது, உருவாக்கப்பட்டது மற்றும் வழங்கப்பட்டது: எல் & டி டெக்னாலஜி சர்வீசஸ் (LTTS)இறுதியாக புதுப்பிக்கப்பட்டது: 29-09-2026 14:47:57 சிறந்த பார்வை: Google Chrome, Firefox"
+          - generic [ref=f2e523]: "பதிப்பு : ஃப்யூஷன் வி1.2"
+        - generic [ref=f2e524]:
+          - generic [ref=f2e525]:
+            - link [ref=f2e526] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f2e527]
+            - link [ref=f2e528] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f2e529]
+          - generic [ref=f2e530]:
+            - paragraph [ref=f2e531]: "வருகையாளர் எண்ணிக்கை : 14832"
+            - img "Group Icon" [ref=f2e533]

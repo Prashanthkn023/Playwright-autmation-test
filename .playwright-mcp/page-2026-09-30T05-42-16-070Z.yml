@@ -1,0 +1,112 @@
+- generic [ref=f2e4]:
+  - generic [ref=f2e5]:
+    - banner [ref=f2e6]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e10]:
+          - img "Nature" [ref=f2e289] [cursor=pointer]
+          - generic [ref=f2e12]:
+            - generic [ref=f2e13]: Greater Chennai Traffic Police
+            - generic [ref=f2e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=f2e21]:
+          - combobox "Search..." [ref=f2e290]
+          - group [aria-hidden]
+        - generic [ref=f2e23]:
+          - generic [ref=f2e26]:
+            - combobox "தமிழ்" [ref=f2e291] [cursor=pointer]
+            - textbox [aria-hidden]: tl
+            - group [aria-hidden]
+          - button [ref=f2e292] [cursor=pointer]:
+            - img "Play Store" [ref=f2e293]
+          - link "account of current user" [ref=f2e294] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=f2e295]
+          - link "account of current user" [ref=f2e296] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=f2e297]
+          - link "account of current user" [ref=f2e298] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=f2e299]
+          - link "account of current user" [ref=f2e300] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=f2e301]
+    - navigation [ref=f2e39]:
+      - link "முகப்பு" [ref=f2e302] [cursor=pointer]:
+        - /url: /chennai-home
+      - generic [ref=f2e42]:
+        - button "துறை பற்றி" [ref=f2e303] [cursor=pointer]
+        - generic [ref=f2e343]:
+          - generic [ref=f2e344]: பெருநகர சென்னை போக்குவரத்து காவல் துறை
+          - generic [ref=f2e345]: காவல்துறை ஆணையரிடமிருந்து செய்தி
+          - generic [ref=f2e346]: கூடுதல் காவல்துறை ஆணையரிடமிருந்து செய்தி
+          - generic [ref=f2e347]: கட்டமைப்பு
+      - link "நகர சுயவிவரம்" [ref=f2e304] [cursor=pointer]:
+        - /url: /city-profile
+      - link "நகர வரைபடம்" [ref=f2e305] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "ஊடகம்" [ref=f2e306] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "செய்திகள்" [ref=f2e307] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "வாகன சலன்" [ref=f2e308] [cursor=pointer]
+      - link "தமிழ்நாடு காவல்துறை" [ref=f2e309] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "தொடர்பு" [ref=f2e310] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=f2e348]:
+    - generic [ref=f2e355]:
+      - generic [ref=f2e356]: காவல்துறை ஆணையரின் செய்தி-போக்குவரத்து
+      - paragraph [ref=f2e358]:
+        - paragraph [ref=f2e359]: "அன்புடைய சென்னை மக்களே,சாலைப் பாதுகாப்பு என்பது அனைவரும் பகிர்ந்து கொள்ள வேண்டிய பொது பொறுப்பாகும். நாள்தோறும் ஆயிரக்கணக்கான வாகனங்கள் நமது நகரின் சாலைகளில் இயக்கப்படுகின்றன; அவை ஒவ்வொருவருக்கும் பாதுகாப்பாக இருக்க வேண்டும் என்பதைக் காவல் துறையினரும், பொதுமக்களும் உறுதி செய்ய வேண்டியது கடமையாகும். சென்னை காவல் ஆணையராகிய நான், அனைத்து சாலைப் பயனாளர்களும் ஒழுக்கம், பொறுமை மற்றும் எச்சரிக்கையுடன் பயணிக்குமாறு கேட்டுக்கொள்கிறேன். இங்கே சில முக்கியமான நினைவூட்டல்கள்: போக்குவரத்து விதிகளைப் பின்பற்றுங்கள்: எப்போதும் போக்குவரத்து சிக்னல்கள், வேக வரம்புகள் மற்றும் சாலைச் சின்னங்களைப் பின்பற்றுங்கள். இவ்விதிகள் சீரான போக்குவரத்து ஓட்டத்திற்கும், அனைவரின் பாதுகாப்பிற்கும் அமைக்கப்பட்டுள்ளன.அலைபேசியை பயன்படுத்த வேண்டாம்: வாகனம் ஓட்டிக் கொண்டிருக்கும் போது சில விநாடிகளுக்குக் கூட அலைபேசியை பயன்படுத்துவது பெரும் விபத்துகளுக்குக் காரணமாக முடியும். உங்கள் கவனத்தை சாலையிலேயே வைத்துக் கொள்ளுங்கள்.தலைக்கவசம் மற்றும் இருக்கைப்பட்டை அணியுங்கள்: இருசக்கர வாகன பயணிகளுக்கு தலைக்கவசம், காரில் பயணிக்கும் அனைவருக்கும் இருக்கைப்பட்டை அ"
+      - paragraph [ref=f2e360]: திரு டாக்டர் ஏ. அமல்ராஜ், ஐபிஎஸ், காவல் கண்காணிப்பாளர்
+    - generic [ref=f2e365]:
+      - button "Scroll important links left" [ref=f2e366] [cursor=pointer]
+      - generic [ref=f2e370]:
+        - link "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம் தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=f2e373] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=f2e374]:
+            - img "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=f2e376]
+            - generic [ref=f2e377]: தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்
+        - link "பரிவு பரிவு" [ref=f2e383] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=f2e384]:
+            - img "பரிவு" [ref=f2e386]
+            - generic [ref=f2e387]: பரிவு
+        - link "TN அரசு இணையம் TN அரசு இணையம்" [ref=f2e393] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=f2e394]:
+            - img "TN அரசு இணையம்" [ref=f2e396]
+            - generic [ref=f2e397]: TN அரசு இணையம்
+        - link "டிஎன் ஆர்டிஓ டிஎன் ஆர்டிஓ" [ref=f2e403] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=f2e404]:
+            - img "டிஎன் ஆர்டிஓ" [ref=f2e406]
+            - generic [ref=f2e407]: டிஎன் ஆர்டிஓ
+      - button "Scroll important links right" [ref=f2e411] [cursor=pointer]
+    - generic [ref=f2e414]:
+      - generic [ref=f2e415]:
+        - link "பின்னூட்டம்" [ref=f2e417] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "தள வரைபடம்" [ref=f2e419] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "தனியுரிமைக் கொள்கை" [ref=f2e421] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "புகார்கள்" [ref=f2e423] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "அடிக்கடி கேட்கப்படும் கேள்விகள்" [ref=f2e425] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=f2e426]:
+        - generic [ref=f2e427]:
+          - generic [ref=f2e428]: "இணையதள உள்ளடக்கம் உருவாக்கப்பட்டது, நிர்வகிக்கப்பட்டது மற்றும் உள்ளடக்க உரிமை: சென்னை பெருநகர போக்குவரத்து காவல் துறை"
+          - generic [ref=f2e429]: "வடிவமைக்கப்பட்டது, உருவாக்கப்பட்டது மற்றும் வழங்கப்பட்டது: எல் & டி டெக்னாலஜி சர்வீசஸ் (LTTS)இறுதியாக புதுப்பிக்கப்பட்டது: 29-09-2026 14:47:57 சிறந்த பார்வை: Google Chrome, Firefox"
+          - generic [ref=f2e430]: "பதிப்பு : ஃப்யூஷன் வி1.2"
+        - generic [ref=f2e431]:
+          - generic [ref=f2e432]:
+            - link [ref=f2e433] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f2e434]
+            - link [ref=f2e435] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f2e436]
+          - generic [ref=f2e437]:
+            - paragraph [ref=f2e438]: "வருகையாளர் எண்ணிக்கை : 14832"
+            - img "Group Icon" [ref=f2e440]

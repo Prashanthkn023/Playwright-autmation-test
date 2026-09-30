@@ -1,0 +1,129 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e289] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e290]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "தமிழ்" [ref=e291] [cursor=pointer]
+            - textbox [aria-hidden]: tl
+            - group [aria-hidden]
+          - button [ref=e292] [cursor=pointer]:
+            - img "Play Store" [ref=e293]
+          - link "account of current user" [ref=e294] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e295]
+          - link "account of current user" [ref=e296] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e297]
+          - link "account of current user" [ref=e298] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e299]
+          - link "account of current user" [ref=e300] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e301]
+    - navigation [ref=e39]:
+      - link "முகப்பு" [ref=e302] [cursor=pointer]:
+        - /url: /chennai-home
+      - generic [ref=e42]:
+        - button "துறை பற்றி" [ref=e303] [cursor=pointer]
+        - generic [ref=e343]:
+          - generic [ref=e344]: பெருநகர சென்னை போக்குவரத்து காவல் துறை
+          - generic [ref=e345]: காவல்துறை ஆணையரிடமிருந்து செய்தி
+          - generic [ref=e346]: கூடுதல் காவல்துறை ஆணையரிடமிருந்து செய்தி
+          - generic [ref=e347]: கட்டமைப்பு
+      - link "நகர சுயவிவரம்" [ref=e304] [cursor=pointer]:
+        - /url: /city-profile
+      - link "நகர வரைபடம்" [ref=e305] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "ஊடகம்" [ref=e306] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "செய்திகள்" [ref=e307] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "வாகன சலன்" [ref=e308] [cursor=pointer]
+      - link "தமிழ்நாடு காவல்துறை" [ref=e309] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "தொடர்பு" [ref=e310] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=e348]:
+    - generic [ref=e351]:
+      - generic [ref=e355]:
+        - generic [ref=e356]: கிரேட்டர் சென்னை போக்குவரத்து போலீஸ்.
+        - paragraph [ref=e358]:
+          - paragraph [ref=e359]: "1659 ஆம் ஆண்டு, அப்போது \"சென்னை\" \"மதராஸ்\" என அழைக்கப்பட்டு, சில மீனவக் கிராமங்களின் தொகுப்பாக இருந்தபோது, பெத்த நாயக்கர் நகரத்தை பாதுகாக்கப் பியூன்கள் குழுவை அமைத்தார். 1780 ஆம் ஆண்டில், சந்தைகளை நிர்வகிக்க \"சூப்பரிண்டெண்ட் ஆப் போலீஸ்\" என்ற பதவி உருவாக்கப்பட்டது. 1857 இந்திய கிளர்ச்சிக்கு பின், பிரிட்டிஷ் ஆட்சி சீர்திருத்தங்களின் ஒரு பகுதியாக மாட்ராஸ் போலீஸ் அமைப்பை உருவாக்கியது. 1928 ஆம் ஆண்டில், \"இன்ஸ்பெக்டர் ஜெனரல்\" மற்றும் \"கமிஷனர் ஆப் போலீஸ்\" அதிகரித்து வரும் போக்குவரத்து பிரச்சினைகளை சமாளிக்க கூடுதல் பணியாளர்களை அனுமதிக்க அரசு நோக்கி விண்ணப்பித்தனர். ஆனால் அரசாங்கம் தாமதமாக பதிலளித்தது. 1928 ஆம் ஆண்டின் இறுதியில், சென்னை நகரில் போக்குவரத்து தொடர்பான சிக்கல்கள் அதிகரித்திருப்பதை அரசு தெளிவாகக் கண்டபோதிலும், உடனடி நடவடிக்கை எடுக்கவில்லை. இருப்பினும், போக்குவரத்து துறையின் பணியாளர்கள் எண்ணிக்கையை அதிகரித்து, அதை மேம்படுத்த வேண்டிய அவசியத்தை அரசு உணர வேண்டிய நிலை ஏற்பட்டது. இவ்வாறு ஒரு தனி “டிராஃபிக் போலீஸ்” பிரிவை உருவாக்கும் விதை விதைக்கப்பட்டது 1929 ஆம் ஆண்டில், முழு அமைப்பும் மறுசீரமைக்கப்பட்டு, அப்போது சென்னை போலீஸ் கமிஷனராக இருந்த சர் சார்ல்ஸ் கனிங்ஹாம் உருவாக்கிய “செயல்பாட்டு பிரிவு” (Functional Division) முறையில் மாற்றம் செய்யப்பட்டது. 1929 செப்டம்பர் 1 ஆம் தேதி முதல், காவல் துறை மூன்று பிரிவுகளாகப் பிரிக்கப்பட்டது: சட்டம் & ஒழுங்கு (L&O), குற்றம் (Crime), மற்றும் போக்குவரத்து (Traffic). 1929 ஆம் ஆண்டு, சென்னை நகர போக்குவரத்து காவல்துறை வரலாற்றில் ஒரு முக்கிய மைல்கல் ஆக அமைந்தது. அந்நாள்களில் இருந்த பணிமுறை மற்றும் நிலப்பிரிவு முறைகள் மாற்றமடைந்தன."
+      - heading "புதுப்பிப்புகள்" [level=1] [ref=e364]
+      - generic [ref=e365]:
+        - generic [ref=e368]:
+          - generic [ref=e369]: "போக்குவரத்து போலீசார்: சேவை மற்றும் சுகாதாரத்தில் ஒரு நூற்றாண்டு"
+          - generic [ref=e371]:
+            - text: சென்னை இந்தியாவின் முதன்மை நகர்களில் ஒன்று போக்குவரத்தை சிறப்பு காவல் பணியாக அறிவித்தது. 1920களின் க...
+            - generic [ref=e372]: மேலும் வாசிக்கவும்
+        - generic [ref=e376]:
+          - generic [ref=e377]: சென்னையில் முதல் போக்குவரத்து காவல் நிலையம்
+          - generic [ref=e379]:
+            - text: 1929 ஆம் ஆண்டு 'செயல்பாட்டு பிரிவு' الإصلاحம் இந்த மாற்றத்தை அந்த காலத்து போலீஸ் ஆணையர் சர்ச் சா...
+            - generic [ref=e380]: மேலும் வாசிக்கவும்
+        - generic [ref=e384]:
+          - generic [ref=e385]: பிரிட்டிஷ் இராணுவ மற்றும் நிர்வாகப் பாரம்பர்யங்கள்.
+          - generic [ref=e387]:
+            - text: இந்த புகைப்படம் 1929 ஆம் ஆண்டை சார்ந்தது, இந்தியாவில் பிரிட்டிஷ் காலனிய காலத்தின் கடைசிப் பருவத்தில்...
+            - generic [ref=e388]: மேலும் வாசிக்கவும்
+    - generic [ref=e390]:
+      - button "Scroll important links left" [ref=e391] [cursor=pointer]
+      - generic [ref=e395]:
+        - link "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம் தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=e398] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e399]:
+            - img "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=e401]
+            - generic [ref=e402]: தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்
+        - link "பரிவு பரிவு" [ref=e408] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e409]:
+            - img "பரிவு" [ref=e411]
+            - generic [ref=e412]: பரிவு
+        - link "TN அரசு இணையம் TN அரசு இணையம்" [ref=e418] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e419]:
+            - img "TN அரசு இணையம்" [ref=e421]
+            - generic [ref=e422]: TN அரசு இணையம்
+        - link "டிஎன் ஆர்டிஓ டிஎன் ஆர்டிஓ" [ref=e428] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e429]:
+            - img "டிஎன் ஆர்டிஓ" [ref=e431]
+            - generic [ref=e432]: டிஎன் ஆர்டிஓ
+      - button "Scroll important links right" [ref=e436] [cursor=pointer]
+    - generic [ref=e439]:
+      - generic [ref=e440]:
+        - link "பின்னூட்டம்" [ref=e442] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "தள வரைபடம்" [ref=e444] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "தனியுரிமைக் கொள்கை" [ref=e446] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "புகார்கள்" [ref=e448] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "அடிக்கடி கேட்கப்படும் கேள்விகள்" [ref=e450] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e451]:
+        - generic [ref=e452]:
+          - generic [ref=e453]: "இணையதள உள்ளடக்கம் உருவாக்கப்பட்டது, நிர்வகிக்கப்பட்டது மற்றும் உள்ளடக்க உரிமை: சென்னை பெருநகர போக்குவரத்து காவல் துறை"
+          - generic [ref=e454]: "வடிவமைக்கப்பட்டது, உருவாக்கப்பட்டது மற்றும் வழங்கப்பட்டது: எல் & டி டெக்னாலஜி சர்வீசஸ் (LTTS)இறுதியாக புதுப்பிக்கப்பட்டது: 29-09-2026 14:47:57 சிறந்த பார்வை: Google Chrome, Firefox"
+          - generic [ref=e455]: "பதிப்பு : ஃப்யூஷன் வி1.2"
+        - generic [ref=e456]:
+          - generic [ref=e457]:
+            - link [ref=e458] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e459]
+            - link [ref=e460] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e461]
+          - generic [ref=e462]:
+            - paragraph [ref=e463]: "வருகையாளர் எண்ணிக்கை : 14830"
+            - img "Group Icon" [ref=e465]

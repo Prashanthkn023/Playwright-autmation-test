@@ -216,21 +216,27 @@ export class CmsCityPage extends BasePage {
   // =====================================================
 
   async openCmsCityProfile() {
+    const cityProfileCandidates = this.page.getByText(/City Profile/i);
+    const totalCandidates = await cityProfileCandidates.count();
 
-    const cmsCityProfileText = this.page
-      .getByRole('navigation')
-      .getByText('City Profile', { exact: true })
-      .first();
+    let clicked = false;
 
-    await expect(
-      cmsCityProfileText
-    ).toBeVisible();
+    for (let index = 0; index < totalCandidates; index++) {
+      const candidate = cityProfileCandidates.nth(index);
 
-    await cmsCityProfileText.click({ force: true });
+      if (!(await candidate.isVisible().catch(() => false))) {
+        continue;
+      }
 
-    await this.page.waitForLoadState(
-      'domcontentloaded'
-    );
+      await candidate.click({ force: true });
+      clicked = true;
+      break;
+    }
+
+    expect(clicked, 'CMS City Profile text should be clickable after login').toBe(true);
+
+    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForTimeout(1000);
   }
 
   // =====================================================
