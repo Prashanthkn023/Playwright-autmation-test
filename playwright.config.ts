@@ -35,7 +35,7 @@ export default defineConfig({
 
     headless: process.env.CI
       ? true
-      : process.env.HEADLESS === 'true',
+      : process.env.HEADLESS === 'false',
 
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
