@@ -1,3 +1,4 @@
+
 name: Playwright Tests
 
 "on":
@@ -13,7 +14,7 @@ name: Playwright Tests
   schedule:
     - cron: "0 4 * * *"
 
-  # Allow manual execution from GitHub Actions
+  # Allow manual execution
   workflow_dispatch:
 
 jobs:
@@ -21,6 +22,12 @@ jobs:
     name: Run Playwright Tests
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
+    env:
+      CI: "true"
+      HEADLESS: "true"
+      CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
+      CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
 
     steps:
       # 1. Checkout repository
@@ -45,17 +52,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 5. Install Playwright Chromium
+      # 5. Verify Allure reporter
+      - name: Verify Allure dependency
+        run: npm ls allure-playwright
+
+      # 6. Install Playwright Chromium
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      # 6. Clean previous reports
+      # 7. Clean previous reports
       - name: Clean Previous Reports
+        shell: bash
         run: |
-          rm -rf allure-results
-          rm -rf allure-report
-          rm -rf test-results
-          rm -rf playwright-report
+          rm -rf allure-results allure-report
+          rm -rf test-results playwright-report
           rm -f tests/bug-reports/Automation_Bug_Report.xlsx
 
           mkdir -p allure-results
@@ -63,19 +73,15 @@ jobs:
 
           echo "Previous reports cleared successfully."
 
-      # 7. Run Playwright tests
+      # 8. Run Playwright tests
       # Excludes tests tagged @manual
       - name: Run Playwright tests
-        env:
-          CI: "true"
-          HEADLESS: "true"
-          CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
-          CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
         run: npx playwright test --grep-invert "@manual"
 
-      # 8. Generate Allure HTML report
+      # 9. Generate Allure HTML report
       - name: Generate Allure HTML Report
         if: always()
+        shell: bash
         run: |
           if [ -d "allure-results" ] && \
              [ "$(find allure-results -type f | wc -l)" -gt 0 ]; then
@@ -87,52 +93,52 @@ jobs:
             echo "No Allure results found. Skipping report generation."
           fi
 
-      # 9. Upload Allure raw results
+      # 10. Upload Allure raw results
       - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results/
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 14
 
-      # 10. Upload Allure HTML report
+      # 11. Upload Allure HTML report
       - name: Upload Allure HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report/
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 14
 
-      # 11. Upload Playwright HTML report
+      # 12. Upload Playwright HTML report
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 14
 
-      # 12. Upload test results
+      # 13. Upload test results
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: test-results/
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 14
 
-      # 13. Upload Excel bug report
+      # 14. Upload Excel bug report
       - name: Upload Excel Bug Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Automation-Bug-Report
           path: tests/bug-reports/Automation_Bug_Report.xlsx
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 14
