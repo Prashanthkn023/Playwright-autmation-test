@@ -216,6 +216,8 @@ export class CmsCityPage extends BasePage {
   // =====================================================
 
   async openCmsCityProfile() {
+    await this.closeAnyPopup();
+
     const cityProfileCandidates = this.page.getByText(/City Profile/i);
     const totalCandidates = await cityProfileCandidates.count();
 
@@ -244,6 +246,7 @@ export class CmsCityPage extends BasePage {
   // =====================================================
 
   async openPublishedCityProfile() {
+    await this.closeAnyPopup();
 
     await expect(
       this.cityProfileLink

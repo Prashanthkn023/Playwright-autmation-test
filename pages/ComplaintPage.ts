@@ -3,6 +3,48 @@ import { BasePage } from './BasePage';
 import path from 'path';
 import Tesseract from 'tesseract.js';
 
+function extractOtp(payload: unknown): string {
+  if (!payload || typeof payload !== 'object') {
+    return '';
+  }
+
+  const response = payload as Record<string, unknown>;
+
+  // Inspect fields that explicitly represent an OTP.
+  for (const key of [
+    'otp',
+    'OTP',
+    'code',
+    'verificationCode',
+    'otpCode',
+  ]) {
+    const value = response[key];
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      const candidate = String(value).trim();
+
+      if (/^\d{4,8}$/.test(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  // Search common nested response objects.
+  for (const key of ['data', 'payload', 'result']) {
+    const nested = response[key];
+
+    if (nested && typeof nested === 'object') {
+      const candidate = extractOtp(nested);
+
+      if (candidate) {
+        return candidate;
+      }
+    }
+  }
+
+  return '';
+}
+
 export class ComplaintPage extends BasePage {
 
   private complaintApiResponse?: {
@@ -374,8 +416,9 @@ export class ComplaintPage extends BasePage {
 
     } catch {
 
-      const toastText =
-        await this.toastMessage.textContent();
+      const toastText = await this.toastMessage
+        .textContent({ timeout: 5000 })
+        .catch(() => '');
 
       if (
         toastText &&
@@ -390,7 +433,7 @@ export class ComplaintPage extends BasePage {
       }
 
       throw new Error(
-        'Complaint submission failed: Unknown OTP result.'
+        `Complaint submission failed: no success response was rendered${toastText ? ` (${toastText.trim()})` : '.'}`
       );
     }
   }
@@ -468,85 +511,66 @@ export class ComplaintPage extends BasePage {
         20
       );
 
-      /*
-       * Listen for OTP API response
-       * before clicking Submit.
-       */
-      const otpPromise =
-        new Promise<string>(
-          (resolve) => {
-
-            this.page.on(
-              'response',
-              async (
-                response
-              ) => {
-
-                if (
-                  response
-                    .url()
-                    .includes(
-                      '/citizen/login'
-                    ) &&
-                  response
-                    .request()
-                    .method() ===
-                    'POST'
-                ) {
-
-                  try {
-
-                    const json =
-                      await response.json();
-
-                    const otpPayload =
-                      json?.payload;
-
-                    if (
-                      otpPayload
-                    ) {
-
-                      console.log(
-                        'Captured OTP after captcha submit:',
-                        otpPayload
-                      );
-
-                      resolve(
-                        otpPayload
-                      );
-                    }
-
-                  } catch {
-                    // Ignore invalid/non-JSON response
-                  }
-                }
-              }
-            );
-          }
-        );
+      const otpResponsePromise = this.page.waitForResponse(
+        response =>
+          response.url().includes('/citizen/login') &&
+          response.request().method() === 'POST',
+        { timeout: 30000 }
+      );
 
       /*
-       * Submit Complaint.
+       * Submit the complaint form and capture the citizen login response.
        */
       await this.clickSubmit();
-
-      /*
-       * Verify Toast Message.
-       */
       await this.verifyToastMessage();
 
-      /*
-       * Get OTP from API response.
-       */
-      const otpPayload =
-        await otpPromise;
+      const otpResponse = await otpResponsePromise;
+
+      if (!otpResponse.ok()) {
+        throw new Error(
+          `Citizen login API failed: HTTP ${otpResponse.status()}`
+        );
+      }
+
+      let otpResponseBody: unknown;
+
+      try {
+        otpResponseBody = await otpResponse.json();
+      } catch {
+        const responseText = await otpResponse.text().catch(() => '');
+        throw new Error(
+          `Citizen login API did not return JSON. Response: ${responseText.slice(0, 300)}`
+        );
+      }
+
+      const otp = extractOtp(otpResponseBody);
+
+      if (!otp) {
+        console.log(
+          'Citizen login API response:',
+          JSON.stringify(otpResponseBody, null, 2)
+        );
+
+        throw new Error(
+          'The citizen login API response does not contain a numeric OTP. ' +
+          'The response appears to contain a status message only. ' +
+          'Use an approved test-only OTP retrieval mechanism or configure ' +
+          'the test API to return an OTP field.'
+        );
+      }
 
       /*
-       * Enter OTP.
+       * Automatically enter the OTP returned by the API.
        */
-      await this.otpField.fill(
-        otpPayload
-      );
+      await this.otpField.waitFor({
+        state: 'visible',
+        timeout: 30000,
+      });
+
+      await this.otpField.fill(otp);
+      await expect(this.otpField).toHaveValue(otp);
+
+      console.log('OTP retrieved from API and entered successfully.');
 
       /*
        * Verify and Submit.

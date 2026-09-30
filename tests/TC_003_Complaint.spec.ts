@@ -9,22 +9,25 @@ const complaintCases = getTestCases<{
   incidentSubType: string;
   location: string;
   message: string;
-}>('testdata/complaint-cases.json');
+}>('testdata/complaint.json');
 
 for (const testCase of complaintCases) {
-  test(`TC_003 Complaint Page Submission Flow - ${testCase.scenario} @manual`, async ({ home, complaint }) => {
-    await home.openHomePage();
-    await home.openComplaint();
+  test(
+    `TC_003 Complaint Page Submission Flow - ${testCase.scenario} @manual`,
+    async ({ home, complaint }) => {
+      await home.openHomePage();
+      await home.openComplaint();
 
-    await complaint.submitComplaint({
-      name: testCase.name,
-      mobile: testCase.mobile,
-      incidentType: testCase.incidentType,
-      incidentSubType: testCase.incidentSubType,
-      location: testCase.location,
-      message: testCase.message,
-    });
+      await complaint.submitComplaint({
+        name: testCase.name,
+        mobile: testCase.mobile,
+        incidentType: testCase.incidentType,
+        incidentSubType: testCase.incidentSubType,
+        location: testCase.location,
+        message: testCase.message,
+      });
 
-    await complaint.validateComplaintApiResponse();
-  });
+      await complaint.validateComplaintApiResponse();
+    },
+  );
 }

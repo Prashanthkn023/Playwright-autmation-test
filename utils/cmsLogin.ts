@@ -73,20 +73,21 @@ export async function openCmsAboutUsDropdown(page: Page) {
 }
 
 async function closeCmsPopup(page: Page) {
-  const popup = page.locator('.flash-popup-overlay').first();
-  await popup.waitFor({ state: 'visible', timeout: 10000 }).catch(() => undefined);
+  const popup = page
+    .locator('.flash-popup-overlay:visible, .flash-popup:visible, .modal.show:visible')
+    .first();
 
-  const closeButtons = page.locator(
-    '.flash-popup-overlay button, [aria-label="Close"], [aria-label="close"], button:has-text("Close"), .modal button'
-  );
-
-  for (let index = 0; index < await closeButtons.count(); index++) {
-    const closeButton = closeButtons.nth(index);
-
-    if (await closeButton.isVisible().catch(() => false)) {
-      await closeButton.click();
-      await popup.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => undefined);
-      break;
-    }
+  if (!(await popup.isVisible({ timeout: 5000 }).catch(() => false))) {
+    return;
   }
+
+  const closeButton = popup.locator('button').first();
+
+  if (await closeButton.isVisible().catch(() => false)) {
+    await closeButton.click({ force: true, timeout: 5000 });
+  } else {
+    await page.keyboard.press('Escape');
+  }
+
+  await expect(popup).toBeHidden({ timeout: 10000 });
 }

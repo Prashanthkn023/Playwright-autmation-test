@@ -11,6 +11,15 @@ export class BasePage {
   // Navigate to URL
   async closeAnyPopup() {
     await closeAwarenessPopup(this.page);
+    await this.page.waitForTimeout(1000);
+
+    const awarenessPopup = this.page.locator('.flash-popup-overlay:visible').first();
+    const awarenessCloseButton = awarenessPopup.getByRole('button', { name: '✕' }).first();
+
+    if (await awarenessCloseButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await awarenessCloseButton.click({ force: true, timeout: 5000 });
+      await expect(awarenessPopup).toBeHidden({ timeout: 10000 });
+    }
 
     const closeSelectors = [
       '[aria-label="Close"]',

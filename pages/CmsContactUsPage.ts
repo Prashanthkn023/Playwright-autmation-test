@@ -147,6 +147,7 @@ export class CmsContactUsPage extends BasePage {
   }
 
   async openContactUs() {
+    await this.closeAnyPopup();
     await this.contactUsLink.click();
   }
 }
