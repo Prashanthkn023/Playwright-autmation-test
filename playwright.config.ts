@@ -18,25 +18,30 @@ export default defineConfig({
 
   workers: process.env.CI ? 1 : Number(process.env.WORKERS) || 1,
 
-  // Excel report + terminal output
+  // Terminal + Allure + Excel Bug Report
   reporter: [
     ['list'],
+    [
+      'allure-playwright',
+      {
+        resultsDir: 'allure-results',
+      },
+    ],
     ['./reporters/bugReporter.ts'],
   ],
 
   use: {
     baseURL: process.env.BASE_URL || 'https://gctp.in',
 
-    headless: process.env.CI ? true : process.env.HEADLESS === 'false',
+    headless: process.env.CI
+      ? true
+      : process.env.HEADLESS === 'true',
 
     screenshot: 'only-on-failure',
-
     video: 'retain-on-failure',
-
     trace: 'retain-on-failure',
 
     actionTimeout: 60000,
-
     navigationTimeout: 120000,
 
     ignoreHTTPSErrors: true,
