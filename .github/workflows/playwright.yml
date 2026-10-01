@@ -16,28 +16,18 @@ name: Playwright Tests
   # Allow manual execution
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   test:
     name: Run Playwright Tests
-    timeout-minutes: 120
-
-    # Use your Windows self-hosted runner
-    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
 
     env:
       CI: "true"
       HEADLESS: "true"
-      WORKERS: "1"
-
       CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
       CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-
-      BASE_URL: https://gctp.in
-      CMS_BASE_URL: https://cms.gctp.in/
 
     steps:
       # 1. Checkout repository
@@ -68,52 +58,40 @@ jobs:
 
       # 6. Install Playwright Chromium
       - name: Install Playwright Chromium
-        run: npx playwright install chromium
+        run: npx playwright install --with-deps chromium
 
       # 7. Clean previous reports
       - name: Clean Previous Reports
-        shell: pwsh
+        shell: bash
         run: |
-          $folders = @(
-            "allure-results",
-            "allure-report",
-            "test-results",
-            "playwright-report",
-            "tests/bug-reports"
-          )
+          rm -rf allure-results allure-report
+          rm -rf test-results playwright-report
+          rm -rf tests/bug-reports
 
-          foreach ($folder in $folders) {
-            if (Test-Path $folder) {
-              Remove-Item $folder -Recurse -Force
-            }
-          }
+          mkdir -p allure-results
+          mkdir -p tests/bug-reports
 
-          New-Item -ItemType Directory -Force -Path "allure-results" | Out-Null
-          New-Item -ItemType Directory -Force -Path "tests/bug-reports" | Out-Null
+          echo "Previous reports cleared successfully."
 
-          Write-Host "Previous reports cleared successfully."
-
-      # 8. Run Playwright tests, excluding manual tests
+      # 8. Run Playwright tests
+      # Excludes tests tagged @manual
       - name: Run Playwright tests
         run: npx playwright test --grep-invert "@manual"
 
       # 9. Generate Allure HTML report
       - name: Generate Allure HTML Report
         if: always()
-        shell: pwsh
+        shell: bash
         run: |
-          $results = Get-ChildItem "allure-results" -File -Recurse -ErrorAction SilentlyContinue
-
-          if ($results.Count -gt 0) {
-            npx --yes allure-commandline@2.34.1 generate allure-results --clean -o allure-report
-
-            if ($LASTEXITCODE -ne 0) {
-              throw "Allure report generation failed."
-            }
-          }
-          else {
-            Write-Host "No Allure results found. Skipping report generation."
-          }
+          if [ -d "allure-results" ] && \
+             [ "$(find allure-results -type f | wc -l)" -gt 0 ]; then
+            npx --yes allure-commandline@2.34.1 generate \
+              allure-results \
+              --clean \
+              -o allure-report
+          else
+            echo "No Allure results found. Skipping report generation."
+          fi
 
       # 10. Upload Allure raw results
       - name: Upload Allure Results
