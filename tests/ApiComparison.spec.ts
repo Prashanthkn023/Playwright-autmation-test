@@ -122,6 +122,17 @@ const modules: ModuleLink[] = [
     linkName: 'Site Map',
   },
 
+  {
+    name: 'Privacy Policy',
+    linkName: 'Privacy Policy',
+  },
+
+  {
+    name: "FAQ'S",
+    linkName: "FAQ'S",
+  },
+  
+
 ];
 
 
