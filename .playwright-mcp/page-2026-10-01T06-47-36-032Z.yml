@@ -1,0 +1,124 @@
+- generic [ref=e50]:
+  - generic [ref=e51]:
+    - banner [ref=e52]:
+      - generic [ref=e54]:
+        - generic [ref=e56]:
+          - img "Nature" [ref=e57]
+          - generic [ref=e58]:
+            - generic [ref=e59]: Greater Chennai Traffic Police
+            - generic [ref=e60]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e66]:
+          - combobox "Search..." [ref=e67]
+          - group [aria-hidden]
+        - generic [ref=e68]:
+          - text: LOGIN
+          - generic [ref=e71]:
+            - combobox [ref=e72] [cursor=pointer]: English
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button "account of current user" [ref=e73] [cursor=pointer]
+          - link "account of current user" [ref=e76] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+          - link "account of current user" [ref=e78] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+          - link "account of current user" [ref=e80] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+          - link "account of current user" [ref=e82] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+    - navigation [ref=e87]:
+      - list [ref=e88]:
+        - listitem [ref=e89]:
+          - link [ref=e90] [cursor=pointer]:
+            - /url: /chennai-home
+            - text: Home
+            - link [ref=e91]:
+              - /url: /chennai-Cms
+        - listitem [ref=e94]:
+          - link [ref=e95] [cursor=pointer]:
+            - /url: "#"
+            - text: About Us
+            - link [ref=e98]:
+              - /url: /chennai-ctp-Cms
+        - listitem [ref=e101]:
+          - link [ref=e102] [cursor=pointer]:
+            - /url: /city-profile
+            - text: City Profile
+            - link [ref=e103]:
+              - /url: /chennai-cityprofile-Cms
+        - listitem [ref=e106]:
+          - link "City Map" [ref=e107] [cursor=pointer]:
+            - /url: /chennai_map
+        - listitem [ref=e108]:
+          - link [ref=e109] [cursor=pointer]:
+            - /url: /chennai-media
+            - text: Media
+            - link [ref=e110]:
+              - /url: /chennai-media-Cms
+        - listitem [ref=e113]:
+          - link [ref=e114] [cursor=pointer]:
+            - /url: /chennai-news-updates
+            - text: News
+            - link [ref=e115]:
+              - /url: /chennai-updates-Cms
+        - listitem [ref=e118]:
+          - link "VehicleChallan" [ref=e119] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e123]:
+          - link "TamilNaduPolice" [ref=e124] [cursor=pointer]:
+            - /url: https://www.police.tn.gov.in/citizenportal
+        - listitem [ref=e125]:
+          - link [ref=e126] [cursor=pointer]:
+            - /url: /chennai-contactus
+            - text: Contact Us
+            - link [ref=e127]:
+              - /url: /chennai-contactus-Cms
+  - generic [ref=e393]:
+    - generic [ref=e394]:
+      - button [ref=e395] [cursor=pointer]
+      - generic [ref=e399]:
+        - heading "Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area" [level=1] [ref=e400]
+        - paragraph [ref=e401]: To reduce traffic congestion and improve vehicular movement in the OMR (Rajiv Gandhi Salai) and Thuraipakkam corridors, the Greater Chennai Traffic Police has implemented revised traffic regulations effective from 23.09.2026. The changes include U-turn restrictions at key junctions near Geetham Restaurant, Srivaram, and World Trade Centre, with alternative U-turn points designated at the Perungudi Toll Booth. Motorists are advised to follow the revised routes and cooperate with traffic authorities for smooth traffic flow.
+    - generic [ref=e404]:
+      - button "Scroll important links left" [ref=e405] [cursor=pointer]
+      - generic [ref=e409]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e412] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e413]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e415]
+            - generic [ref=e416]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e422] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e423]:
+            - img "Parivahan" [ref=e425]
+            - generic [ref=e426]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e432] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e433]:
+            - img "TN Govt Web" [ref=e435]
+            - generic [ref=e436]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e442] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e443]:
+            - img "TNRTO" [ref=e445]
+            - generic [ref=e446]: TNRTO
+      - button "Scroll important links right" [ref=e450] [cursor=pointer]
+    - generic [ref=e453]:
+      - generic [ref=e454]:
+        - link "Feedback" [ref=e456] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e458] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e460] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=e462] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e464] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e465]:
+        - generic [ref=e466]:
+          - generic [ref=e467]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e468]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 01-10-2026 10:08:23 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e469]: "Version : Fusion V1.2"
+        - generic [ref=e470]:
+          - paragraph [ref=e471]: "Number Of Visitors : 15433"
+          - img "Group Icon" [ref=e473]

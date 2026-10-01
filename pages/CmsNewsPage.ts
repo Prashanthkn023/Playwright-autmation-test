@@ -1,7 +1,19 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
 
+export type NewsRecord = {
+  title: string;
+  description: string;
+  image: string;
+  detailTitle: string;
+  detailBody: string;
+  detailImage: string;
+};
+
 export class CmsNewsPage extends BasePage {
+  readonly cmsNewsUrl = 'https://cms.gctp.in/chennai-news-updates-Cms';
+  readonly cmsListingUrl = 'https://cms.gctp.in/chennai-news-updates';
+  readonly publicNewsUrl = 'https://gctp.in/chennai-news-updates';
   readonly newsLink: Locator;
   readonly trafficDiversionHeading: Locator;
   readonly trafficDiversionDescription: Locator;
@@ -87,6 +99,94 @@ export class CmsNewsPage extends BasePage {
 
   async openNewsPage() {
     await this.navigate('https://gctp.in/chennai-news-updates');
+  }
+
+  private normalizeText(value: string | null | undefined) {
+    return (value ?? '').replace(/\s+/g, ' ').trim();
+  }
+
+  private normalizeImage(value: string | null | undefined) {
+    const source = (value ?? '').trim();
+    return source ? source.split('?')[0].split('/').pop() ?? source : '';
+  }
+
+  async closeAwarenessPopup() {
+    const popupSelector = '.flash-popup-overlay:visible, .flash-popup:visible';
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const popup = this.page.locator(popupSelector).first();
+      if (!(await popup.isVisible({ timeout: attempt === 0 ? 5000 : 1000 }).catch(() => false))) {
+        return;
+      }
+
+      await popup.locator('.flash-close-btn').first().click({ force: true });
+      await expect(this.page.locator(popupSelector)).toHaveCount(0, { timeout: 5000 }).catch(() => undefined);
+    }
+
+    await expect(this.page.locator(popupSelector)).toHaveCount(0, { timeout: 10000 });
+  }
+
+  async loginToCms(username: string, password: string) {
+    await this.page.goto(this.cmsNewsUrl);
+    await this.page.getByRole('textbox', { name: 'example@gmail.com' }).fill(username);
+    await this.page.getByRole('textbox', { name: '*******' }).fill(password);
+    await this.page.getByRole('button', { name: 'Login' }).click();
+    await expect(this.page.getByRole('navigation')).toBeVisible();
+    await this.closeAwarenessPopup();
+  }
+
+  async openCmsNewsPage() {
+    await this.page.goto(this.cmsListingUrl);
+    await this.closeAwarenessPopup();
+
+    if (!this.page.url().match(/chennai-news-updates/i)) {
+      await this.newsLink.first().click({ force: true });
+    }
+
+    await expect(this.page).toHaveURL(/chennai-news-updates/i);
+    await this.closeAwarenessPopup();
+  }
+
+  async openPublicNewsPage() {
+    await this.page.goto(this.publicNewsUrl);
+    await this.closeAwarenessPopup();
+    await expect(this.page).toHaveURL(/chennai-news-updates/i);
+  }
+
+  async collectNewsRecords(listingUrl: string): Promise<NewsRecord[]> {
+    const records: NewsRecord[] = [];
+    const cards = this.page.locator('section:has(button:has-text("Read More"))');
+    const cardCount = await cards.count();
+
+    for (let index = 0; index < cardCount; index++) {
+      const card = cards.nth(index);
+      const title = this.normalizeText(await card.locator('h1, h2, h3').first().textContent());
+      const description = this.normalizeText(await card.locator('p').first().textContent());
+      const image = this.normalizeImage(await card.locator('img').first().getAttribute('src'));
+      const readMore = card.getByRole('button', { name: 'Read More' });
+
+      await expect(readMore).toBeVisible();
+      await readMore.click();
+
+      const detailHeading = this.page.locator('h1, h2, h3').first();
+      const detailContainer = detailHeading.locator('xpath=../..');
+      const detailTitle = this.normalizeText(await detailHeading.textContent());
+      const detailBody = this.normalizeText(await detailContainer.locator('p').first().textContent());
+      const detailImage = this.normalizeImage(await detailContainer.locator('img').first().getAttribute('src').catch(() => null));
+
+      records.push({ title, description, image, detailTitle, detailBody, detailImage });
+
+      await this.page.goto(listingUrl);
+      await this.closeAwarenessPopup();
+      if (listingUrl.includes('cms.gctp.in') && !this.page.url().match(/chennai-news-updates/i)) {
+        await this.newsLink.first().click({ force: true });
+      }
+      await expect(this.page).toHaveURL(/chennai-news-updates/i);
+      await this.closeAwarenessPopup();
+      await expect(cards.nth(index)).toBeVisible();
+    }
+
+    return records;
   }
 
   async openNews() {

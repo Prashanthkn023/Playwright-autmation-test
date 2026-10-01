@@ -1,0 +1,9 @@
+[     158ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/plugins/plotly.js:0
+[    1184ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cms.gctp.in/plot.min.js' with computed SHA-384 integrity 'OipH/2uUn7Q71CsHDdN4agRSF3NFYk2CuAZUwOmrkbG5LTdi10tJFPtidKYUYNPm'. The resource has been blocked. @ https://cms.gctp.in/chennai-news-updates-Cms:0
+[    1255ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cms.gctp.in/popper.min.js' with computed SHA-384 integrity 'rn0XrCNfhQuw2/tzfv4cvBHjPnljfEYSGlYLk2VmCk0ts82JdJvQ72xx/nV/XJcB'. The resource has been blocked. @ https://cms.gctp.in/chennai-news-updates-Cms:0
+[    1433ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://cms.gctp.in/bootstap.min.js:0
+[    1923ms] [ERROR] Mixed Content: The page at 'https://cms.gctp.in/chennai-news-updates-Cms' was loaded over HTTPS, but attempted to connect to the insecure WebSocket endpoint 'ws://cms.gctp.in:6067/socket.io/?EIO=4&transport=websocket'. This request has been blocked; this endpoint must be available over WSS. @ https://cms.gctp.in/static/js/main.634c6d71.js:1
+[    2037ms] [LOG] [, chennai-news-updates-Cms] @ https://cms.gctp.in/static/js/main.634c6d71.js:125
+[    2137ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://cms.gctp.in/chennai-news-updates-Cms:0
+[   10357ms] [LOG] socket connected @ https://cms.gctp.in/static/js/main.634c6d71.js:105
+[   22733ms] [ERROR] Mixed Content: The page at 'https://cms.gctp.in/chennai-home' was loaded over HTTPS, but attempted to connect to the insecure WebSocket endpoint 'ws://cms.gctp.in:6067/socket.io/?EIO=4&transport=websocket'. This request has been blocked; this endpoint must be available over WSS. @ https://cms.gctp.in/static/js/main.634c6d71.js:1

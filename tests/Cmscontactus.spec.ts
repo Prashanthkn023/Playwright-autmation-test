@@ -10,6 +10,32 @@ type ContactRecord = {
     phone: string;
 };
 
+const closeContactUsPopup = async (page: import('@playwright/test').Page) => {
+    const popupSelector = '.flash-popup-overlay:visible';
+    const popup = page.locator(popupSelector).first();
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+        if (!(await popup.isVisible({ timeout: attempt === 0 ? 5000 : 1000 }).catch(() => false))) {
+            return;
+        }
+
+        const closeControl = popup.locator('.flash-close-btn').first();
+
+        if (await closeControl.isVisible().catch(() => false)) {
+            await closeControl.click({ force: true, timeout: 5000 });
+        } else {
+            const bounds = await popup.boundingBox();
+            if (bounds) {
+                await page.mouse.click(bounds.x + bounds.width - 28, bounds.y + 28);
+            }
+        }
+
+        await expect(page.locator(popupSelector)).toHaveCount(0, { timeout: 5000 }).catch(() => undefined);
+    }
+
+    await expect(page.locator(popupSelector)).toHaveCount(0, { timeout: 5000 });
+};
+
 const getComparisonDifferences = (
     expected: ContactRecord[],
     actual: ContactRecord[]
@@ -57,6 +83,7 @@ test('verify CMS Contact Us page', async ({ page }) => {
     const expectedContactDetails = await contactUsPage.getContactRecords('cms');
 
     await contactUsPage.openHomePage();
+    await closeContactUsPopup(page);
     await contactUsPage.openContactUs();
 
     await expect(page.locator('table').first()).toBeVisible();

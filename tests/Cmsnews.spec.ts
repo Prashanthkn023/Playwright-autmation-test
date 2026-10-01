@@ -1,68 +1,57 @@
 import { expect, test } from '@playwright/test';
-import { CmsNewsPage } from '../pages/CmsNewsPage';
+import { CmsNewsPage, NewsRecord } from '../pages/CmsNewsPage';
 
-test('verify the live GCTP news updates content', async ({ page }) => {
+const normalizeComparisonValue = (value: string) => value.replace(/\s+/g, ' ').trim();
+
+const getComparisonDifferences = (expected: NewsRecord[], actual: NewsRecord[]) => {
+  const differences: string[] = [];
+
+  if (expected.length !== actual.length) {
+    differences.push(`Count: CMS=${expected.length}; public=${actual.length}`);
+  }
+
+  for (let index = 0; index < Math.max(expected.length, actual.length); index++) {
+    const cmsRecord = expected[index];
+    const publicRecord = actual[index];
+
+    if (!cmsRecord || !publicRecord) {
+      differences.push(`Order/record ${index + 1}: CMS=${JSON.stringify(cmsRecord ?? null)}; public=${JSON.stringify(publicRecord ?? null)}`);
+      continue;
+    }
+
+    for (const field of ['title', 'description', 'image', 'detailTitle', 'detailBody', 'detailImage'] as const) {
+      if (normalizeComparisonValue(cmsRecord[field]) !== normalizeComparisonValue(publicRecord[field])) {
+        differences.push(`Record ${index + 1} ${field}: CMS="${cmsRecord[field]}"; public="${publicRecord[field]}"`);
+      }
+    }
+  }
+
+  return differences;
+};
+
+test('compare CMS approved News with public News', async ({ page }) => {
+  const cmsUsername = process.env.CMS_USERNAME;
+  const cmsPassword = process.env.CMS_PASSWORD;
+
+  expect(cmsUsername, 'CMS_USERNAME must be configured').toBeTruthy();
+  expect(cmsPassword, 'CMS_PASSWORD must be configured').toBeTruthy();
+
   const newsPage = new CmsNewsPage(page);
 
-  await newsPage.openNewsPage();
-  await expect(page).toHaveURL(/chennai-news-updates/i);
+  await newsPage.loginToCms(cmsUsername!, cmsPassword!);
+  await newsPage.openCmsNewsPage();
+  const cmsRecords = await newsPage.collectNewsRecords(newsPage.cmsListingUrl);
+  expect(cmsRecords.length, 'CMS News records should not be empty').toBeGreaterThan(0);
 
-  await expect(newsPage.trafficDiversionHeading).toBeVisible();
-  await expect(newsPage.trafficDiversionDescription).toBeVisible();
-  await expect(newsPage.trafficDiversionDescription).toContainText(
-    'To reduce traffic congestion and improve vehicular movement'
-  );
-  await expect(newsPage.trafficDiversionImage).toBeVisible();
-  await expect(newsPage.trafficDiversionReadMoreButton).toBeVisible();
+  await newsPage.openPublicNewsPage();
+  const publicRecords = await newsPage.collectNewsRecords(newsPage.publicNewsUrl);
+  expect(publicRecords.length, 'Public News records should not be empty').toBeGreaterThan(0);
 
-  await newsPage.openTrafficDiversionDetails();
-  await expect(page.getByRole('heading', {
-    name: /Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area/i,
-  })).toBeVisible();
-  await expect(page.getByText(/To reduce traffic congestion and improve vehicular movement/i)).toBeVisible();
-  await expect(page.getByRole('img', {
-    name: /Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area/i,
-  })).toBeVisible();
+  const differences = getComparisonDifferences(cmsRecords, publicRecords);
+  await test.info().attach('news-comparison-differences', {
+    body: differences.length ? differences.join('\n') : 'No content differences found.',
+    contentType: 'text/plain',
+  });
 
-  await newsPage.goBackFromNewsDetail();
-  await expect(page).toHaveURL(/chennai-news-updates/i);
-
-  await expect(newsPage.pendingEChallanHeading).toBeVisible();
-  await expect(newsPage.pendingEChallanDescription).toBeVisible();
-  await expect(newsPage.pendingEChallanDescription).toContainText(
-    'Verify and clear your pending e-Challans'
-  );
-  await expect(newsPage.pendingEChallanImage).toBeVisible();
-  await expect(newsPage.pendingEChallanReadMoreButton).toBeVisible();
-
-  await newsPage.openPendingEChallanDetails();
-  await expect(page.getByRole('heading', {
-    name: /Pending E-Challan Fine Verification/i,
-  })).toBeVisible();
-  await expect(page.getByText(/Verify and clear your pending e-Challans/i)).toBeVisible();
-  await expect(page.getByRole('img', {
-    name: /Pending E-Challan Fine Verification/i,
-  })).toBeVisible();
-
-  await newsPage.goBackFromNewsDetail();
-  await expect(page).toHaveURL(/chennai-news-updates/i);
-
-  await expect(newsPage.megaBikeRallyHeading).toBeVisible();
-  await expect(newsPage.megaBikeRallyDescription).toBeVisible();
-  await expect(newsPage.megaBikeRallyDescription).toContainText('Mega Bike Rally for Road Safety');
-  await expect(newsPage.megaBikeRallyDescription).toContainText('scheduled for early 2026');
-  await expect(newsPage.megaBikeRallyImage).toBeVisible();
-  await expect(newsPage.megaBikeRallyReadMoreButton).toBeVisible();
-
-  await newsPage.openMegaBikeRallyDetails();
-  await expect(page.getByRole('heading', {
-    name: /Mega Bike Rally for Road Safety/i,
-  })).toBeVisible();
-  await expect(page.locator('p').filter({ hasText: /Mega Bike Rally for Road Safety.*scheduled for early 2026/i })).toBeVisible();
-  await expect(page.getByRole('img', {
-    name: /Mega Bike Rally for Road Safety/i,
-  })).toBeVisible();
-
-  await newsPage.goBackFromNewsDetail();
-  await expect(page).toHaveURL(/chennai-news-updates/i);
+  expect(differences, 'CMS and public News content should match').toEqual([]);
 });

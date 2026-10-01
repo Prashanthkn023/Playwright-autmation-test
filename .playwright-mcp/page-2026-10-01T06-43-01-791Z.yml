@@ -1,0 +1,108 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e11] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e22]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "English" [ref=e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=e28] [cursor=pointer]:
+            - img "Play Store" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e31]
+          - link "account of current user" [ref=e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e33]
+          - link "account of current user" [ref=e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e35]
+          - link "account of current user" [ref=e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e37]
+    - navigation [ref=e39]:
+      - link "Home" [ref=e41] [cursor=pointer]:
+        - /url: /chennai-home
+      - button "About Us" [ref=e43] [cursor=pointer]
+      - link "City Profile" [ref=e47] [cursor=pointer]:
+        - /url: /city-profile
+      - link "City Map" [ref=e49] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "Media" [ref=e51] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "News" [ref=e53] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "Vehicle Challan" [ref=e55] [cursor=pointer]
+      - link "Tamil Nadu Police" [ref=e60] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "Contact Us" [ref=e62] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=e167]:
+    - generic [ref=e169]:
+      - button "Go back" [ref=e170] [cursor=pointer]
+      - generic [ref=e173]:
+        - generic [ref=e174]:
+          - heading "Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area" [level=1] [ref=e175]
+          - paragraph [ref=e176]: To reduce traffic congestion and improve vehicular movement in the OMR (Rajiv Gandhi Salai) and Thuraipakkam corridors, the Greater Chennai Traffic Police has implemented revised traffic regulations effective from 23.09.2026. The changes include U-turn restrictions at key junctions near Geetham Restaurant, Srivaram, and World Trade Centre, with alternative U-turn points designated at the Perungudi Toll Booth. Motorists are advised to follow the revised routes and cooperate with traffic authorities for smooth traffic flow.
+        - img "Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area" [ref=e178]
+    - generic [ref=e179]:
+      - button "Scroll important links left" [ref=e180] [cursor=pointer]
+      - generic [ref=e184]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e187] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e188]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e190]
+            - generic [ref=e191]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e197] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e198]:
+            - img "Parivahan" [ref=e200]
+            - generic [ref=e201]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e207] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e208]:
+            - img "TN Govt Web" [ref=e210]
+            - generic [ref=e211]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e217] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e218]:
+            - img "TNRTO" [ref=e220]
+            - generic [ref=e221]: TNRTO
+      - button "Scroll important links right" [ref=e225] [cursor=pointer]
+    - generic [ref=e228]:
+      - generic [ref=e229]:
+        - link "Feedback" [ref=e231] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e233] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e235] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=e237] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e239] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e240]:
+        - generic [ref=e241]:
+          - generic [ref=e242]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e243]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 01-10-2026 10:08:23 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e244]: "Version : Fusion V1.2"
+        - generic [ref=e245]:
+          - generic [ref=e246]:
+            - link [ref=e247] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e248]
+            - link [ref=e249] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e250]
+          - generic [ref=e251]:
+            - paragraph [ref=e252]: "Number Of Visitors : 15431"
+            - img "Group Icon" [ref=e254]

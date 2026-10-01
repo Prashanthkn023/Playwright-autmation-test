@@ -1,0 +1,141 @@
+- generic [ref=e50]:
+  - generic [ref=e51]:
+    - banner [ref=e52]:
+      - generic [ref=e54]:
+        - generic [ref=e56]:
+          - img "Nature" [ref=e57]
+          - generic [ref=e58]:
+            - generic [ref=e59]: Greater Chennai Traffic Police
+            - generic [ref=e60]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e66]:
+          - combobox "Search..." [ref=e67]
+          - group [aria-hidden]
+        - generic [ref=e68]:
+          - text: LOGIN
+          - generic [ref=e71]:
+            - combobox [ref=e72] [cursor=pointer]: English
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button "account of current user" [ref=e73] [cursor=pointer]
+          - link "account of current user" [ref=e76] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+          - link "account of current user" [ref=e78] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+          - link "account of current user" [ref=e80] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+          - link "account of current user" [ref=e82] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+    - navigation [ref=e87]:
+      - list [ref=e88]:
+        - listitem [ref=e89]:
+          - link [ref=e90] [cursor=pointer]:
+            - /url: /chennai-home
+            - text: Home
+            - link [ref=e91]:
+              - /url: /chennai-Cms
+        - listitem [ref=e94]:
+          - link [ref=e95] [cursor=pointer]:
+            - /url: "#"
+            - text: About Us
+            - link [ref=e98]:
+              - /url: /chennai-ctp-Cms
+        - listitem [ref=e101]:
+          - link [ref=e102] [cursor=pointer]:
+            - /url: /city-profile
+            - text: City Profile
+            - link [ref=e103]:
+              - /url: /chennai-cityprofile-Cms
+        - listitem [ref=e106]:
+          - link "City Map" [ref=e107] [cursor=pointer]:
+            - /url: /chennai_map
+        - listitem [ref=e108]:
+          - link [ref=e109] [cursor=pointer]:
+            - /url: /chennai-media
+            - text: Media
+            - link [ref=e110]:
+              - /url: /chennai-media-Cms
+        - listitem [ref=e113]:
+          - link [ref=e114] [cursor=pointer]:
+            - /url: /chennai-news-updates
+            - text: News
+            - link [ref=e115]:
+              - /url: /chennai-updates-Cms
+        - listitem [ref=e118]:
+          - link "VehicleChallan" [ref=e119] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e123]:
+          - link "TamilNaduPolice" [ref=e124] [cursor=pointer]:
+            - /url: https://www.police.tn.gov.in/citizenportal
+        - listitem [ref=e125]:
+          - link [ref=e126] [cursor=pointer]:
+            - /url: /chennai-contactus
+            - text: Contact Us
+            - link [ref=e127]:
+              - /url: /chennai-contactus-Cms
+  - generic [ref=e294]:
+    - generic [ref=e295]:
+      - generic [ref=e298]:
+        - generic [ref=e299]:
+          - heading "Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area" [level=2] [ref=e300]
+          - paragraph [ref=e301]:
+            - generic [ref=e302]: To reduce traffic congestion and improve vehicular movement in the OMR (Rajiv Gandhi Salai) and Thuraipakkam corridors, the Greater Chennai Traffic Po...
+          - button "Read More" [ref=e303] [cursor=pointer]
+        - img "Greater Chennai Traffic Police" [ref=e304]
+      - generic [ref=e307]:
+        - generic [ref=e308]:
+          - heading "Pending E-Challan Fine Verification" [level=2] [ref=e309]
+          - paragraph [ref=e310]:
+            - generic [ref=e311]: Verify and clear your pending e-Challans through designated centres or online services. Avoid additional penalties by completing payment on time.
+          - button "Read More" [ref=e312] [cursor=pointer]
+        - img "Greater Chennai Traffic Police" [ref=e313]
+      - generic [ref=e316]:
+        - generic [ref=e317]:
+          - heading "Mega Bike Rally for Road Safety" [level=2] [ref=e318]
+          - paragraph [ref=e319]:
+            - generic [ref=e320]: Mega Bike Rally for Road Safety, is scheduled for early 2026, organized by the Greater Chennai Traffic Police.
+          - button "Read More" [ref=e321] [cursor=pointer]
+        - img "Greater Chennai Traffic Police" [ref=e322]
+    - generic [ref=e323]:
+      - button "Scroll important links left" [ref=e324] [cursor=pointer]
+      - generic [ref=e328]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e331] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e332]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e334]
+            - generic [ref=e335]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e341] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e342]:
+            - img "Parivahan" [ref=e344]
+            - generic [ref=e345]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e351] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e352]:
+            - img "TN Govt Web" [ref=e354]
+            - generic [ref=e355]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e361] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e362]:
+            - img "TNRTO" [ref=e364]
+            - generic [ref=e365]: TNRTO
+      - button "Scroll important links right" [ref=e369] [cursor=pointer]
+    - generic [ref=e372]:
+      - generic [ref=e373]:
+        - link "Feedback" [ref=e375] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e377] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e379] [cursor=pointer]:
+          - /url: /chennai-PRIVATEPOLICY
+        - link "Complaints" [ref=e381] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e383] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e384]:
+        - generic [ref=e385]:
+          - generic [ref=e386]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e387]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 01-10-2026 10:08:23 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e388]: "Version : Fusion V1.2"
+        - generic [ref=e389]:
+          - paragraph [ref=e390]: "Number Of Visitors : 15433"
+          - img "Group Icon" [ref=e392]
