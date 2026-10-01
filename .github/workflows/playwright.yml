@@ -20,7 +20,7 @@ name: Playwright Tests
 jobs:
   test:
     name: Run Playwright Tests
-    timeout-minutes: 60
+    timeout-minutes: 120
     runs-on: ubuntu-latest
 
     env:
@@ -28,6 +28,7 @@ jobs:
       HEADLESS: "true"
       CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
       CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
+      CMS_BASE_URL: ${{ vars.CMS_BASE_URL || secrets.CMS_BASE_URL }}
 
     steps:
       # 1. Checkout repository
@@ -73,12 +74,33 @@ jobs:
 
           echo "Previous reports cleared successfully."
 
-      # 8. Run Playwright tests
+      # 8. Validate CMS configuration and endpoint reachability
+      - name: Validate CMS configuration
+        shell: bash
+        run: |
+          test -n "$CMS_USERNAME" || { echo "::error::CMS_USERNAME is not configured."; exit 1; }
+          test -n "$CMS_PASSWORD" || { echo "::error::CMS_PASSWORD is not configured."; exit 1; }
+
+          CMS_BASE_URL="${CMS_BASE_URL:-https://cms.gctp.in/}"
+          echo "Using CMS_BASE_URL: $CMS_BASE_URL"
+          echo "CMS credentials are configured."
+
+          for target in "$CMS_BASE_URL" "https://gctp.in/chennai-home"; do
+            echo "Checking reachability: $target"
+            curl --fail --silent --show-error --location \
+              --max-time 30 --retry 2 --retry-delay 2 \
+              --output /dev/null "$target" || {
+              echo "::error::Unable to reach $target from the GitHub runner."
+              exit 1
+            }
+          done
+
+      # 9. Run Playwright tests
       # Excludes tests tagged @manual
       - name: Run Playwright tests
         run: npx playwright test --grep-invert "@manual"
 
-      # 9. Generate Allure HTML report
+      # 10. Generate Allure HTML report
       - name: Generate Allure HTML Report
         if: always()
         shell: bash
@@ -93,7 +115,7 @@ jobs:
             echo "No Allure results found. Skipping report generation."
           fi
 
-      # 10. Upload Allure raw results
+      # 11. Upload Allure raw results
       - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -103,7 +125,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 11. Upload Allure HTML report
+      # 12. Upload Allure HTML report
       - name: Upload Allure HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -113,7 +135,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 12. Upload Playwright HTML report
+      # 13. Upload Playwright HTML report
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -123,7 +145,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 13. Upload test results
+      # 14. Upload test results
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -133,7 +155,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 14. Upload Excel bug report
+      # 15. Upload Excel bug report
       - name: Upload Excel Bug Report
         if: always()
         uses: actions/upload-artifact@v4
