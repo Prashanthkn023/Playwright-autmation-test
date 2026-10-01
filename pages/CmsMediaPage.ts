@@ -11,6 +11,7 @@ export class CmsMediaPage extends BasePage {
   readonly cmsLoginEmailInput: Locator;
   readonly cmsLoginPasswordInput: Locator;
   readonly cmsLoginSubmitButton: Locator;
+  readonly cmsBaseUrl: string;
 
   constructor(page: Page) {
     super(page);
@@ -26,6 +27,7 @@ export class CmsMediaPage extends BasePage {
       .first();
     this.cmsLoginPasswordInput = page.locator('input[type="password"], input[name*="pass" i]').first();
     this.cmsLoginSubmitButton = page.getByRole('button', { name: /login|sign in|submit/i }).first();
+    this.cmsBaseUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in';
   }
 
   async openHomePage() {
@@ -43,7 +45,7 @@ export class CmsMediaPage extends BasePage {
   }
 
   async openCmsMediaPage() {
-    await this.navigate('https://cms.gctp.in/chennai-media-Cms');
+    await this.navigate(new URL('/chennai-media-Cms', this.cmsBaseUrl).toString());
   }
 
   async openPhotos() {

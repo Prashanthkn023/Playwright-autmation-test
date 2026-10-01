@@ -1,7 +1,21 @@
 import { expect, Page } from '@playwright/test';
 
-export const CMS_USERNAME = 'Prashanth@gctp.in';
-export const CMS_PASSWORD = 'Prashanth@123';
+function getRequiredCmsEnv(
+  key: 'CMS_USERNAME' | 'CMS_PASSWORD'
+): string {
+  const value = process.env[key]?.trim();
+
+  if (!value) {
+    throw new Error(
+      `${key} must be configured in the environment before running CMS tests.`
+    );
+  }
+
+  return value;
+}
+
+export const CMS_USERNAME = getRequiredCmsEnv('CMS_USERNAME');
+export const CMS_PASSWORD = getRequiredCmsEnv('CMS_PASSWORD');
 
 export async function loginToConfiguredCms(
   page: Page,
