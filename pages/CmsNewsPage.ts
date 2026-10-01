@@ -1,6 +1,9 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
 
+const publicBaseUrl = (process.env.BASE_URL || 'https://gctp.in').replace(/\/+$/, '');
+const cmsBaseUrl = (process.env.CMS_BASE_URL || 'https://cms.gctp.in').replace(/\/+$/, '');
+
 export type NewsRecord = {
   title: string;
   description: string;
@@ -11,9 +14,9 @@ export type NewsRecord = {
 };
 
 export class CmsNewsPage extends BasePage {
-  readonly cmsNewsUrl = 'https://cms.gctp.in/chennai-news-updates-Cms';
-  readonly cmsListingUrl = 'https://cms.gctp.in/chennai-news-updates';
-  readonly publicNewsUrl = 'https://gctp.in/chennai-news-updates';
+  readonly cmsNewsUrl = `${cmsBaseUrl}/chennai-news-updates-Cms`;
+  readonly cmsListingUrl = `${cmsBaseUrl}/chennai-news-updates`;
+  readonly publicNewsUrl = `${publicBaseUrl}/chennai-news-updates`;
   readonly newsLink: Locator;
   readonly trafficDiversionHeading: Locator;
   readonly trafficDiversionDescription: Locator;
@@ -94,11 +97,11 @@ export class CmsNewsPage extends BasePage {
   }
 
   async openHomePage() {
-    await this.navigate('https://gctp.in/chennai-home');
+    await this.navigate(`${publicBaseUrl}/chennai-home`);
   }
 
   async openNewsPage() {
-    await this.navigate('https://gctp.in/chennai-news-updates');
+    await this.navigate(this.publicNewsUrl);
   }
 
   private normalizeText(value: string | null | undefined) {
