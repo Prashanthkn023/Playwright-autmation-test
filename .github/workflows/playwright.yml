@@ -12,7 +12,7 @@ name: Playwright Tests
 
   # Run daily at 9:30 AM IST (04:00 UTC)
   schedule:
-    - cron: "0 4 * * *"
+    - cron: "7 4 * * *" 
 
   # Allow manual execution
   workflow_dispatch:
