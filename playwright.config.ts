@@ -4,6 +4,9 @@ import 'dotenv/config';
 export default defineConfig({
   testDir: './tests',
 
+  // Empty placeholder test used only by Playwright agents
+  testIgnore: /seed\.spec\.ts/,
+
   // Global test timeout
   timeout: Number(process.env.TIMEOUT) || 600000,
 
@@ -21,6 +24,7 @@ export default defineConfig({
   // Terminal + Allure + Excel Bug Report
   reporter: [
     ['list'],
+    ['html', { open: 'never', outputFolder: 'playwright-report' }],
     [
       'allure-playwright',
       {
