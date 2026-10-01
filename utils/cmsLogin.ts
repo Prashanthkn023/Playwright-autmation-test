@@ -74,21 +74,28 @@ export async function openCmsAboutUsDropdown(page: Page) {
 }
 
 async function closeCmsPopup(page: Page) {
-  const popup = page
-    .locator('.flash-popup-overlay:visible, .flash-popup:visible, .modal.show:visible')
-    .first();
+  const popupSelector = '.flash-popup-overlay:visible, .flash-popup:visible, .modal.show:visible';
 
-  if (!(await popup.isVisible({ timeout: 5000 }).catch(() => false))) {
-    return;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const popup = page.locator(popupSelector).first();
+
+    if (!(await popup.waitFor({
+      state: 'visible',
+      timeout: attempt === 0 ? 5000 : 1500,
+    }).then(() => true).catch(() => false))) {
+      return;
+    }
+
+    const closeButton = popup.locator('.flash-close-btn, button').first();
+
+    if (await closeButton.isVisible().catch(() => false)) {
+      await closeButton.click({ force: true, timeout: 5000 });
+    } else {
+      await page.keyboard.press('Escape').catch(() => undefined);
+    }
+
+    await popup.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => undefined);
   }
 
-  const closeButton = popup.locator('button').first();
-
-  if (await closeButton.isVisible().catch(() => false)) {
-    await closeButton.click({ force: true, timeout: 5000 });
-  } else {
-    await page.keyboard.press('Escape');
-  }
-
-  await expect(popup).toBeHidden({ timeout: 10000 });
+  await expect(page.locator(popupSelector).first()).toBeHidden({ timeout: 10000 });
 }
