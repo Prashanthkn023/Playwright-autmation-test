@@ -1,6 +1,9 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
+const publicBaseUrl = (process.env.BASE_URL || 'https://gctp.in').replace(/\/+$/, '');
+const cmsBaseUrl = (process.env.CMS_BASE_URL || 'https://cms.gctp.in').replace(/\/+$/, '');
+
 export class CmsMediaPage extends BasePage {
   readonly mediaLink: Locator;
   readonly mediaNavigationText: Locator;
@@ -29,7 +32,7 @@ export class CmsMediaPage extends BasePage {
   }
 
   async openHomePage() {
-    await this.navigate('https://gctp.in/chennai-home');
+    await this.navigate(`${publicBaseUrl}/chennai-home`);
   }
 
   async openMedia() {
@@ -39,11 +42,11 @@ export class CmsMediaPage extends BasePage {
   }
 
   async openMediaPage() {
-    await this.navigate('https://gctp.in/chennai-media');
+    await this.navigate(`${publicBaseUrl}/chennai-media`);
   }
 
   async openCmsMediaPage() {
-    await this.navigate('https://cms.gctp.in/chennai-media-Cms');
+    await this.navigate(`${cmsBaseUrl}/chennai-media-Cms`);
   }
 
   async openPhotos() {

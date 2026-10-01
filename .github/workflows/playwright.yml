@@ -20,12 +20,14 @@ name: Playwright Tests
 jobs:
   test:
     name: Run Playwright Tests
-    timeout-minutes: 60
+    timeout-minutes: 120
     runs-on: ubuntu-latest
 
     env:
       CI: "true"
       HEADLESS: "true"
+      BASE_URL: ${{ vars.BASE_URL || 'https://gctp.in' }}
+      CMS_BASE_URL: ${{ vars.CMS_BASE_URL || secrets.CMS_BASE_URL || 'https://cms.gctp.in/' }}
       CMS_USERNAME: ${{ secrets.CMS_USERNAME }}
       CMS_PASSWORD: ${{ secrets.CMS_PASSWORD }}
 
@@ -73,12 +75,35 @@ jobs:
 
           echo "Previous reports cleared successfully."
 
-      # 8. Run Playwright tests
+      # 8. Validate CI configuration and target reachability
+      - name: Validate configuration and endpoint reachability
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -n "${CMS_USERNAME:-}" || { echo "::error::Missing CMS_USERNAME secret."; exit 1; }
+          test -n "${CMS_PASSWORD:-}" || { echo "::error::Missing CMS_PASSWORD secret."; exit 1; }
+
+          cms_url="${CMS_BASE_URL%/}/"
+          public_url="${BASE_URL%/}/chennai-home"
+
+          echo "Using CMS_BASE_URL=${cms_url}"
+          echo "Using BASE_URL=${BASE_URL}"
+
+          cms_status="$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 20 --connect-timeout 10 "${cms_url}" || true)"
+          test "${cms_status}" != "000" || { echo "::error::CMS endpoint is unreachable: ${cms_url}"; exit 1; }
+          echo "CMS endpoint is reachable (HTTP ${cms_status})."
+
+          public_status="$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 20 --connect-timeout 10 "${public_url}" || true)"
+          test "${public_status}" != "000" || { echo "::error::Public endpoint is unreachable: ${public_url}"; exit 1; }
+          echo "Public endpoint is reachable (HTTP ${public_status})."
+
+      # 9. Run Playwright tests
       # Excludes tests tagged @manual
       - name: Run Playwright tests
         run: npx playwright test --grep-invert "@manual"
 
-      # 9. Generate Allure HTML report
+      # 10. Generate Allure HTML report
       - name: Generate Allure HTML Report
         if: always()
         shell: bash
@@ -93,7 +118,7 @@ jobs:
             echo "No Allure results found. Skipping report generation."
           fi
 
-      # 10. Upload Allure raw results
+      # 11. Upload Allure raw results
       - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -103,7 +128,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 11. Upload Allure HTML report
+      # 12. Upload Allure HTML report
       - name: Upload Allure HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -113,7 +138,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 12. Upload Playwright HTML report
+      # 13. Upload Playwright HTML report
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -123,7 +148,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 13. Upload test results
+      # 14. Upload test results
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -133,7 +158,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      # 14. Upload Excel bug report
+      # 15. Upload Excel bug report
       - name: Upload Excel Bug Report
         if: always()
         uses: actions/upload-artifact@v4

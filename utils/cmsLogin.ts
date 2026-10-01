@@ -1,7 +1,15 @@
 import { expect, Page } from '@playwright/test';
 
-export const CMS_USERNAME = 'Prashanth@gctp.in';
-export const CMS_PASSWORD = 'Prashanth@123';
+const getRequiredCredential = (name: 'CMS_USERNAME' | 'CMS_PASSWORD') => {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    throw new Error(`${name} must be configured in environment variables/secrets before running CMS tests.`);
+  }
+  return value;
+};
+
+export const CMS_USERNAME = getRequiredCredential('CMS_USERNAME');
+export const CMS_PASSWORD = getRequiredCredential('CMS_PASSWORD');
 
 export async function loginToConfiguredCms(
   page: Page,
