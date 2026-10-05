@@ -153,6 +153,10 @@ export class CmsNewsPage extends BasePage {
   async collectNewsRecords(listingUrl: string): Promise<NewsRecord[]> {
     const records: NewsRecord[] = [];
     const cards = this.page.locator('section:has(button:has-text("Read More"))');
+    await expect(
+      cards.first(),
+      `News cards did not load at ${this.page.url()}`
+    ).toBeVisible({ timeout: 30000 });
     const cardCount = await cards.count();
 
     console.log('CMS News collection:', JSON.stringify({

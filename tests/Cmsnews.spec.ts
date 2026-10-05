@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { CmsNewsPage, NewsRecord } from '../pages/CmsNewsPage';
-import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
+import { loginToConfiguredCms } from '../utils/cmsLogin';
 
 const normalizeComparisonValue = (value: string) => value.replace(/\s+/g, ' ').trim();
 
@@ -33,7 +33,7 @@ const getComparisonDifferences = (expected: NewsRecord[], actual: NewsRecord[]) 
 test('compare CMS approved News with public News', async ({ page }) => {
   const newsPage = new CmsNewsPage(page);
 
-  await newsPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
+  await loginToConfiguredCms(page, newsPage.cmsNewsUrl);
   await newsPage.openCmsNewsPage();
   const cmsRecords = await newsPage.collectNewsRecords(newsPage.cmsListingUrl);
   console.log('========== CMS NEWS DEBUG ==========');

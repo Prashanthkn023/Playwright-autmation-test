@@ -55,8 +55,8 @@ pipeline {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'gctp-cms-credentials',
-                        usernameVariable: 'Prashanth@gctp.in',
-                        passwordVariable: 'Prashanth@123'
+                        usernameVariable: 'CMS_USERNAME',
+                        passwordVariable: 'CMS_PASSWORD'
                     )
                 ]) {
 

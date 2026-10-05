@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { loginToCms as loginToConfiguredCms } from '../utils/cmsLogin';
 
 export class CmsCityPage extends BasePage {
 
@@ -140,75 +141,7 @@ export class CmsCityPage extends BasePage {
     username: string,
     password: string
   ) {
-
-    const usernameInput =
-      this.page.locator(
-        'input[name="username"], input[type="email"], input[placeholder="example@gmail.com"]'
-      );
-
-    const passwordInput =
-      this.page.locator(
-        'input[type="password"]'
-      );
-
-    let loginFormLoaded = false;
-
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await this.page.goto(cmsUrl, {
-        waitUntil: 'domcontentloaded'
-      });
-
-      loginFormLoaded = await expect(usernameInput)
-        .toBeVisible({ timeout: 10000 })
-        .then(() => true)
-        .catch(() => false);
-
-      if (!loginFormLoaded) {
-        const loginTrigger = this.page.getByText('LOGIN', { exact: true });
-        const triggerVisible = await loginTrigger
-          .isVisible()
-          .catch(() => false);
-
-        if (triggerVisible) {
-          await loginTrigger.click().catch(() => undefined);
-          loginFormLoaded = await expect(usernameInput)
-            .toBeVisible({ timeout: 10000 })
-            .then(() => true)
-            .catch(() => false);
-        }
-      }
-
-      if (loginFormLoaded) {
-        break;
-      }
-    }
-
-    expect(
-      loginFormLoaded,
-      'CMS login form should load after retrying the CMS portal'
-    ).toBe(true);
-
-    await usernameInput.fill(
-      username
-    );
-
-    await expect(
-      passwordInput
-    ).toBeVisible();
-
-    await passwordInput.fill(
-      password
-    );
-
-    await this.page
-      .getByRole('button', {
-        name: 'Login'
-      })
-      .click();
-
-    await this.page.waitForLoadState(
-      'domcontentloaded'
-    );
+    await loginToConfiguredCms(this.page, cmsUrl, username, password);
   }
 
   // =====================================================
@@ -219,9 +152,7 @@ export class CmsCityPage extends BasePage {
     await this.closeAnyPopup();
 
     const cityProfileLink = this.page
-      .locator('nav')
-      .locator('a')
-      .filter({ hasText: /^City Profile$/i })
+      .locator('nav a[href*="cityprofile-Cms" i]')
       .first();
 
     await expect(
@@ -230,8 +161,9 @@ export class CmsCityPage extends BasePage {
     ).toBeVisible({ timeout: 30000 });
     await cityProfileLink.click({ force: true });
 
+    await this.page.waitForURL(/chennai-cityprofile-Cms/i);
     await this.page.waitForLoadState('domcontentloaded');
-    await this.page.waitForTimeout(1000);
+    await expect(this.page.locator('tbody tr').first()).toBeVisible({ timeout: 30000 });
   }
 
   // =====================================================
