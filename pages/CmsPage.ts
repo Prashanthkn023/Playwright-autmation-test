@@ -131,9 +131,11 @@ export class CmsPage extends BasePage {
     await openEmpanelment("Smart Traffic Management");
 
     await expect(
-      this.page.getByText(
-        "Smart Traffic Management & Technology in Chennai"
-      )
+      this.page.getByRole("heading", {
+        name: "Smart Traffic Management & Technology in Chennai",
+        exact: true,
+        level: 1,
+      })
     ).toBeVisible();
 
     await this.page

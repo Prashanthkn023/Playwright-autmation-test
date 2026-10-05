@@ -52,12 +52,22 @@ pipeline {
 
             steps {
 
-                catchError(
-                    buildResult: 'UNSTABLE',
-                    stageResult: 'UNSTABLE'
-                ) {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'gctp-cms-credentials',
+                        usernameVariable: 'Prashanth@gtcp.in',
+                        passwordVariable: 'Prashnath@123'
+                    )
+                ]) {
 
-                    bat 'npx playwright test'
+                    catchError(
+                        buildResult: 'UNSTABLE',
+                        stageResult: 'UNSTABLE'
+                    ) {
+
+                        bat 'npx playwright test'
+
+                    }
 
                 }
 

@@ -1,5 +1,6 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { loginToCms as loginToConfiguredCms } from '../utils/cmsLogin';
 
 export class CmsMediaPage extends BasePage {
   readonly mediaLink: Locator;
@@ -16,16 +17,14 @@ export class CmsMediaPage extends BasePage {
     super(page);
 
     this.mediaLink = page.getByRole('link', { name: /media/i }).first();
-    this.mediaNavigationText = page.getByRole('navigation').getByText('Media');
+    this.mediaNavigationText = page.locator('nav').getByText('Media', { exact: true });
     this.photosHeading = page.getByRole('button', { name: 'PHOTOS' });
     this.videosTab = page.getByRole('button', { name: 'VIDEOS' });
     this.iframes = page.locator('iframe');
     this.images = page.locator('img');
-    this.cmsLoginEmailInput = page
-      .locator('input[type="email"], input[type="text"], input[name*="user" i], input[name*="email" i]')
-      .first();
-    this.cmsLoginPasswordInput = page.locator('input[type="password"], input[name*="pass" i]').first();
-    this.cmsLoginSubmitButton = page.getByRole('button', { name: /login|sign in|submit/i }).first();
+    this.cmsLoginEmailInput = page.locator('input[type="email"]').first();
+    this.cmsLoginPasswordInput = page.locator('input[type="password"]').first();
+    this.cmsLoginSubmitButton = page.getByRole('button', { name: 'Login' }).first();
   }
 
   async openHomePage() {
@@ -55,18 +54,16 @@ export class CmsMediaPage extends BasePage {
   }
 
   async loginToCms(username: string, password: string) {
-    await this.openCmsMediaPage();
-    await this.cmsLoginEmailInput.fill(username);
-    await this.cmsLoginPasswordInput.fill(password);
-    await this.cmsLoginSubmitButton.click();
-    await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => undefined);
+    await loginToConfiguredCms(
+      this.page,
+      'https://cms.gctp.in/chennai-media-Cms',
+      username,
+      password,
+    );
   }
 
   async clickMediaText() {
-    const mediaText = this.page
-      .getByRole('navigation')
-      .getByText('Media', { exact: true })
-      .first();
+    const mediaText = this.page.locator('nav').getByText('Media', { exact: true }).first();
     await expect(mediaText).toBeVisible({ timeout: 30000 });
     await mediaText.click({ force: true });
     await this.page.waitForLoadState('domcontentloaded');

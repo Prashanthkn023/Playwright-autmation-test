@@ -218,24 +218,17 @@ export class CmsCityPage extends BasePage {
   async openCmsCityProfile() {
     await this.closeAnyPopup();
 
-    const cityProfileCandidates = this.page.getByText(/City Profile/i);
-    const totalCandidates = await cityProfileCandidates.count();
+    const cityProfileLink = this.page
+      .locator('nav')
+      .locator('a')
+      .filter({ hasText: /^City Profile$/i })
+      .first();
 
-    let clicked = false;
-
-    for (let index = 0; index < totalCandidates; index++) {
-      const candidate = cityProfileCandidates.nth(index);
-
-      if (!(await candidate.isVisible().catch(() => false))) {
-        continue;
-      }
-
-      await candidate.click({ force: true });
-      clicked = true;
-      break;
-    }
-
-    expect(clicked, 'CMS City Profile text should be clickable after login').toBe(true);
+    await expect(
+      cityProfileLink,
+      'CMS City Profile link should be visible after login'
+    ).toBeVisible({ timeout: 30000 });
+    await cityProfileLink.click({ force: true });
 
     await this.page.waitForLoadState('domcontentloaded');
     await this.page.waitForTimeout(1000);

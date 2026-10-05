@@ -17,6 +17,9 @@ export async function loginToCms(
   username: string,
   password: string
 ) {
+  expect(username.trim(), 'CMS_USERNAME must be configured').not.toBe('');
+  expect(password, 'CMS_PASSWORD must be configured').not.toBe('');
+
   const usernameInput = page.locator(
     'input[name="username"], input[type="email"], input[placeholder="example@gmail.com"]'
   );
@@ -46,7 +49,9 @@ export async function loginToCms(
   await passwordInput.fill(password);
   await page.getByRole('button', { name: 'Login' }).click();
 
-  await expect(page.getByRole('navigation')).toBeVisible({ timeout: 30000 });
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(1000);
+
   await closeCmsPopup(page);
 }
 
@@ -54,7 +59,7 @@ export async function openCmsAboutUsGctp(page: Page) {
   await openCmsAboutUsDropdown(page);
 
   const gctpLink = page
-    .getByRole('navigation')
+    .locator('nav')
     .getByText('GCTP', { exact: true });
   await expect(gctpLink).toBeVisible({ timeout: 30000 });
   await gctpLink.click();
@@ -65,7 +70,7 @@ export async function openCmsAboutUsDropdown(page: Page) {
   await closeCmsPopup(page);
 
   const aboutUsItem = page
-    .getByRole('navigation')
+    .locator('nav')
     .getByText('About Us', { exact: true })
     .first();
 

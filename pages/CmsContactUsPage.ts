@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { loginToCms as loginToConfiguredCms } from '../utils/cmsLogin';
 
 export class CmsContactUsPage extends BasePage {
   readonly contactUsLink: Locator;
@@ -14,7 +15,7 @@ export class CmsContactUsPage extends BasePage {
     super(page);
 
     this.contactUsLink = page
-      .getByRole('navigation')
+      .locator('nav')
       .getByRole('link', {
         name: 'Contact Us',
         exact: true,
@@ -90,68 +91,14 @@ export class CmsContactUsPage extends BasePage {
     username: string,
     password: string,
   ): Promise<void> {
-    const usernameInput = this.page.locator(
-      'input[name="username"], input[type="email"], input[placeholder="example@gmail.com"]',
-    );
-
-    const passwordInput = this.page.locator(
-      'input[type="password"]',
-    );
-
-    let loginFormLoaded = false;
-
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await this.page.goto(cmsUrl, {
-        waitUntil: 'domcontentloaded',
-      });
-
-      loginFormLoaded = await usernameInput
-        .isVisible({ timeout: 10000 })
-        .catch(() => false);
-
-      if (!loginFormLoaded) {
-        const loginTrigger = this.page.getByText('LOGIN', {
-          exact: true,
-        });
-
-        if (await loginTrigger.isVisible().catch(() => false)) {
-          await loginTrigger.click().catch(() => undefined);
-
-          loginFormLoaded = await usernameInput
-            .isVisible({ timeout: 10000 })
-            .catch(() => false);
-        }
-      }
-
-      if (loginFormLoaded) {
-        break;
-      }
-    }
-
-    expect(
-      loginFormLoaded,
-      'CMS login form should load',
-    ).toBe(true);
-
-    await usernameInput.fill(username);
-    await passwordInput.fill(password);
-
-    await this.page.getByRole('button', {
-      name: 'Login',
-    }).click();
-
-    await expect(
-      this.page.getByRole('navigation'),
-    ).toBeVisible({
-      timeout: 30000,
-    });
+    await loginToConfiguredCms(this.page, cmsUrl, username, password);
   }
 
   async openCmsContactUs(): Promise<void> {
     await this.closeContactUsPopup();
 
     const cmsContactUsLink = this.page
-      .getByRole('navigation')
+      .locator('nav')
       .getByText('Contact Us', {
         exact: true,
       });
