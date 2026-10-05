@@ -18,7 +18,7 @@ pipeline {
 
             steps {
 
-                bat 'npm install'
+                bat 'npm ci'
 
             }
 
@@ -28,7 +28,21 @@ pipeline {
 
             steps {
 
-                bat 'npx playwright install'
+                bat 'npx playwright install chromium'
+
+            }
+
+        }
+
+        stage('Clean Reports') {
+
+            steps {
+
+                bat 'if exist allure-results rmdir /s /q allure-results'
+                bat 'if exist allure-report rmdir /s /q allure-report'
+                bat 'if exist playwright-report rmdir /s /q playwright-report'
+                bat 'if exist test-results rmdir /s /q test-results'
+                bat 'mkdir allure-results'
 
             }
 
@@ -46,6 +60,20 @@ pipeline {
                     bat 'npx playwright test'
 
                 }
+
+            }
+
+        }
+
+        stage('Publish Allure Report') {
+
+            steps {
+
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    results: [[path: 'allure-results']]
+                ])
 
             }
 
@@ -75,7 +103,7 @@ pipeline {
         always {
 
             archiveArtifacts(
-                artifacts: 'bug-reports/**/*,test-results/**/*,playwright-report/**/*',
+                artifacts: 'allure-results/**/*,bug-reports/**/*,test-results/**/*,playwright-report/**/*',
                 allowEmptyArchive: true,
                 fingerprint: true
             )
