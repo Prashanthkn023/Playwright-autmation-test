@@ -34,7 +34,6 @@ jobs:
 
       GEMINI_AGENT: ${{ vars.GEMINI_AGENT }}
 
-      HEADLESS: ${{ vars.HEADLESS }}
       BROWSER: ${{ vars.BROWSER }}
       TIMEOUT: ${{ vars.TIMEOUT }}
       CAPTCHA_WAIT: ${{ vars.CAPTCHA_WAIT }}
