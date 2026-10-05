@@ -163,7 +163,11 @@ export class CmsPage extends BasePage {
     await openEmpanelment("Road Safety Awareness");
 
     await expect(
-      this.page.getByText("Road Safety Awareness")
+      this.page.getByRole("heading", {
+        name: "Road Safety Awareness",
+        exact: true,
+        level: 1,
+      })
     ).toBeVisible();
 
     await this.page

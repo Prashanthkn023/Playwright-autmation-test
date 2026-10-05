@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { loginToCms as loginToConfiguredCms } from '../utils/cmsLogin';
 
 export type NewsRecord = {
   title: string;
@@ -127,11 +128,7 @@ export class CmsNewsPage extends BasePage {
   }
 
   async loginToCms(username: string, password: string) {
-    await this.page.goto(this.cmsNewsUrl);
-    await this.page.getByRole('textbox', { name: 'example@gmail.com' }).fill(username);
-    await this.page.getByRole('textbox', { name: '*******' }).fill(password);
-    await this.page.getByRole('button', { name: 'Login' }).click();
-    await expect(this.page.getByRole('navigation')).toBeVisible();
+    await loginToConfiguredCms(this.page, this.cmsNewsUrl, username, password);
     await this.closeAwarenessPopup();
   }
 
@@ -157,6 +154,12 @@ export class CmsNewsPage extends BasePage {
     const records: NewsRecord[] = [];
     const cards = this.page.locator('section:has(button:has-text("Read More"))');
     const cardCount = await cards.count();
+
+    console.log('CMS News collection:', JSON.stringify({
+      listingUrl,
+      currentUrl: this.page.url(),
+      cardCount,
+    }));
 
     for (let index = 0; index < cardCount; index++) {
       const card = cards.nth(index);

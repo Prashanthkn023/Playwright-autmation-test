@@ -36,6 +36,11 @@ test('compare CMS approved News with public News', async ({ page }) => {
   await newsPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
   await newsPage.openCmsNewsPage();
   const cmsRecords = await newsPage.collectNewsRecords(newsPage.cmsListingUrl);
+  console.log('========== CMS NEWS DEBUG ==========');
+  console.log('CMS News URL:', newsPage.cmsListingUrl);
+  console.log('Current URL:', page.url());
+  console.log('CMS News Records:', cmsRecords.length);
+  console.log('====================================');
   expect(cmsRecords.length, 'CMS News records should not be empty').toBeGreaterThan(0);
 
   await newsPage.openPublicNewsPage();
