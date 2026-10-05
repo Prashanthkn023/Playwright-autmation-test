@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { CmsNewsPage, NewsRecord } from '../pages/CmsNewsPage';
+import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 
 const normalizeComparisonValue = (value: string) => value.replace(/\s+/g, ' ').trim();
 
@@ -30,15 +31,9 @@ const getComparisonDifferences = (expected: NewsRecord[], actual: NewsRecord[]) 
 };
 
 test('compare CMS approved News with public News', async ({ page }) => {
-  const cmsUsername = process.env.CMS_USERNAME;
-  const cmsPassword = process.env.CMS_PASSWORD;
-
-  expect(cmsUsername, 'CMS_USERNAME must be configured').toBeTruthy();
-  expect(cmsPassword, 'CMS_PASSWORD must be configured').toBeTruthy();
-
   const newsPage = new CmsNewsPage(page);
 
-  await newsPage.loginToCms(cmsUsername!, cmsPassword!);
+  await newsPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
   await newsPage.openCmsNewsPage();
   const cmsRecords = await newsPage.collectNewsRecords(newsPage.cmsListingUrl);
   expect(cmsRecords.length, 'CMS News records should not be empty').toBeGreaterThan(0);
