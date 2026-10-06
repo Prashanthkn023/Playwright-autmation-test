@@ -82,6 +82,8 @@ jobs:
       - name: Network Diagnostics
         shell: bash
         run: |
+          set +e  # Allow commands to fail without exiting the script
+
           echo "=========================================="
           echo "NETWORK DIAGNOSTICS FOR GCTP/CMS"
           echo "=========================================="
@@ -122,7 +124,7 @@ jobs:
           echo ""
 
           echo "=== 8. VERBOSE HTTPS CONNECTION - cms.gctp.in ==="
-          curl -v --connect-timeout 10 --max-time 30 https://cms.gctp.in 2>&1 | head -50
+          (curl -v --connect-timeout 10 --max-time 30 https://cms.gctp.in 2>&1 | head -50) || echo "Verbose curl failed or timed out"
           echo ""
 
           echo "=== 9. TCP CONNECTIVITY TEST - cms.gctp.in:443 ==="
@@ -140,6 +142,8 @@ jobs:
           echo "=========================================="
           echo "DIAGNOSTICS COMPLETE"
           echo "=========================================="
+
+          exit 0  # Always exit successfully to not block the workflow
 
       # 7. Clean previous reports
       - name: Clean Previous Reports
