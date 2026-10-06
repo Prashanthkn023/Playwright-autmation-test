@@ -11,16 +11,23 @@ export async function closeAwarenessPopup(page: Page) {
     }
 
     const closeButton = popup.locator('button').first();
+    let dismissed = false;
     if (await closeButton.isVisible().catch(() => false)) {
-      await closeButton.click({ force: true, timeout: 5000 });
-    } else {
+      dismissed = await closeButton.click({ force: true, timeout: 1500 })
+        .then(() => true)
+        .catch(() => false);
+    }
+
+    if (!dismissed) {
       await page.keyboard.press('Escape').catch(() => undefined);
     }
 
-    if (await popup.waitFor({ state: 'hidden', timeout: 5000 }).then(() => true).catch(() => false)) {
+    if (await popup.waitFor({ state: 'hidden', timeout: 2500 }).then(() => true).catch(() => false)) {
       return;
     }
   }
 
-  await expect(page.locator(popupSelector).first()).toBeHidden({ timeout: 5000 });
+  // A third-party awareness popup should not prevent page navigation when its
+  // close control is unresponsive or the popup is in the middle of an animation.
+  await expect(page.locator(popupSelector).first()).toBeHidden({ timeout: 1000 }).catch(() => undefined);
 }

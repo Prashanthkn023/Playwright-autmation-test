@@ -175,7 +175,15 @@ export class CmsNewsPage extends BasePage {
       await expect(readMore).toBeVisible();
       await readMore.click();
 
-      const detailHeading = this.page.locator('h1, h2, h3').first();
+      const detailHeading = this.page.getByRole('heading', {
+        name: title,
+        exact: true,
+      }).first();
+      await expect(
+        detailHeading,
+        `News detail heading should match clicked card: ${title}`
+      ).toBeVisible({ timeout: 15000 });
+
       const detailContainer = detailHeading.locator('xpath=../..');
       const detailTitle = this.normalizeText(await detailHeading.textContent());
       const detailBody = this.normalizeText(await detailContainer.locator('p').first().textContent());
