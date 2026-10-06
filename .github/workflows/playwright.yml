@@ -78,6 +78,69 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      # 6.5. Network Diagnostics (TEMPORARY - for debugging ECONNREFUSED)
+      - name: Network Diagnostics
+        shell: bash
+        run: |
+          echo "=========================================="
+          echo "NETWORK DIAGNOSTICS FOR GCTP/CMS"
+          echo "=========================================="
+          echo ""
+
+          echo "=== 1. PROXY ENVIRONMENT VARIABLES ==="
+          env | grep -i proxy || echo "No proxy variables set"
+          echo ""
+
+          echo "=== 2. DNS RESOLUTION - gctp.in ==="
+          nslookup gctp.in 8.8.8.8 || echo "DNS resolution failed for gctp.in"
+          echo ""
+
+          echo "=== 3. DNS RESOLUTION - cms.gctp.in ==="
+          nslookup cms.gctp.in 8.8.8.8 || echo "DNS resolution failed for cms.gctp.in"
+          echo ""
+
+          echo "=== 4. HTTPS HEAD REQUEST - gctp.in ==="
+          curl -I --connect-timeout 10 --max-time 30 https://gctp.in 2>&1 || echo "HTTPS connection failed to gctp.in"
+          echo ""
+
+          echo "=== 5. HTTPS HEAD REQUEST - cms.gctp.in ==="
+          curl -I --connect-timeout 10 --max-time 30 https://cms.gctp.in 2>&1 || echo "HTTPS connection failed to cms.gctp.in"
+          echo ""
+
+          echo "=== 6. HTTPS HEAD REQUEST - CMS API (home-page) ==="
+          curl -I --connect-timeout 10 --max-time 30 \
+            -H "Accept: application/json" \
+            'https://cms.gctp.in/api/fusion-cms-web-backend/home-page?approvalStatus=all' 2>&1 \
+            || echo "HTTPS connection failed to CMS API"
+          echo ""
+
+          echo "=== 7. HTTPS HEAD REQUEST - GCTP API (home-page) ==="
+          curl -I --connect-timeout 10 --max-time 30 \
+            -H "Accept: application/json" \
+            'https://gctp.in/api/fusion-public-facing-web-backend/home-page' 2>&1 \
+            || echo "HTTPS connection failed to GCTP API"
+          echo ""
+
+          echo "=== 8. VERBOSE HTTPS CONNECTION - cms.gctp.in ==="
+          curl -v --connect-timeout 10 --max-time 30 https://cms.gctp.in 2>&1 | head -50
+          echo ""
+
+          echo "=== 9. TCP CONNECTIVITY TEST - cms.gctp.in:443 ==="
+          timeout 10 bash -c 'cat < /dev/null > /dev/tcp/cms.gctp.in/443' && echo "TCP connection successful" || echo "TCP connection failed (ECONNREFUSED or timeout)"
+          echo ""
+
+          echo "=== 10. TCP CONNECTIVITY TEST - gctp.in:443 ==="
+          timeout 10 bash -c 'cat < /dev/null > /dev/tcp/gctp.in/443' && echo "TCP connection successful" || echo "TCP connection failed (ECONNREFUSED or timeout)"
+          echo ""
+
+          echo "=== 11. GITHUB RUNNER PUBLIC IP ==="
+          curl -s --connect-timeout 10 --max-time 15 https://api.ipify.org || echo "Cannot determine public IP"
+          echo ""
+
+          echo "=========================================="
+          echo "DIAGNOSTICS COMPLETE"
+          echo "=========================================="
+
       # 7. Clean previous reports
       - name: Clean Previous Reports
         shell: bash
