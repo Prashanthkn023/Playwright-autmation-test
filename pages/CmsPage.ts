@@ -151,7 +151,7 @@ export class CmsPage extends BasePage {
       this.page
         .locator('p.text-check')
         .filter({
-          hasText: /^GCTP – Ensuring Safe and Seamless Mobility$/,
+          hasText: 'GCTP – Ensuring Safe and Seamless Mobility',
         })
     ).toBeVisible();
 
