@@ -148,9 +148,11 @@ export class CmsPage extends BasePage {
     await openEmpanelment("GCTP – Ensuring Safe");
 
     await expect(
-      this.page.getByText(
-        "GCTP – Ensuring Safe and Seamless Mobility"
-      )
+      this.page
+        .locator('p.text-check')
+        .filter({
+          hasText: /^GCTP – Ensuring Safe and Seamless Mobility$/,
+        })
     ).toBeVisible();
 
     await this.page
