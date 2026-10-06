@@ -27,3 +27,5 @@ bug-reports/
 # Captcha screenshots generated at test-run time
 captcha.png
 complaint-captcha.png
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

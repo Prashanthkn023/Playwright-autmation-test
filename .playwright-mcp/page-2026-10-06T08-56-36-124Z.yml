@@ -1,0 +1,56 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - banner [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e10]:
+            - img "Nature"
+            - generic [ref=e11]:
+              - generic [ref=e12]: Greater Chennai Traffic Police
+              - generic [ref=e13]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=e20]:
+            - combobox "Search..." [ref=e21]
+            - group [aria-hidden]
+          - generic [ref=e22]:
+            - generic [ref=e25]:
+              - combobox "English" [ref=e26] [cursor=pointer]
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button "Play Store" [ref=e27] [cursor=pointer]:
+              - img "Play Store"
+            - link "account of current user" [ref=e28] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+              - img "Facebook" [ref=e29]
+            - link "account of current user" [ref=e30] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+              - img "Instagram"
+            - link "account of current user" [ref=e31] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+              - img "Twitter" [ref=e32]
+            - link "account of current user" [ref=e33] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+              - img "Youtube" [ref=e34]
+      - button "Toggle navigation" [ref=e36] [cursor=pointer]
+    - generic [ref=e40]:
+      - generic [ref=e41]: Traffic Updates
+      - generic [ref=e48]: Helpline
+      - generic [ref=e52]:
+        - button "Scroll important links left" [ref=e53] [cursor=pointer]
+        - button "Scroll important links right" [ref=e57] [cursor=pointer]
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e64]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: Loading... Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e65]: "Version : Fusion V1.2"
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - link [ref=e68] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e69]
+            - link [ref=e70] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e71]
+          - generic [ref=e72]:
+            - paragraph [ref=e73]: "Number Of Visitors : Loading visitor count..."
+            - img "Group Icon" [ref=e75]
+  - generic [ref=e76]: Loading visitor count...
