@@ -148,11 +148,11 @@ export class CmsPage extends BasePage {
     await openEmpanelment("GCTP – Ensuring Safe");
 
     await expect(
-      this.page
-        .locator('p.text-check')
-        .filter({
-          hasText: 'GCTP – Ensuring Safe and Seamless Mobility',
-        })
+      this.page.getByRole("heading", {
+        name: "GCTP – Ensuring Safe and Seamless Mobility",
+        exact: true,
+        level: 1,
+      })
     ).toBeVisible();
 
     await this.page
