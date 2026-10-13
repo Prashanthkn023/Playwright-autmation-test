@@ -17,9 +17,13 @@ export class CmsMediaPage extends BasePage {
     super(page);
 
     this.mediaLink = page.getByRole('link', { name: /media/i }).first();
-    this.mediaNavigationText = page.locator('nav').getByText('Media', { exact: true });
-    this.photosHeading = page.getByRole('button', { name: 'PHOTOS' });
-    this.videosTab = page.getByRole('button', { name: 'VIDEOS' });
+    this.mediaNavigationText = page.getByRole('navigation').getByText('Media', { exact: true });
+    this.photosHeading = page.locator(
+      'button:has-text("PHOTOS"), [role="tab"]:has-text("PHOTOS")'
+    ).first();
+    this.videosTab = page.locator(
+      'button:has-text("VIDEOS"), [role="tab"]:has-text("VIDEOS")'
+    ).first();
     this.iframes = page.locator('iframe');
     this.images = page.locator('img');
     this.cmsLoginEmailInput = page.locator('input[type="email"]').first();
@@ -43,29 +47,62 @@ export class CmsMediaPage extends BasePage {
 
   async openCmsMediaPage() {
     await this.navigate('https://cms.gctp.in/chennai-media-Cms');
+
+    if (!/chennai-media-Cms/i.test(this.page.url())) {
+      const menuButton = this.page.getByRole('button', {
+        name: /Toggle navigation/i,
+      });
+
+      if (await menuButton.isVisible().catch(() => false)) {
+        await menuButton.click({ force: true });
+      }
+
+      const cmsMediaLink = this.page.getByRole('link', {
+        name: 'Media',
+        exact: true,
+      }).first();
+
+      if (await cmsMediaLink.isVisible({ timeout: 10000 }).catch(() => false)) {
+        await cmsMediaLink.click({ force: true });
+        await this.page.waitForLoadState('domcontentloaded').catch(() => undefined);
+      }
+    }
+
+    await expect(this.page).toHaveURL(
+      /cms\.gctp\.in\/chennai-media(?:-Cms)?(?:$|\/)/i,
+      { timeout: 30000 }
+    );
   }
 
-  async openPhotos() {
-    await this.photosHeading.click();
+  async openPhotos(): Promise<boolean> {
+    if (!await this.photosHeading.isVisible({ timeout: 10000 }).catch(() => false)) {
+      return false;
+    }
+    await this.photosHeading.click({ force: true });
+    return true;
   }
 
-  async openVideos() {
-    await this.videosTab.click();
+  async openVideos(): Promise<boolean> {
+    if (!await this.videosTab.isVisible({ timeout: 10000 }).catch(() => false)) {
+      return false;
+    }
+    await this.videosTab.click({ force: true });
+    return true;
   }
 
   async loginToCms(username: string, password: string) {
     await loginToConfiguredCms(
       this.page,
-      'https://cms.gctp.in/chennai-media-Cms',
+      'https://cms.gctp.in/',
       username,
-      password,
+      password
     );
   }
 
   async clickMediaText() {
-    const mediaText = this.page.locator('nav').getByText('Media', { exact: true }).first();
-    await expect(mediaText).toBeVisible({ timeout: 30000 });
-    await mediaText.click({ force: true });
+    const mediaLink = this.page.getByRole('navigation').getByRole('link', { name: 'Media', exact: true }).first();
+    await expect(mediaLink).toBeVisible({ timeout: 30000 });
+    await mediaLink.click({ force: true });
     await this.page.waitForLoadState('domcontentloaded');
     await this.closeAnyPopup();
   }

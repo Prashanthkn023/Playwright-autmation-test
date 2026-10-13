@@ -152,12 +152,44 @@ export class CmsNewsPage extends BasePage {
 
   async collectNewsRecords(listingUrl: string): Promise<NewsRecord[]> {
     const records: NewsRecord[] = [];
-    const cards = this.page.locator('section:has(button:has-text("Read More"))');
+    const maxAttempts = 3;
+    let cardCount = 0;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const cards = this.page.locator(
+        'section:has(button:has-text("Read More")), ' +
+        'article:has(button:has-text("Read More")), ' +
+        '.card-container:has(button:has-text("Read More"))'
+      );
+
+      cardCount = await cards.count();
+      if (cardCount > 0) {
+        break;
+      }
+
+      console.warn(
+        `No CMS/news cards found on attempt ${attempt}/${maxAttempts} at ${this.page.url()}. Reloading the listing page...`
+      );
+
+      await this.page.goto(listingUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 120000,
+      });
+      await this.closeAwarenessPopup();
+      await this.page.waitForTimeout(3000);
+    }
+
+    const cards = this.page.locator(
+      'section:has(button:has-text("Read More")), ' +
+      'article:has(button:has-text("Read More")), ' +
+      '.card-container:has(button:has-text("Read More"))'
+    );
+
     await expect(
       cards.first(),
       `News cards did not load at ${this.page.url()}`
     ).toBeVisible({ timeout: 30000 });
-    const cardCount = await cards.count();
+    cardCount = await cards.count();
 
     console.log('CMS News collection:', JSON.stringify({
       listingUrl,

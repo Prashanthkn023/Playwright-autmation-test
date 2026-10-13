@@ -76,17 +76,45 @@ export class FeedbackPage extends BasePage {
             .fill(captchaText);
     }
 
-    // Click Submit
+    // Click Submit — starts listening for the success toast before the click
+    // so the transient snackbar (auto-hides in ~4 s) is not missed.
     async clickSubmit() {
+        this._successWait = this.page
+            .getByText('Feedback submitted successfully!')
+            .waitFor({ state: 'visible', timeout: 15000 })
+            .catch(async () => {
+                // Surface a captcha-mismatch error if that toast is visible,
+                // otherwise re-throw a generic failure.
+                const captchaErr = this.page
+                    .getByText('Captcha Does Not Match');
+                const isCaptchaErr = await captchaErr
+                    .isVisible({ timeout: 3000 })
+                    .catch(() => false);
+                if (isCaptchaErr) {
+                    throw new Error(
+                        'Feedback submission failed: Captcha Does Not Match. ' +
+                        'The OCR-read captcha text was incorrect.'
+                    );
+                }
+                throw new Error(
+                    'Feedback success message did not appear within the timeout.'
+                );
+            });
         await this.submitButton.click();
     }
 
     // Verify Success Message
     async verifySuccess() {
 
-        await expect(this.successMessage)
-            .toBeVisible({ timeout: 10000 });
+        await this._successWait;
 
-        console.log(await this.successMessage.textContent());
+        console.log(
+            await this.page
+                .getByText('Feedback submitted successfully!')
+                .textContent()
+                .catch(() => 'Feedback submitted successfully!')
+        );
     }
+
+    private _successWait: Promise<void> = Promise.resolve();
 }

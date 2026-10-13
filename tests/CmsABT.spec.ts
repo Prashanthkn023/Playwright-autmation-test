@@ -229,6 +229,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   const actualImageLoadFailures: string[] = [];
 
   // About Us
+  await closeAwarenessPopup(page);
   await page.getByRole('button', { name: 'About Us' }).click();
 
   // GCTP

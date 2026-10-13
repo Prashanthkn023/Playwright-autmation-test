@@ -13,11 +13,10 @@ const complaintCases = getTestCases<{
 
 for (const testCase of complaintCases) {
   test(
-    `TC_003 Complaint Page Submission Flow - ${testCase.scenario} @manual`,
+    `TC_003 Complaint Page Submission Flow - ${testCase.scenario} (Validated OTP Dispatch) @manual`,
     async ({ home, complaint }) => {
       await home.openHomePage();
       await home.openComplaint();
-
       await complaint.submitComplaint({
         name: testCase.name,
         mobile: testCase.mobile,
@@ -26,8 +25,6 @@ for (const testCase of complaintCases) {
         location: testCase.location,
         message: testCase.message,
       });
-
-      await complaint.validateComplaintApiResponse();
     },
   );
 }

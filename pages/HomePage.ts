@@ -12,7 +12,12 @@ export class HomePage extends BasePage {
         super(page);
 
         this.feedbackLink = page.getByRole('link', { name: 'Feedback' });
-        this.complaintLink = page.getByRole('link', { name: 'Complaints' });
+        // Scope to the footer to avoid the inline "Complaints" link inside
+        // the feedback-form note, which causes a strict-mode violation when
+        // navigating from the Feedback page.
+        this.complaintLink = page
+            .locator('.footer-link')
+            .filter({ hasText: 'Complaints' });
 
         // Home page logo
         this.homeLogo = page.locator('img[alt="logo"]');

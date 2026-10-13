@@ -1,33 +1,93 @@
 import { expect, Page } from '@playwright/test';
 
+const POPUP_SELECTOR =
+  '.flash-popup-overlay:visible, .flash-popup:visible, .modal.show:visible, [role="dialog"]:visible, [class*="popup"]:visible';
+
+async function forceRemovePopup(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const selectors = [
+      '.flash-popup-overlay',
+      '.flash-popup',
+      '.modal.show',
+      '[role="dialog"]',
+      '.popup',
+      '.modal',
+      '.modal-backdrop',
+      '.overlay',
+    ];
+
+    for (const selector of selectors) {
+      document.querySelectorAll(selector).forEach((element) => {
+        const htmlElement = element as HTMLElement;
+        htmlElement.style.display = 'none';
+        htmlElement.style.visibility = 'hidden';
+        htmlElement.style.opacity = '0';
+        htmlElement.style.pointerEvents = 'none';
+        htmlElement.setAttribute('aria-hidden', 'true');
+        htmlElement.removeAttribute('open');
+      });
+    }
+
+    document.body.classList.remove('modal-open');
+    document.querySelectorAll('.modal-backdrop, .overlay, .popup-overlay').forEach((element) => element.remove());
+  });
+}
+
 export async function closeAwarenessPopup(page: Page) {
-  const popupSelector = '.flash-popup-overlay:visible, .flash-popup:visible';
+  const popup = page.locator(POPUP_SELECTOR).first();
 
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const popup = page.locator(popupSelector).first();
-
-    if (!(await popup.isVisible({ timeout: attempt === 0 ? 5000 : 1500 }).catch(() => false))) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (!(await popup.isVisible({ timeout: 1500 }).catch(() => false))) {
       return;
     }
 
-    const closeButton = popup.locator('button').first();
+    const closeCandidates = [
+      popup.locator('.flash-close-btn').first(),
+      popup.locator('button[aria-label="Close"]').first(),
+      popup.locator('button[aria-label="close"]').first(),
+      popup.locator('[data-bs-dismiss="modal"]').first(),
+      popup.locator('[data-dismiss="modal"]').first(),
+      popup.locator('button.close').first(),
+      popup.locator('.btn-close').first(),
+      popup.locator('button:has-text("Close")').first(),
+      popup.locator('button:has-text("Dismiss")').first(),
+      popup.locator('button').first(),
+      page.keyboard.press('Escape'),
+    ];
+
     let dismissed = false;
-    if (await closeButton.isVisible().catch(() => false)) {
-      dismissed = await closeButton.click({ force: true, timeout: 1500 })
+
+    for (const candidate of closeCandidates) {
+      if (candidate instanceof Promise) {
+        await candidate.catch(() => undefined);
+        continue;
+      }
+
+      if (!(await candidate.isVisible().catch(() => false))) {
+        continue;
+      }
+
+      dismissed = await candidate
+        .click({ force: true, timeout: 1500 })
         .then(() => true)
         .catch(() => false);
+
+      if (dismissed) {
+        break;
+      }
     }
 
     if (!dismissed) {
       await page.keyboard.press('Escape').catch(() => undefined);
     }
 
-    if (await popup.waitFor({ state: 'hidden', timeout: 2500 }).then(() => true).catch(() => false)) {
+    await page.waitForTimeout(300);
+
+    if (!(await popup.isVisible({ timeout: 1000 }).catch(() => false))) {
       return;
     }
   }
 
-  // A third-party awareness popup should not prevent page navigation when its
-  // close control is unresponsive or the popup is in the middle of an animation.
-  await expect(page.locator(popupSelector).first()).toBeHidden({ timeout: 1000 }).catch(() => undefined);
+  await forceRemovePopup(page);
+  await expect(page.locator(POPUP_SELECTOR).first()).toBeHidden({ timeout: 2000 }).catch(() => undefined);
 }

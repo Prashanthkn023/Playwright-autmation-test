@@ -1,3 +1,4 @@
+
 import { defineConfig, devices } from '@playwright/test';
 import 'dotenv/config';
 
@@ -21,16 +22,36 @@ export default defineConfig({
   retries: process.env.CI ? 0 : 0,
   workers: process.env.CI ? 1 : Number(process.env.WORKERS) || 1,
 
-  // Terminal + Allure + Excel Bug Report
+  // Terminal + HTML + JUnit + Allure + Excel Bug Report
   reporter: [
     ['list'],
-    ['html', { open: 'never', outputFolder: 'playwright-report' }],
+
+    // Playwright HTML report
+    [
+      'html',
+      {
+        open: 'never',
+        outputFolder: 'playwright-report',
+      },
+    ],
+
+    // JUnit XML report for Jenkins email summary
+    [
+      'junit',
+      {
+        outputFile: 'test-results/results.xml',
+      },
+    ],
+
+    // Allure report
     [
       'allure-playwright',
       {
         resultsDir: 'allure-results',
       },
     ],
+
+    // Custom Excel Bug Reporter
     ['./reporters/bugReporter.ts'],
   ],
 

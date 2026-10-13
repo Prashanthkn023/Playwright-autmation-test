@@ -15,7 +15,7 @@ export class CmsContactUsPage extends BasePage {
     super(page);
 
     this.contactUsLink = page
-      .locator('nav')
+      .getByRole('navigation')
       .getByRole('link', {
         name: 'Contact Us',
         exact: true,
@@ -98,7 +98,7 @@ export class CmsContactUsPage extends BasePage {
     await this.closeContactUsPopup();
 
     const cmsContactUsLink = this.page
-      .locator('nav')
+      .getByRole('navigation')
       .getByText('Contact Us', {
         exact: true,
       });

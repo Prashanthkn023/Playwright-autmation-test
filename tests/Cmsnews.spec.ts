@@ -192,7 +192,8 @@ test(
 
     await loginToConfiguredCms(
       page,
-      newsPage.cmsNewsUrl
+      newsPage.cmsNewsUrl,
+      /chennai-news-updates/i
     );
 
     // ========================================================

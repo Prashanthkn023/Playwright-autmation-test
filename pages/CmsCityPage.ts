@@ -1,3 +1,4 @@
+
 import { createHash } from 'crypto';
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './BasePage';
@@ -26,9 +27,10 @@ export class CmsCityPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    this.cityProfileLink = page
-      .locator('nav')
-      .getByRole('link', { name: 'City Profile', exact: true });
+    this.cityProfileLink = page.getByRole('link', {
+      name: 'City Profile',
+      exact: true,
+    });
 
     this.cityProfileHeading = page.getByText('CITY PROFILE', {
       exact: true,
@@ -88,36 +90,91 @@ export class CmsCityPage extends BasePage {
     cmsUrl: string,
     username: string,
     password: string,
-  ) {
-    await loginToConfiguredCms(this.page, cmsUrl, username, password);
+  ): Promise<void> {
+    await loginToConfiguredCms(
+      this.page,
+      cmsUrl,
+      username,
+      password,
+    );
   }
 
-  async openCmsCityProfile() {
+  async openCmsCityProfile(): Promise<void> {
     await this.closeAnyPopup();
+
+    // Diagnose the rendered page before attempting navigation.
+    await this.page.waitForLoadState('domcontentloaded');
+
+    const bodyText = await this.page
+      .locator('body')
+      .innerText()
+      .catch(() => '');
+
+    const anchorCount = await this.page.locator('a').count();
+    const buttonCount = await this.page.getByRole('button').count();
+    const iframeCount = await this.page.locator('iframe').count();
+
+    console.log('CMS City Profile diagnostic:', {
+      url: this.page.url(),
+      title: await this.page.title(),
+      bodyLength: bodyText.length,
+      bodyText: bodyText.slice(0, 2000),
+      anchorCount,
+      buttonCount,
+      iframeCount,
+    });
+
+    if (bodyText.trim().length === 0) {
+      throw new Error(
+        'CMS page body is empty after login. Investigate page rendering or authentication before changing the City Profile locator.',
+      );
+    }
+
+    const linkCount = await this.cityProfileLink.count();
+
+    if (linkCount === 0) {
+      throw new Error(
+        `City Profile link was not found after login. URL: ${this.page.url()}. ` +
+        `Body text: ${bodyText.slice(0, 500)}. ` +
+        'Inspect the rendered page and CMS navigation before changing the locator.',
+      );
+    }
 
     await expect(
       this.cityProfileLink,
       'CMS City Profile link should be visible after login',
-    ).toBeVisible({ timeout: 30000 });
+    ).toBeVisible({ timeout: 10000 });
 
     await expect(this.cityProfileLink).toHaveAttribute(
       'href',
-      '/city-profile',
+      /\/city-profile\/?$/i,
     );
 
-    await this.cityProfileLink.click({ force: true });
+    await Promise.all([
+      this.page.waitForURL('**/city-profile', {
+        timeout: 30000,
+      }),
+      this.cityProfileLink.click(),
+    ]);
 
-    await this.page.waitForURL('**/city-profile');
     await this.page.waitForLoadState('domcontentloaded');
   }
 
-  async openPublishedCityProfile() {
+  async openPublishedCityProfile(): Promise<void> {
     await this.closeAnyPopup();
 
-    await expect(this.cityProfileLink).toBeVisible();
-    await this.cityProfileLink.click();
+    await expect(
+      this.cityProfileLink,
+      'Published City Profile link should be visible',
+    ).toBeVisible({ timeout: 30000 });
 
-    await this.page.waitForURL('**/city-profile');
+    await Promise.all([
+      this.page.waitForURL('**/city-profile', {
+        timeout: 30000,
+      }),
+      this.cityProfileLink.click(),
+    ]);
+
     await this.page.waitForLoadState('domcontentloaded');
   }
 
@@ -266,7 +323,7 @@ export class CmsCityPage extends BasePage {
     return this.getImageFingerprint(this.attraction3Image);
   }
 
-  async clickReadMore() {
+  async clickReadMore(): Promise<void> {
     if (this.isCmsContentList()) {
       return;
     }
@@ -284,11 +341,11 @@ export class CmsCityPage extends BasePage {
     }
   }
 
-  private isCmsContentList() {
+  private isCmsContentList(): boolean {
     return this.page.url().includes('chennai-cityprofile-Cms');
   }
 
-  private cmsRow(title: string) {
+  private cmsRow(title: string): Locator {
     return this.page
       .locator('tbody tr')
       .filter({ hasText: title })
@@ -296,7 +353,10 @@ export class CmsCityPage extends BasePage {
       .first();
   }
 
-  private async getCmsCellText(title: string, cellIndex: number) {
+  private async getCmsCellText(
+    title: string,
+    cellIndex: number,
+  ) {
     return this.cmsRow(title)
       .locator('td')
       .nth(cellIndex)
@@ -305,7 +365,9 @@ export class CmsCityPage extends BasePage {
 
   private async getCmsDescription(title: string) {
     const row = this.cmsRow(title);
-    const readMore = row.getByText('Read More', { exact: true });
+    const readMore = row.getByText('Read More', {
+      exact: true,
+    });
 
     if (await readMore.count()) {
       await readMore.first().click();
@@ -336,6 +398,7 @@ export class CmsCityPage extends BasePage {
 
       canvas.width = imageElement.naturalWidth;
       canvas.height = imageElement.naturalHeight;
+
       canvas.getContext('2d')?.drawImage(imageElement, 0, 0);
 
       return canvas.toDataURL('image/png');

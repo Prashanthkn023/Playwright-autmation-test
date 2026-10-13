@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Page,Locator} from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class CmsPage extends BasePage {
@@ -37,12 +37,40 @@ export class CmsPage extends BasePage {
     ];
 
     for (const link of links) {
-      const locator = this.page.getByRole("link", {
-        name: new RegExp(link.name, "i"),
-      }).first();
+      const matchingLinks = this.page.locator(`a[href="${link.url}"]`);
+      let locator: Locator | null = null;
 
-      await expect(locator).toBeVisible();
-      await expect(locator).toHaveAttribute("href", new RegExp(link.url.replace(/\//g, "\\/") + "$"));
+      for (let attempt = 0; attempt < 5 && !locator; attempt++) {
+        const count = await matchingLinks.count();
+        for (let index = 0; index < count; index++) {
+          const candidate = matchingLinks.nth(index);
+          if (await candidate.isVisible().catch(() => false)) {
+            locator = candidate;
+            break;
+          }
+        }
+
+        if (!locator && attempt < 4) {
+          await this.page.getByRole("button", {
+            name: /Scroll important links right/i,
+          }).click({ force: true }).catch(() => undefined);
+          await this.page.waitForTimeout(500);
+        }
+      }
+
+      expect(
+        locator,
+        `Important link "${link.name}" should be rendered`
+      ).not.toBeNull();
+
+      if (!locator) {
+        continue;
+      }
+
+      await expect(locator).toHaveAttribute(
+        "href",
+        new RegExp(link.url.replace(/\//g, "\\/") + "$")
+      );
 
       const [popup] = await Promise.all([
         this.page.waitForEvent("popup").catch(() => null),

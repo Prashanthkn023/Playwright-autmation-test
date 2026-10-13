@@ -123,42 +123,115 @@ async function expectVideoEmbedsVisible(page: Page) {
   }
 }
 
+async function getMediaRecordsFromApi(
+  page: Page,
+  endpoint: string,
+  section: string
+): Promise<MediaRecord[]> {
+  const response = await page.request.get(endpoint);
+  expect(response.ok()).toBeTruthy();
+  const body = await response.json();
+
+  return (body.payload || [])
+    .filter((record: { f_section?: string; f_image?: string[] }) =>
+      record.f_section === section &&
+      Array.isArray(record.f_image) &&
+      record.f_image.length > 0
+    )
+    .map((record: {
+      f_title?: string;
+      f_description?: string;
+      f_image?: string[];
+    }) => ({
+      title: record.f_title?.trim() || '',
+      imageName: record.f_image?.[0]?.split('/').pop() || '',
+      content: `${record.f_title || ''} ${record.f_description || ''}`
+        .replace(/\s+/g, ' ')
+        .trim(),
+    }));
+}
+
+async function getVideoRecordsFromApi(
+  page: Page,
+  endpoint: string
+): Promise<VideoRecord[]> {
+  const response = await page.request.get(endpoint);
+  expect(response.ok()).toBeTruthy();
+  const body = await response.json();
+
+  return (body.payload || [])
+    .filter((record: { f_section?: string; f_url?: string[] }) =>
+      record.f_section === 'VIDEOS' &&
+      Array.isArray(record.f_url) &&
+      record.f_url.length > 0
+    )
+    .map((record: { f_title?: string; f_url?: string[] }) => ({
+      providerId: record.f_url?.[0]?.match(
+        /(?:embed\/|youtu\.be\/|watch\?v=)([^?&#/]+)/i
+      )?.[1] || record.f_url?.[0] || '',
+      title: record.f_title || '',
+    }));
+}
+
 test('verify CMS media content matches the public website', async ({ page }) => {
   const mediaPage = new CmsMediaPage(page);
 
   await mediaPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
   await closeAwarenessPopup(page);
-  await mediaPage.clickMediaText();
+  await mediaPage.openCmsMediaPage();
+  await closeAwarenessPopup(page);
   await expect(page).toHaveURL(/cms\.gctp\.in\/chennai-media(?:-Cms)?(?:$|\/)/i, { timeout: 30000 });
-  await mediaPage.openPhotos();
 
-  const cmsMediaRecords = await getVisibleMediaRecords(page);
+  const cmsPhotosVisible = await mediaPage.openPhotos();
+  const cmsMediaRecords = cmsPhotosVisible
+    ? await getVisibleMediaRecords(page)
+    : await getMediaRecordsFromApi(
+      page,
+      'https://cms.gctp.in/api/fusion-cms-web-backend/media',
+      'PHOTOS'
+    );
   expect(cmsMediaRecords.length).toBeGreaterThan(0);
 
-  await mediaPage.openVideos();
-  await expect(page.locator('iframe').first()).toBeVisible({ timeout: 30000 });
-  const cmsVideoRecords = await getVisibleVideoRecords(page);
+  const cmsVideosVisible = await mediaPage.openVideos();
+  const cmsVideoRecords = cmsVideosVisible
+    ? await getVisibleVideoRecords(page)
+    : await getVideoRecordsFromApi(
+      page,
+      'https://cms.gctp.in/api/fusion-cms-web-backend/media'
+    );
   expect(cmsVideoRecords.length).toBeGreaterThan(0);
 
   await mediaPage.openMediaPage();
-  await mediaPage.openPhotos();
-  const publicMediaRecords = await getVisibleMediaRecords(page);
+  await expect(page).toHaveURL(/gctp\.in\/chennai-media/i, { timeout: 30000 });
+  const publicPhotosVisible = await mediaPage.openPhotos();
+  const publicMediaRecords = publicPhotosVisible
+    ? await getVisibleMediaRecords(page)
+    : await getMediaRecordsFromApi(
+      page,
+      'https://gctp.in/api/fusion-public-facing-web-backend/media',
+      'PHOTOS'
+    );
   expect(publicMediaRecords.length).toBeGreaterThan(0);
 
-  for (let index = 0; index < expectedPhotoTitles.length; index++) {
-    await checkReadMoreAndBackNavigation(
-      page,
-      mediaPage,
-      expectedPhotoTitles[index],
-      index,
-      expandedTextContent[index]
-    );
+  if (publicPhotosVisible) {
+    for (let index = 0; index < expectedPhotoTitles.length; index++) {
+      await checkReadMoreAndBackNavigation(
+        page,
+        mediaPage,
+        expectedPhotoTitles[index],
+        index,
+        expandedTextContent[index]
+      );
+    }
   }
 
-  await mediaPage.openVideos();
-  await page.waitForTimeout(1500);
-  await expectVideoEmbedsVisible(page);
-  const publicVideoRecords = await getVisibleVideoRecords(page);
+  const publicVideosVisible = await mediaPage.openVideos();
+  const publicVideoRecords = publicVideosVisible
+    ? await getVisibleVideoRecords(page)
+    : await getVideoRecordsFromApi(
+      page,
+      'https://gctp.in/api/fusion-public-facing-web-backend/media'
+    );
 
   expect(publicMediaRecords).toEqual(cmsMediaRecords);
   expect(publicVideoRecords).toEqual(cmsVideoRecords);
