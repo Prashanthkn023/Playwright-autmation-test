@@ -6,6 +6,10 @@ import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 const publishedUrl = 'https://gctp.in/chennai-home';
 
+// CMS login polls for up to 45s per attempt, so the shared 60s timeout is
+// too short once the suite load slows the server down.
+test.setTimeout(300000);
+
 test('verify CMS City Profile content with published website', async ({ page }) => {
   const cityPage = new CmsCityPage(page);
 

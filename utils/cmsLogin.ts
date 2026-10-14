@@ -286,15 +286,21 @@ export async function loginToCms(
 
         await loginButton.click();
 
-        const loginResponse = await loginResponsePromise;
+        // Robust wait: Poll until either authenticated session is detected OR login form disappears
+        await expect.poll(
+          async () => {
+            const hasAuthState = await hasCmsSession(page, targetUrl.hostname);
+            const loginFormVisible = await isLoginFormVisible(page);
+            console.log(`Polling auth: hasSession=${hasAuthState}, loginFormVisible=${loginFormVisible}`);
+            return hasAuthState && !loginFormVisible;
+          },
+          {
+            message: 'CMS session was not established or login form is still visible',
+            intervals: [1000, 2000, 5000],
+            timeout: 45000,
+          }
+        ).toBeTruthy();
 
-        if (loginResponse) {
-          console.log(`Login API status: ${loginResponse.status()}`);
-        } else {
-          console.log('Login API response was not observed within 30 seconds.');
-        }
-
-        await page.waitForTimeout(3000);
       } else {
         console.log(
           'Login form is not visible. Continuing with session verification.'

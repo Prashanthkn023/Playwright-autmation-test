@@ -113,9 +113,23 @@ export class CmsContactUsPage extends BasePage {
 
     await this.closeContactUsPopup();
 
+    await this.waitForContactTable();
+  }
+
+  // The contact table renders its shell immediately, then fills the body
+  // with a loading spinner. Waiting on the bare table passes while the data
+  // is still loading, so wait until the spinner is gone.
+  private async waitForContactTable(): Promise<void> {
+    const table = this.page.locator('table').first();
+
+    await expect(table).toBeVisible({
+      timeout: 30000,
+    });
+
     await expect(
-      this.page.locator('table').first(),
-    ).toBeVisible({
+      table.getByRole('progressbar'),
+      'Contact details should finish loading',
+    ).toHaveCount(0, {
       timeout: 30000,
     });
   }
@@ -234,10 +248,6 @@ export class CmsContactUsPage extends BasePage {
 
     await this.contactUsLink.click();
 
-    await expect(
-      this.page.locator('table').first(),
-    ).toBeVisible({
-      timeout: 30000,
-    });
+    await this.waitForContactTable();
   }
 }

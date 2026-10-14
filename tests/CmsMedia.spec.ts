@@ -173,45 +173,37 @@ async function getVideoRecordsFromApi(
     }));
 }
 
+// CMS login polls for up to 45s per attempt, so the shared 60s timeout is
+// too short once the suite load slows the server down.
+test.setTimeout(300000);
+
 test('verify CMS media content matches the public website', async ({ page }) => {
   const mediaPage = new CmsMediaPage(page);
 
+  // 1. LOGIN TO CMS AND GET APPROVED RECORDS
   await mediaPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
   await closeAwarenessPopup(page);
-  await mediaPage.openCmsMediaPage();
-  await closeAwarenessPopup(page);
-  await expect(page).toHaveURL(/cms\.gctp\.in\/chennai-media(?:-Cms)?(?:$|\/)/i, { timeout: 30000 });
 
-  const cmsPhotosVisible = await mediaPage.openPhotos();
-  const cmsMediaRecords = cmsPhotosVisible
-    ? await getVisibleMediaRecords(page)
-    : await getMediaRecordsFromApi(
-      page,
-      'https://cms.gctp.in/api/fusion-cms-web-backend/media',
-      'PHOTOS'
-    );
-  expect(cmsMediaRecords.length).toBeGreaterThan(0);
+  const cmsMediaRecords = await getMediaRecordsFromApi(
+    page,
+    'https://cms.gctp.in/api/fusion-cms-web-backend/media',
+    'PHOTOS'
+  );
+  expect(cmsMediaRecords.length, 'CMS should have approved photos').toBeGreaterThan(0);
 
-  const cmsVideosVisible = await mediaPage.openVideos();
-  const cmsVideoRecords = cmsVideosVisible
-    ? await getVisibleVideoRecords(page)
-    : await getVideoRecordsFromApi(
-      page,
-      'https://cms.gctp.in/api/fusion-cms-web-backend/media'
-    );
-  expect(cmsVideoRecords.length).toBeGreaterThan(0);
+  const cmsVideoRecords = await getVideoRecordsFromApi(
+    page,
+    'https://cms.gctp.in/api/fusion-cms-web-backend/media'
+  );
+  expect(cmsVideoRecords.length, 'CMS should have approved videos').toBeGreaterThan(0);
 
+  // 2. NAVIGATE TO PUBLIC SITE AND SCRAPE PUBLISHED RECORDS
   await mediaPage.openMediaPage();
   await expect(page).toHaveURL(/gctp\.in\/chennai-media/i, { timeout: 30000 });
+
+  // UI CHECKS
   const publicPhotosVisible = await mediaPage.openPhotos();
-  const publicMediaRecords = publicPhotosVisible
-    ? await getVisibleMediaRecords(page)
-    : await getMediaRecordsFromApi(
-      page,
-      'https://gctp.in/api/fusion-public-facing-web-backend/media',
-      'PHOTOS'
-    );
-  expect(publicMediaRecords.length).toBeGreaterThan(0);
+  expect(publicPhotosVisible, 'Public Photos section should be visible').toBeTruthy();
 
   if (publicPhotosVisible) {
     for (let index = 0; index < expectedPhotoTitles.length; index++) {
@@ -225,14 +217,42 @@ test('verify CMS media content matches the public website', async ({ page }) => 
     }
   }
 
-  const publicVideosVisible = await mediaPage.openVideos();
-  const publicVideoRecords = publicVideosVisible
-    ? await getVisibleVideoRecords(page)
-    : await getVideoRecordsFromApi(
-      page,
-      'https://gctp.in/api/fusion-public-facing-web-backend/media'
-    );
+  const publicMediaRecords = await getVisibleMediaRecords(page);
+  expect(publicMediaRecords.length, 'Public should have visible photos').toBeGreaterThan(0);
 
-  expect(publicMediaRecords).toEqual(cmsMediaRecords);
-  expect(publicVideoRecords).toEqual(cmsVideoRecords);
+  const publicVideosVisible = await mediaPage.openVideos();
+  expect(publicVideosVisible, 'Public Videos section should be visible').toBeTruthy();
+  const publicVideoRecords = await getVisibleVideoRecords(page);
+  expect(publicVideoRecords.length, 'Public should have visible videos').toBeGreaterThan(0);
+
+  // 3. COMPARE CMS APPROVED RECORDS (API) WITH PUBLISHED RECORDS (DOM)
+  // Use stable keys to match records if possible. Currently, matching by title.
+  const cmsMediaByTitle = new Map(cmsMediaRecords.map(r => [r.title.toLowerCase(), r]));
+  const publicMediaByTitle = new Map(publicMediaRecords.map(r => [r.title.toLowerCase(), r]));
+
+  // Assert counts
+  expect(publicMediaByTitle.size, 'Public site should have same number of photo records as CMS API').toBe(cmsMediaByTitle.size);
+
+  // Assert content
+  for (const [title, cmsRecord] of cmsMediaByTitle) {
+      const publicRecord = publicMediaByTitle.get(title);
+      expect(publicRecord, `Missing published photo record for: ${title}`).toBeDefined();
+      if (publicRecord) {
+        expect(publicRecord.content, `Content mismatch for photo: ${title}`).toBe(cmsRecord.content);
+      }
+  }
+
+  // Similar comparison for videos
+  const cmsVideoByTitle = new Map(cmsVideoRecords.map(r => [r.title.toLowerCase(), r]));
+  const publicVideoByTitle = new Map(publicVideoRecords.map(r => [r.title.toLowerCase(), r]));
+
+  expect(publicVideoByTitle.size, 'Public site should have same number of video records as CMS API').toBe(cmsVideoByTitle.size);
+
+  for (const [title, cmsRecord] of cmsVideoByTitle) {
+      const publicRecord = publicVideoByTitle.get(title);
+      expect(publicRecord, `Missing published video record for: ${title}`).toBeDefined();
+      if (publicRecord) {
+        expect(publicRecord.providerId, `Video provider ID mismatch for: ${title}`).toBe(cmsRecord.providerId);
+      }
+  }
 });

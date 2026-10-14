@@ -4,6 +4,10 @@ import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 
+// CMS login polls for up to 45s per attempt, so the shared 60s timeout is
+// too short once the suite load slows the server down.
+test.setTimeout(300000);
+
 type ContactRecord = {
     name: string;
     designation: string;

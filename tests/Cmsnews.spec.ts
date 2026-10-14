@@ -164,6 +164,10 @@ const getComparisonDifferences = (
 // CMS NEWS VS PUBLIC NEWS TEST
 // ============================================================
 
+// CMS login polls for up to 45s per attempt, so the shared 60s timeout is
+// too short once the suite load slows the server down.
+test.setTimeout(300000);
+
 test(
   'compare CMS approved News with public News',
   async ({ page }) => {
