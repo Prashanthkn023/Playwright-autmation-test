@@ -11,6 +11,7 @@ type VerifiedEndpoint = {
   url: string;
   source: ApiSource;
   description: string;
+  headers?: Record<string, string>;
 };
 
 type ModuleEndpointMapping = {
@@ -105,6 +106,10 @@ const verifiedEndpoints: VerifiedEndpoint[] = [
     url: 'https://gctp.in/api/cgi-bin/IGiS_Ent_service?IEG_PROJECT=chennai_its_ws&service=WFS&request=GetFeature&typeName=IEG_PROJECT:GCTP_Station_Boundaries_V1&version=1.1.0&outputformat=geojson',
     source: 'Geospatial API',
     description: 'City Map station boundary GeoJSON; observed returning HTTP 404 in live browser network capture',
+    headers: {
+      Accept: 'application/geo+json, application/json',
+      Referer: 'https://gctp.in/chennai_map',
+    },
   },
   {
     id: 'complaint-incident-sub-types',
@@ -177,6 +182,7 @@ async function measureEndpoint(
         timeout: REQUEST_TIMEOUT_MS,
         headers: {
           Accept: 'application/json',
+          ...endpoint.headers,
         },
       });
 

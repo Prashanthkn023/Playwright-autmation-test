@@ -133,14 +133,34 @@ export class CmsNewsPage extends BasePage {
   }
 
   async openCmsNewsPage() {
-    await this.page.goto(this.cmsListingUrl);
-    await this.closeAwarenessPopup();
-
-    if (!this.page.url().match(/chennai-news-updates/i)) {
-      await this.newsLink.first().click({ force: true });
+    // The CMS is a React SPA. Direct page.goto('/chennai-news-updates') causes
+    // the SPA to reload and its router may redirect to /chennai-home before the
+    // session state is rehydrated. SPA navigation via pushState + popstate event
+    // triggers React Router to render the news listing in-place, preserving the
+    // authenticated session.
+    if (this.page.url().match(/chennai-news-updates/i) && !this.page.url().includes('-Cms')) {
+      await this.closeAwarenessPopup();
+      return;
     }
 
-    await expect(this.page).toHaveURL(/chennai-news-updates/i);
+    // Dismiss any flash popup that may be blocking the page before navigating.
+    await this.closeAwarenessPopup();
+    const popup = this.page.locator('.flash-popup:visible, .flash-popup-overlay:visible').first();
+    if (await popup.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await this.page.keyboard.press('Escape').catch(() => undefined);
+      await this.page.waitForTimeout(500);
+    }
+
+    // Trigger React Router in-app navigation using the History API.
+    await this.page.evaluate(() => {
+      window.history.pushState({}, '', '/chennai-news-updates');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+
+    // Wait for the news listing to render.
+    await this.page.waitForTimeout(2000);
+    await this.closeAwarenessPopup();
+    await expect(this.page).toHaveURL(/chennai-news-updates/i, { timeout: 15000 });
     await this.closeAwarenessPopup();
   }
 
@@ -219,14 +239,25 @@ export class CmsNewsPage extends BasePage {
 
       records.push({ title, description, image, detailTitle, detailBody, detailImage });
 
-      await this.page.goto(listingUrl);
-      await this.closeAwarenessPopup();
-      if (listingUrl.includes('cms.gctp.in') && !this.page.url().match(/chennai-news-updates/i)) {
-        await this.newsLink.first().click({ force: true });
+      // Navigate back to the listing. For the CMS (a React SPA), use the History
+      // API to trigger React Router in-place navigation without a full page reload.
+      // A full reload causes the router to redirect to /chennai-home, losing the
+      // news listing content.
+      if (listingUrl.includes('cms.gctp.in')) {
+        await this.openCmsNewsPage();
+      } else {
+        // Public website: direct goto works fine.
+        await this.page.goto(listingUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 120000,
+        });
+        await this.page.waitForLoadState('domcontentloaded').catch(() => undefined);
+        await this.closeAwarenessPopup();
       }
-      await expect(this.page).toHaveURL(/chennai-news-updates/i);
+
+      await expect(this.page).toHaveURL(/chennai-news-updates/i, { timeout: 30000 });
       await this.closeAwarenessPopup();
-      await expect(cards.nth(index)).toBeVisible();
+      await expect(cards.nth(index)).toBeVisible({ timeout: 15000 });
     }
 
     return records;
