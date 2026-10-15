@@ -3,6 +3,7 @@ import { BasePage } from './BasePage';
 
 export class CityMapPage extends BasePage {
   readonly mapContainer: Locator;
+  readonly mapCanvas: Locator;
   readonly zoomInButton: Locator;
   readonly zoomOutButton: Locator;
   readonly fullScreenButton: Locator;
@@ -15,6 +16,7 @@ export class CityMapPage extends BasePage {
     super(page);
 
     this.mapContainer = page.locator('#touristLocations_map_id');
+    this.mapCanvas = this.mapContainer.locator('canvas').first();
     this.zoomInButton = page.locator('button.ol-zoom-in');
     this.zoomOutButton = page.locator('button.ol-zoom-out');
     this.fullScreenButton = page.locator('button.ol-full-screen-false, button.ol-full-screen-true');
@@ -28,6 +30,19 @@ export class CityMapPage extends BasePage {
     await this.navigate('https://gctp.in/chennai_map');
     await this.closeAnyPopup();
     await expect(this.mapContainer).toBeVisible({ timeout: 15000 });
+  }
+
+  async openCityMapFromHomePage() {
+    await this.navigate('https://gctp.in/');
+    await this.navigate('https://gctp.in/chennai-home');
+    await this.page.getByRole('link', { name: 'City Map' }).click();
+    await this.closeAnyPopup();
+    await expect(this.mapContainer).toBeVisible({ timeout: 15000 });
+    await expect(this.mapCanvas).toBeVisible();
+  }
+
+  async clickMapCanvas(position?: { x: number; y: number }) {
+    await this.mapCanvas.click(position ? { position } : {});
   }
 
   async clickZoomIn() {

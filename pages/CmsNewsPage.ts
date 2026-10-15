@@ -174,32 +174,37 @@ export class CmsNewsPage extends BasePage {
     const records: NewsRecord[] = [];
     const maxAttempts = 3;
     let cardCount = 0;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      const cards = this.page.locator(
-        'div.newsbackground:has(button:has-text("Read More"))'
-      );
-
-      cardCount = await cards.count();
-      if (cardCount > 0) {
-        break;
-      }
-
-      console.warn(
-        `No CMS/news cards found on attempt ${attempt}/${maxAttempts} at ${this.page.url()}. Reloading the listing page...`
-      );
-
-      await this.page.goto(listingUrl, {
-        waitUntil: 'domcontentloaded',
-        timeout: 120000,
-      });
-      await this.closeAwarenessPopup();
-      await this.page.waitForTimeout(3000);
-    }
-
     const cards = this.page.locator(
       'div.newsbackground:has(button:has-text("Read More"))'
     );
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await cards.first().waitFor({ state: 'visible', timeout: 10000 });
+        cardCount = await cards.count();
+        break;
+      } catch {
+        if (attempt === maxAttempts) {
+          break;
+        }
+      }
+
+      console.warn(
+        `News cards not visible on attempt ${attempt}/${maxAttempts} at ${this.page.url()}. Reopening the listing page...`
+      );
+
+      if (listingUrl.includes('cms.gctp.in')) {
+        // A full CMS reload can redirect to /chennai-home before its SPA session
+        // is restored. Re-enter the listing through React Router instead.
+        await this.openCmsNewsPage();
+      } else {
+        await this.page.goto(listingUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 120000,
+        });
+      }
+      await this.closeAwarenessPopup();
+    }
 
     await expect(
       cards.first(),
