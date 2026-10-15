@@ -35,7 +35,7 @@ export class CmsNewsPage extends BasePage {
     this.newsLink = page.getByRole('link', { name: 'News' });
 
     this.trafficDiversionHeading = page.getByRole('heading', {
-      name: /Traffic Diversion and U-Turn Restrictions in OMR and Thuraipakkam Area/i,
+      name: /Traffic Diversion and U-Turn Restrictions/i,
     });
     this.trafficDiversionDescription = page
       .locator('div, p')
@@ -157,9 +157,7 @@ export class CmsNewsPage extends BasePage {
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       const cards = this.page.locator(
-        'section:has(button:has-text("Read More")), ' +
-        'article:has(button:has-text("Read More")), ' +
-        '.card-container:has(button:has-text("Read More"))'
+        'div.newsbackground:has(button:has-text("Read More"))'
       );
 
       cardCount = await cards.count();
@@ -180,9 +178,7 @@ export class CmsNewsPage extends BasePage {
     }
 
     const cards = this.page.locator(
-      'section:has(button:has-text("Read More")), ' +
-      'article:has(button:has-text("Read More")), ' +
-      '.card-container:has(button:has-text("Read More"))'
+      'div.newsbackground:has(button:has-text("Read More"))'
     );
 
     await expect(

@@ -4,10 +4,24 @@ import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 const baseUrl = 'https://gctp.in';
 
 async function selectTamil(page: Page) {
-  const languageSelector = page.getByRole('combobox', { name: 'English' });
+  const overlay = page.locator('.flash-popup-overlay');
+  if (await overlay.isVisible({ timeout: 3000 }).catch(() => false)) {
+    const closeButton = overlay.locator('button, .flash-close-btn, [aria-label="Close"]').first();
+    if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await closeButton.click();
+    }
+    await overlay.waitFor({ state: 'hidden', timeout: 10000 });
+  } else if (await overlay.count() > 0) {
+    await overlay.first().waitFor({ state: 'hidden', timeout: 10000 }).catch(() => undefined);
+  }
 
+  const languageSelector = page.getByRole('combobox', { name: 'English' });
+  await expect(languageSelector).toBeVisible({ timeout: 10000 });
   await languageSelector.click();
-  await page.getByRole('option', { name: 'தமிழ்' }).click();
+
+  const tamilOption = page.getByRole('option', { name: 'தமிழ்' });
+  await expect(tamilOption).toBeVisible({ timeout: 10000 });
+  await tamilOption.click();
 
   await expect(
     page.getByRole('combobox', { name: 'தமிழ்' })
@@ -17,14 +31,6 @@ async function selectTamil(page: Page) {
 async function openTamilHome(page: Page) {
   await page.goto(`${baseUrl}/chennai-home`, { waitUntil: 'domcontentloaded' });
   await closeAwarenessPopup(page);
-
-  const awarenessPopup = page.locator('.flash-popup-overlay:visible').first();
-  if (await awarenessPopup.isVisible({ timeout: 3000 }).catch(() => false)) {
-    const closeButton = awarenessPopup.getByRole('button').first();
-    await closeButton.click({ force: true });
-    await awarenessPopup.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => undefined);
-  }
-
   await selectTamil(page);
 }
 

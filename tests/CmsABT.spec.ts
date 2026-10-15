@@ -102,6 +102,10 @@ const getContentDifferences = (
     : 'No content differences found.';
 };
 
+// CMS login polls for up to 45s per attempt, so the shared 60s timeout is
+// too short once the suite load slows the server down.
+test.setTimeout(300000);
+
 test('verify CMS About Us content with published website', async ({ page }) => {
 
   // =====================================================

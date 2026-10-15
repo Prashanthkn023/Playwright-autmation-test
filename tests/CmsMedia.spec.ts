@@ -43,24 +43,77 @@ async function getVisibleMediaRecords(page: Page): Promise<MediaRecord[]> {
     'Get it on Apple store',
   ]);
 
-  return page.locator('img[alt]:visible').evaluateAll(
-    (images, excludedAlts) => images
-      .map((image) => {
-        const imageElement = image as HTMLImageElement;
-        const title = imageElement.alt.trim();
-        const card = imageElement.parentElement;
-        const source = imageElement.currentSrc || imageElement.src;
-        const imageName = source.split('/').pop()?.split('?')[0] || source;
+  const mediaCards = page.locator('.home-hero-traffic-cardGTGC:visible');
+  const cardCount = await mediaCards.count();
 
-        return {
-          title,
-          imageName,
-          content: card?.innerText?.replace(/\s+/g, ' ').trim() || title,
-        };
-      })
-      .filter((record) => record.title && !excludedAlts.includes(record.title)),
-    [...excludedImageAlts]
-  );
+  for (let expandedCount = 0; expandedCount < cardCount; expandedCount++) {
+    const readMore = mediaCards.getByText('Read More', { exact: true }).first();
+    if (!(await readMore.isVisible({ timeout: 1000 }).catch(() => false))) {
+      break;
+    }
+
+    await readMore.click();
+  }
+
+  const remainingReadMoreButtons = await mediaCards.getByText('Read More', { exact: true }).count();
+  expect(
+    remainingReadMoreButtons,
+    'All visible media cards should expand before scraping full content'
+  ).toBe(0);
+
+  // Build records using Playwright locators per card so we can read the title
+  // element and body element independently and join them with a single space —
+  // exactly mirroring getMediaRecordsFromApi()'s `${f_title} ${f_description}`.
+  // The card DOM is:  [img]  [div > [div(title-text), div(body-text + Read Less)]]
+  // Using card.textContent on the whole card omits any whitespace between the
+  // title div and body div, producing "TitleDescription" instead of
+  // "Title Description".
+  const records: MediaRecord[] = [];
+
+  for (let i = 0; i < cardCount; i++) {
+    const card = mediaCards.nth(i);
+    const img = card.locator('img').first();
+    const title = ((await img.getAttribute('alt')) ?? '').trim();
+
+    if (!title || excludedImageAlts.has(title)) {
+      continue;
+    }
+
+    const source = (await img.evaluate((el) => {
+      const imageElement = el as HTMLImageElement;
+      return imageElement.currentSrc || imageElement.src;
+    })) as string;
+    const imageName = source.split('/').pop()?.split('?')[0] || source;
+
+    // The description text is in the second `.home-hero-traffic-card-des`
+    // inside the `media-card-content` sibling.  The img is wrapped in
+    // `.home-hero-card-imgGTGC-media`, so `img.nextElementSibling` is null;
+    // we must go up to the img's parent and then to its sibling.
+    const bodyText: string = await card.evaluate((cardEl) => {
+      // media-card-content is the sibling of home-hero-card-imgGTGC-media
+      const contentEl = cardEl.querySelector('.media-card-content') as HTMLElement | null;
+      if (!contentEl) return '';
+      // The body block is the second .home-hero-traffic-card-des
+      const desBlocks = contentEl.querySelectorAll('.home-hero-traffic-card-des');
+      const bodyEl = desBlocks.length >= 2 ? (desBlocks[1] as HTMLElement) : null;
+      if (!bodyEl) return '';
+      // innerText gives rendered text including whitespace; strip the button text.
+      return (bodyEl.innerText || '')
+        .replace(/Read Less\s*$/i, '')
+        .replace(/Read More\s*$/i, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    });
+
+    // Join title + description with a single space, matching the API builder.
+    const content = bodyText
+      ? `${title} ${bodyText}`.replace(/\s+/g, ' ').trim()
+      : title;
+
+    records.push({ title, imageName, content });
+  }
+
+  return records;
 }
 
 async function getVisibleVideoRecords(page: Page): Promise<VideoRecord[]> {
@@ -69,20 +122,27 @@ async function getVisibleVideoRecords(page: Page): Promise<VideoRecord[]> {
       const iframeElement = iframe as HTMLIFrameElement;
       const source = iframe.getAttribute('src') || '';
       const providerId = source.match(/(?:embed\/|youtu\.be\/)([^?&#/]+)/i)?.[1] || source;
-      let ancestor = iframe.parentElement;
-      let title = '';
 
-      for (let level = 0; level < 6 && ancestor; level++, ancestor = ancestor.parentElement) {
-        const text = ancestor.innerText?.replace(/\s+/g, ' ').trim() || '';
-        if (text && text !== iframeElement.title) {
-          title = text;
-          break;
-        }
+      // The video card DOM mirrors the photo card DOM:
+      //   [div.home-hero-card-imgGTGC > div.mediastyles > iframe]
+      //   [div.media-card-content > div.home-hero-traffic-card-des > div.media-title > div > span]
+      // Walk up to the card root (.home-hero-traffic-cardGTGC) and read the
+      // .media-title span, which contains only the video title — not the full
+      // card text that the original ancestor.innerText walk was producing.
+      let cardRoot: Element | null = iframeElement;
+      for (let i = 0; i < 8 && cardRoot; i++) {
+        if (cardRoot.classList.contains('home-hero-traffic-cardGTGC')) break;
+        cardRoot = cardRoot.parentElement;
       }
+
+      const titleSpan = cardRoot?.querySelector('.media-title span') as HTMLElement | null;
+      const title = titleSpan?.innerText?.replace(/\s+/g, ' ').trim()
+        || iframeElement.title
+        || providerId;
 
       return {
         providerId,
-        title: title || iframeElement.title || providerId,
+        title,
       };
     })
   );
@@ -222,6 +282,7 @@ test('verify CMS media content matches the public website', async ({ page }) => 
 
   const publicVideosVisible = await mediaPage.openVideos();
   expect(publicVideosVisible, 'Public Videos section should be visible').toBeTruthy();
+  await page.waitForTimeout(2000); // Wait for videos to load
   const publicVideoRecords = await getVisibleVideoRecords(page);
   expect(publicVideoRecords.length, 'Public should have visible videos').toBeGreaterThan(0);
 

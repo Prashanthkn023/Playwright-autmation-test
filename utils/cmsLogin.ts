@@ -270,12 +270,13 @@ export async function loginToCms(
         await usernameField.fill(username);
         await passwordField.fill(password);
 
+        // Register the response listener BEFORE clicking so we never miss it.
         const loginResponsePromise = page
           .waitForResponse(
             (response) =>
               response.url().includes('/api/fusion-configuration-service/users/login') &&
               response.request().method() === 'POST',
-            { timeout: 30000 }
+            { timeout: 15000 }
           )
           .catch(() => null);
 
@@ -285,6 +286,29 @@ export async function loginToCms(
         await expect(loginButton).toBeEnabled({ timeout: 15000 });
 
         await loginButton.click();
+
+        // Wait for the login API response before polling for session state.
+        // If the server silently drops the POST (e.g. rate limiting), the
+        // response promise times out and we fail fast, triggering the retry
+        // loop immediately rather than burning 45s on a dead poll.
+        const loginResponse = await loginResponsePromise;
+
+        if (!loginResponse) {
+          throw new Error(
+            'CMS login API did not respond within 15s. ' +
+            'The server may have dropped the request (rate limiting). Retrying...'
+          );
+        }
+
+        const loginStatus = loginResponse.status();
+        console.log(`CMS login API response: HTTP ${loginStatus}`);
+
+        if (loginStatus !== 200) {
+          const body = await loginResponse.text().catch(() => '(unreadable)');
+          throw new Error(
+            `CMS login API returned HTTP ${loginStatus}. Body: ${body.substring(0, 200)}`
+          );
+        }
 
         // Robust wait: Poll until either authenticated session is detected OR login form disappears
         await expect.poll(
@@ -297,7 +321,7 @@ export async function loginToCms(
           {
             message: 'CMS session was not established or login form is still visible',
             intervals: [1000, 2000, 5000],
-            timeout: 45000,
+            timeout: 30000,
           }
         ).toBeTruthy();
 
