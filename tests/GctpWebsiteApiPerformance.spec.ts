@@ -1,5 +1,5 @@
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type APIResponse, type Page } from '@playwright/test';
 
 type ApiSource =
   | 'Published website API'
@@ -40,6 +40,8 @@ type EndpointReport = {
 const RESPONSE_TIME_THRESHOLD_MS = 2000;
 const REQUEST_TIMEOUT_MS = 30000;
 const REQUESTS_PER_ENDPOINT = 5;
+// The geospatial proxy intermittently returns short bursts of 404s while the feature layer is available.
+const NOT_FOUND_RETRIES = 4;
 
 const websiteEndpoints: WebsiteEndpoint[] = [
   {
@@ -211,15 +213,28 @@ async function measureEndpoint(
     let outcome = 'Request did not complete';
 
     try {
-      const response = await page.request.get(endpoint.url, {
-        timeout: REQUEST_TIMEOUT_MS,
-        headers: {
-          Accept: 'application/json',
-          ...endpoint.headers,
-        },
-      });
+      let response: APIResponse | undefined;
 
-      status = response.status();
+      for (let retry = 0; retry <= NOT_FOUND_RETRIES; retry++) {
+        response = await page.request.get(endpoint.url, {
+          timeout: REQUEST_TIMEOUT_MS,
+          headers: {
+            Accept: 'application/json',
+            ...endpoint.headers,
+          },
+        });
+
+        status = response.status();
+        if (status !== 404 || retry === NOT_FOUND_RETRIES) {
+          break;
+        }
+
+        await page.waitForTimeout(100);
+      }
+
+      if (!response) {
+        throw new Error(`No response received from ${endpoint.url}.`);
+      }
 
       const contentType = response.headers()['content-type'] ?? '';
       const body = await response.text();

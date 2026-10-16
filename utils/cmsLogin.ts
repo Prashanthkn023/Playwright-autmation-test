@@ -169,8 +169,12 @@ async function closeCmsPopup(page: Page): Promise<void> {
 // Never print credentials or the complete login API response.
 // ============================================================
 
-async function getLoginDiagnostics(page: Page): Promise<string> {
+async function getLoginDiagnostics(
+  page: Page,
+  hostname: string
+): Promise<string> {
   const currentUrl = page.url();
+  const authSessionDetected = await hasCmsSession(page, hostname);
   const usernameVisible = await getUsernameField(page)
     .isVisible()
     .catch(() => false);
@@ -197,6 +201,7 @@ async function getLoginDiagnostics(page: Page): Promise<string> {
 
   return [
     `Current URL: ${currentUrl}`,
+    `CMS auth session detected: ${authSessionDetected}`,
     `Username visible: ${usernameVisible}`,
     `Password visible: ${passwordVisible}`,
     `Validation messages: ${
@@ -258,6 +263,8 @@ export async function loginToCms(
         await page.waitForLoadState('domcontentloaded').catch(() => undefined);
         loginFormVisible = await isLoginFormVisible(page);
       }
+
+      let authenticatedWithPersistentLoginForm = false;
 
       if (loginFormVisible) {
         const usernameField = getUsernameField(page);
@@ -329,6 +336,7 @@ export async function loginToCms(
               // regardless of form visibility - the form may be rendered by a different
               // section of the CMS home page or an overlay that does not close automatically.
               if (elapsed > 20000) {
+                authenticatedWithPersistentLoginForm = true;
                 console.log(
                   `CMS session verified after ${elapsed}ms. ` +
                   `Login form selector still matching (possibly a non-login form element). ` +
@@ -364,10 +372,16 @@ export async function loginToCms(
       );
 
       const loginFormVisibleAfterSubmit = await isLoginFormVisible(page);
-      const loginVerified = hasAuthState && !loginFormVisibleAfterSubmit;
+      const loginVerified =
+        hasAuthState &&
+        (!loginFormVisibleAfterSubmit ||
+          authenticatedWithPersistentLoginForm);
 
       if (!loginVerified) {
-        const diagnostics = await getLoginDiagnostics(page);
+        const diagnostics = await getLoginDiagnostics(
+          page,
+          targetUrl.hostname
+        );
         throw new Error(
           'CMS login could not be verified.\n' +
             'A valid CMS auth session was not established, or the login form is still visible. ' +

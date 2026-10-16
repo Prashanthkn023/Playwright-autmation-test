@@ -237,6 +237,7 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   await page.getByRole('button', { name: 'About Us' }).click();
 
   // GCTP
+  await closeAwarenessPopup(page);
   await page
     .getByRole('navigation')
     .getByText('GCTP')
