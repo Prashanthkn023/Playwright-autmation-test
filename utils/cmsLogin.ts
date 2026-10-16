@@ -407,11 +407,26 @@ export async function loginToCms(
 
       await page.waitForLoadState('domcontentloaded').catch(() => undefined);
 
-      if (await isLoginFormVisible(page)) {
-        throw new Error(
-          `CMS session was not available on the requested module: ${cmsUrl}`
-        );
-      }
+      await expect.poll(
+        async () => {
+          const hasAuthState = await hasCmsSession(
+            page,
+            targetUrl.hostname
+          );
+          const loginFormVisible = await isLoginFormVisible(page);
+
+          return (
+            hasAuthState &&
+            (!loginFormVisible || authenticatedWithPersistentLoginForm)
+          );
+        },
+        {
+          message:
+            `CMS session was not available on the requested module: ${cmsUrl}`,
+          intervals: [500, 1000, 2000],
+          timeout: 15000,
+        }
+      ).toBeTruthy();
 
       if (expectedUrlPattern) {
         try {
