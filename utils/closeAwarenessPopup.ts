@@ -38,11 +38,16 @@ export async function closeAwarenessPopup(page: Page) {
 
   for (let attempt = 0; attempt < 4; attempt++) {
     if (!(await popup.isVisible({ timeout: 1500 }).catch(() => false))) {
-      return;
+      await page.waitForTimeout(500);
+      if (!(await popup.isVisible().catch(() => false))) {
+        return;
+      }
+      continue;
     }
 
     const closeCandidates = [
-      popup.locator('.flash-close-btn').first(),
+      page.locator('.flash-close-btn:visible').first(),
+      page.getByRole('button', { name: /^(close|✕|×)$/i }).first(),
       popup.locator('button[aria-label="Close"]').first(),
       popup.locator('button[aria-label="close"]').first(),
       popup.locator('[data-bs-dismiss="modal"]').first(),
@@ -52,17 +57,11 @@ export async function closeAwarenessPopup(page: Page) {
       popup.locator('button:has-text("Close")').first(),
       popup.locator('button:has-text("Dismiss")').first(),
       popup.locator('button').first(),
-      page.keyboard.press('Escape'),
     ];
 
     let dismissed = false;
 
     for (const candidate of closeCandidates) {
-      if (candidate instanceof Promise) {
-        await candidate.catch(() => undefined);
-        continue;
-      }
-
       if (!(await candidate.isVisible().catch(() => false))) {
         continue;
       }
@@ -84,10 +83,15 @@ export async function closeAwarenessPopup(page: Page) {
     await page.waitForTimeout(300);
 
     if (!(await popup.isVisible({ timeout: 1000 }).catch(() => false))) {
-      return;
+      await page.waitForTimeout(500);
+      if (!(await popup.isVisible().catch(() => false))) {
+        return;
+      }
     }
   }
 
   await forceRemovePopup(page);
-  await expect(page.locator(POPUP_SELECTOR).first()).toBeHidden({ timeout: 2000 }).catch(() => undefined);
+  await expect(page.locator(POPUP_SELECTOR).first()).toBeHidden({
+    timeout: 2000,
+  });
 }

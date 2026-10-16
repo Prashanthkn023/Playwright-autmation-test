@@ -494,19 +494,14 @@ export async function openCmsAboutUsDropdown(
   });
 
   const aboutUsItem = navigation
-    .getByText(
-      'About Us',
-      {
-        exact: true,
-      }
-    )
+    .getByText('About Us', { exact: true })
     .first();
 
   await expect(aboutUsItem).toBeVisible({
     timeout: 30000,
   });
 
-  // Before hovering, ensure the flash-popup-overlay is gone. The CMS renders
+  // Before opening the dropdown, ensure the flash-popup-overlay is gone. The CMS renders
   // a flash overlay that intercepts pointer events; a force-remove is required
   // because the MUI component may re-render after closeAwarenessPopup returns.
   const flashOverlay = page.locator('.flash-popup-overlay:visible').first();
@@ -517,7 +512,7 @@ export async function openCmsAboutUsDropdown(
     await page.waitForTimeout(500);
   }
 
-  await aboutUsItem.hover({ force: true });
+  await aboutUsItem.hover();
 }
 
 // ============================================================
