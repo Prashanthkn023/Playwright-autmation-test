@@ -102,16 +102,6 @@ const verifiedEndpoints: VerifiedEndpoint[] = [
     description: 'City Map tourist spot data; observed in live browser network capture',
   },
   {
-    id: 'city-map-station-boundaries',
-    url: 'https://gctp.in/api/cgi-bin/IGiS_Ent_service?IEG_PROJECT=chennai_its_ws&service=WFS&request=GetFeature&typeName=IEG_PROJECT:GCTP_Station_Boundaries_V1&version=1.1.0&outputformat=geojson',
-    source: 'Geospatial API',
-    description: 'City Map station boundary GeoJSON; observed returning HTTP 404 in live browser network capture',
-    headers: {
-      Accept: 'application/geo+json, application/json',
-      Referer: 'https://gctp.in/chennai_map',
-    },
-  },
-  {
     id: 'complaint-incident-sub-types',
     url: 'https://gctp.in/api/fusion-iccc-service/incident-sub-types?cms=true',
     source: 'ICCC API',
@@ -130,7 +120,11 @@ const moduleEndpointMappings: ModuleEndpointMapping[] = [
   { module: 'Media', endpointIds: ['published-media', 'published-home-page'] },
   { module: 'News Updates', endpointIds: ['published-news-updates', 'published-home-page'] },
   { module: 'City Profile', endpointIds: ['published-city-profile', 'published-cms-home-page'] },
-  { module: 'City Map', endpointIds: ['city-map-tourist-spots', 'city-map-station-boundaries'] },
+  {
+    module: 'City Map',
+    endpointIds: ['city-map-tourist-spots'],
+    note: 'The station-boundary endpoint is excluded because it returns HTTP 404.',
+  },
   { module: 'Important Links', endpointIds: ['published-home-page'] },
   { module: 'Helpline', endpointIds: ['published-home-page'] },
   { module: 'Traffic Updates', endpointIds: ['published-home-page'] },

@@ -235,6 +235,8 @@ export async function loginToCms(
 
   const targetUrl = new URL(cmsUrl);
   const cmsHomeUrl = `${targetUrl.origin}/chennai-home`;
+  const cmsLandingUrl =
+    targetUrl.pathname === '/' ? cmsHomeUrl : cmsUrl;
 
   const attempts = 3;
   let lastError: Error | undefined;
@@ -255,7 +257,7 @@ export async function loginToCms(
       let loginFormVisible = await isLoginFormVisible(page);
 
       if (!loginFormVisible) {
-        await page.goto(cmsUrl, {
+        await page.goto(cmsLandingUrl, {
           waitUntil: 'domcontentloaded',
           timeout: 120000,
         });
@@ -263,8 +265,6 @@ export async function loginToCms(
         await page.waitForLoadState('domcontentloaded').catch(() => undefined);
         loginFormVisible = await isLoginFormVisible(page);
       }
-
-      let authenticatedWithPersistentLoginForm = false;
 
       if (loginFormVisible) {
         const usernameField = getUsernameField(page);
@@ -316,39 +316,19 @@ export async function loginToCms(
           );
         }
 
-        // Robust wait: Poll until either authenticated session is detected AND login form disappears.
-        // The CMS React app may take a few seconds to transition away from the login form
-        // after the JWT is stored in localStorage. Once the session is detected, wait
-        // up to 15 additional seconds for the form to disappear.
-        const loginTime = Date.now();
+        // Require both an authenticated session and a completed transition away
+        // from the login form; a stale localStorage token alone is insufficient.
         await expect.poll(
           async () => {
             const hasAuthState = await hasCmsSession(page, targetUrl.hostname);
             const loginFormVisible = await isLoginFormVisible(page);
             console.log(`Polling auth: hasSession=${hasAuthState}, loginFormVisible=${loginFormVisible}, url=${page.url()}`);
 
-            // Once the session token is stored, check whether the form is still up.
-            // If so, attempt to close any overlaying popup that may be blocking the
-            // React transition, then re-check.
             if (hasAuthState && loginFormVisible) {
-              const elapsed = Date.now() - loginTime;
-              // After 20s of having a valid session, treat the login as successful
-              // regardless of form visibility - the form may be rendered by a different
-              // section of the CMS home page or an overlay that does not close automatically.
-              if (elapsed > 20000) {
-                authenticatedWithPersistentLoginForm = true;
-                console.log(
-                  `CMS session verified after ${elapsed}ms. ` +
-                  `Login form selector still matching (possibly a non-login form element). ` +
-                  `Proceeding with authenticated session.`
-                );
-                return true;
-              }
               const flashOverlay = page.locator('.flash-popup-overlay:visible').first();
               if (await flashOverlay.isVisible({ timeout: 500 }).catch(() => false)) {
                 await page.keyboard.press('Escape').catch(() => undefined);
               }
-              return false; // keep polling
             }
 
             return hasAuthState && !loginFormVisible;
@@ -372,10 +352,7 @@ export async function loginToCms(
       );
 
       const loginFormVisibleAfterSubmit = await isLoginFormVisible(page);
-      const loginVerified =
-        hasAuthState &&
-        (!loginFormVisibleAfterSubmit ||
-          authenticatedWithPersistentLoginForm);
+      const loginVerified = hasAuthState && !loginFormVisibleAfterSubmit;
 
       if (!loginVerified) {
         const diagnostics = await getLoginDiagnostics(
@@ -392,14 +369,15 @@ export async function loginToCms(
 
       console.log('CMS login verified via authenticated browser session.');
 
+      const requestedCmsUrl = new URL(cmsLandingUrl);
       const currentUrl = new URL(page.url());
 
       if (
-        currentUrl.origin !== targetUrl.origin ||
-        currentUrl.pathname !== targetUrl.pathname ||
-        currentUrl.search !== targetUrl.search
+        currentUrl.origin !== requestedCmsUrl.origin ||
+        currentUrl.pathname !== requestedCmsUrl.pathname ||
+        currentUrl.search !== requestedCmsUrl.search
       ) {
-        await page.goto(cmsUrl, {
+        await page.goto(cmsLandingUrl, {
           waitUntil: 'domcontentloaded',
           timeout: 120000,
         });
@@ -415,14 +393,11 @@ export async function loginToCms(
           );
           const loginFormVisible = await isLoginFormVisible(page);
 
-          return (
-            hasAuthState &&
-            (!loginFormVisible || authenticatedWithPersistentLoginForm)
-          );
+          return hasAuthState && !loginFormVisible;
         },
         {
           message:
-            `CMS session was not available on the requested module: ${cmsUrl}`,
+            `CMS session was not available on the requested module: ${cmsLandingUrl}`,
           intervals: [500, 1000, 2000],
           timeout: 15000,
         }

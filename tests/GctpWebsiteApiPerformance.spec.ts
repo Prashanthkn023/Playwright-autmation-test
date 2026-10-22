@@ -99,16 +99,6 @@ const websiteEndpoints: WebsiteEndpoint[] = [
     description: 'City Map tourist spot data.',
   },
   {
-    id: 'city-map-station-boundaries',
-    url: 'https://gctp.in/api/cgi-bin/IGiS_Ent_service?IEG_PROJECT=chennai_its_ws&service=WFS&request=GetFeature&typeName=IEG_PROJECT:GCTP_Station_Boundaries_V1&version=1.1.0&outputformat=geojson',
-    source: 'Geospatial API',
-    description: 'City Map station boundary GeoJSON.',
-    headers: {
-      Accept: 'application/geo+json, application/json',
-      Referer: 'https://gctp.in/chennai_map',
-    },
-  },
-  {
     id: 'complaint-incident-subtypes',
     url: 'https://gctp.in/api/fusion-iccc-service/incident-sub-types?cms=true',
     source: 'ICCC API',
@@ -141,7 +131,8 @@ const moduleMappings: ModuleMapping[] = [
   },
   {
     module: 'City Map',
-    endpointIds: ['city-map-tourist-spots', 'city-map-station-boundaries'],
+    endpointIds: ['city-map-tourist-spots'],
+    note: 'The station-boundary endpoint is excluded because it returns HTTP 404.',
   },
   { module: 'Important Links', endpointIds: ['home-page-content'] },
   { module: 'Helpline', endpointIds: ['home-page-content'] },
