@@ -6,6 +6,7 @@ import { ComplaintPage } from '../pages/ComplaintPage';
 import { ImageValidationPage } from '../pages/ImageValidationPage';
 import { CmsPage } from '../pages/CmsPage';
 import { CityMapPage } from '../pages/CityMapPage';
+import { CmsTamilPage } from '../pages/CmsTamilPage';
 import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 
 type PageObjects = {
@@ -21,6 +22,8 @@ type PageObjects = {
     cms: CmsPage;
 
     cityMap: CityMapPage;
+
+    cmsTamil: CmsTamilPage;
 
 };
 
@@ -73,6 +76,12 @@ export const test = base.extend<PageObjects & SharedFixtures>({
     cityMap: async ({ page }, use) => {
 
         await use(new CityMapPage(page));
+
+    },
+
+    cmsTamil: async ({ page }, use) => {
+
+        await use(new CmsTamilPage(page));
 
     }
 
