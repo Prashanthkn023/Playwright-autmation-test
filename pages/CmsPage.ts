@@ -313,7 +313,7 @@ export class CmsPage extends BasePage {
       .click();
 
     await expect(this.page).toHaveURL(
-      "https://gctp.in/chennai-complaints"
+      "https://gctp.in/chennai-complaintss"
     );
   }
 }

@@ -15,8 +15,10 @@ async function selectTamil(page: Page) {
     await overlay.first().waitFor({ state: 'hidden', timeout: 10000 }).catch(() => undefined);
   }
 
+  await closeAwarenessPopup(page);
   const languageSelector = page.getByRole('combobox', { name: 'English' });
   await expect(languageSelector).toBeVisible({ timeout: 10000 });
+  await closeAwarenessPopup(page);
   await languageSelector.click();
 
   const tamilOption = page.getByRole('option', { name: 'தமிழ்' });
