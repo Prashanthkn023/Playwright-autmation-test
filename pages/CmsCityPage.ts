@@ -36,10 +36,9 @@ export class CmsCityPage extends BasePage {
       exact: true,
     });
 
-    this.cityDescription = page
-      .locator('p')
-      .filter({ hasText: 'Chennai is not just a metropolis' })
-      .first();
+    this.cityDescription = this.cityProfileHeading
+      .locator('xpath=..')
+      .locator('p');
 
     this.cityProfileImage = page.locator('.GCTPImg');
 
@@ -191,8 +190,13 @@ export class CmsCityPage extends BasePage {
       return this.getCmsDescription('CITY PROFILE');
     }
 
+    await expect(
+      this.cityDescription.first(),
+      'City profile description should be visible',
+    ).toBeVisible();
+
     return this.cleanDescription(
-      await this.cityDescription.textContent(),
+      (await this.cityDescription.allTextContents()).join(' '),
     );
   }
 
@@ -411,6 +415,7 @@ export class CmsCityPage extends BasePage {
 
   private cleanDescription(value: string | null) {
     return value
+      ?.replace(/\s+/g, ' ')
       ?.replace(/Read More|Read Less/g, '')
       .replace(/\.{3,}\s*$/, '')
       .replace(/[.!?]+\s*$/, '')
