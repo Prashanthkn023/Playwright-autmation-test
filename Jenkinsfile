@@ -40,6 +40,8 @@ pipeline {
                         passwordVariable: 'CMS_PASSWORD'
                     )
                 ]) {
+                    bat 'if not defined CMS_USERNAME (echo CMS_USERNAME is missing from Jenkins credentials & exit /b 1)'
+                    bat 'if not defined CMS_PASSWORD (echo CMS_PASSWORD is missing from Jenkins credentials & exit /b 1)'
                     catchError(
                         buildResult: 'UNSTABLE',
                         stageResult: 'UNSTABLE'

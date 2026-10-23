@@ -64,6 +64,14 @@ async function isLoginFormVisible(page: Page): Promise<boolean> {
   }
 }
 
+async function isCmsNavigationVisible(page: Page): Promise<boolean> {
+  return page
+    .locator('nav a[href*="-Cms"]')
+    .first()
+    .isVisible()
+    .catch(() => false);
+}
+
 async function hasCmsSession(
   page: Page,
   hostname: string
@@ -182,6 +190,7 @@ async function getLoginDiagnostics(
   const passwordVisible = await getPasswordField(page)
     .isVisible()
     .catch(() => false);
+  const cmsNavigationVisible = await isCmsNavigationVisible(page);
 
   const validationMessages = await page
     .locator(
@@ -204,6 +213,7 @@ async function getLoginDiagnostics(
     `CMS auth session detected: ${authSessionDetected}`,
     `Username visible: ${usernameVisible}`,
     `Password visible: ${passwordVisible}`,
+    `CMS navigation visible: ${cmsNavigationVisible}`,
     `Validation messages: ${
       messages.length > 0 ? messages.join(' | ') : 'None detected'
     }`,
@@ -316,25 +326,24 @@ export async function loginToCms(
           );
         }
 
-        // The login form can remain rendered after the CMS has issued a valid
-        // session, so authentication is determined by the session itself.
+        // A token alone can be stale. Require the authenticated CMS navigation
+        // and a dismissed login form before accepting the session.
         await expect.poll(
           async () => {
             const hasAuthState = await hasCmsSession(page, targetUrl.hostname);
             const loginFormVisible = await isLoginFormVisible(page);
-            console.log(`Polling auth: hasSession=${hasAuthState}, loginFormVisible=${loginFormVisible}, url=${page.url()}`);
+            const cmsNavigationVisible = await isCmsNavigationVisible(page);
+            console.log(
+              `Polling auth: hasSession=${hasAuthState}, ` +
+                `loginFormVisible=${loginFormVisible}, ` +
+                `cmsNavigationVisible=${cmsNavigationVisible}, url=${page.url()}`
+            );
 
-            if (hasAuthState && loginFormVisible) {
-              const flashOverlay = page.locator('.flash-popup-overlay:visible').first();
-              if (await flashOverlay.isVisible({ timeout: 500 }).catch(() => false)) {
-                await page.keyboard.press('Escape').catch(() => undefined);
-              }
-            }
-
-            return hasAuthState;
+            return hasAuthState && !loginFormVisible && cmsNavigationVisible;
           },
           {
-            message: 'CMS session was not established after the login response',
+            message:
+              'CMS login did not reach the authenticated navigation after the login response',
             intervals: [1000, 2000, 5000],
             timeout: 30000,
           }
@@ -352,14 +361,11 @@ export async function loginToCms(
       );
 
       const loginFormVisibleAfterSubmit = await isLoginFormVisible(page);
-      const loginVerified = hasAuthState;
-
-      if (loginVerified && loginFormVisibleAfterSubmit) {
-        console.warn(
-          'CMS session is established, but the login form remains rendered. ' +
-            'Continuing with the authenticated session.'
-        );
-      }
+      const cmsNavigationVisible = await isCmsNavigationVisible(page);
+      const loginVerified =
+        hasAuthState &&
+        !loginFormVisibleAfterSubmit &&
+        cmsNavigationVisible;
 
       if (!loginVerified) {
         const diagnostics = await getLoginDiagnostics(
@@ -368,8 +374,9 @@ export async function loginToCms(
         );
         throw new Error(
           'CMS login could not be verified.\n' +
-            'A valid CMS auth session was not established, or the login form is still visible. ' +
-            'The TS load-balancer cookie is not an authentication signal.\n\n' +
+            'The CMS must establish an auth session, dismiss the login form, ' +
+            'and render its CMS navigation. The TS load-balancer cookie is not ' +
+            'an authentication signal.\n\n' +
             diagnostics
         );
       }
@@ -394,11 +401,15 @@ export async function loginToCms(
 
       await expect.poll(
         async () => {
-          return hasCmsSession(page, targetUrl.hostname);
+          return (
+            (await hasCmsSession(page, targetUrl.hostname)) &&
+            !(await isLoginFormVisible(page)) &&
+            (await isCmsNavigationVisible(page))
+          );
         },
         {
           message:
-            `CMS session was not available on the requested module: ${cmsLandingUrl}`,
+            `Authenticated CMS navigation was not available on the requested module: ${cmsLandingUrl}`,
           intervals: [500, 1000, 2000],
           timeout: 15000,
         }
