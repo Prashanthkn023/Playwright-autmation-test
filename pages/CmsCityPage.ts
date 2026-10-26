@@ -36,9 +36,9 @@ export class CmsCityPage extends BasePage {
       exact: true,
     });
 
-    this.cityDescription = this.cityProfileHeading
-      .locator('xpath=..')
-      .locator('p');
+    this.cityDescription = page
+      .locator('.gctp-description-wrapper')
+      .or(page.locator('p').filter({ hasText: 'Chennai is not just a metropolis' }));
 
     this.cityProfileImage = page.locator('.GCTPImg');
 
