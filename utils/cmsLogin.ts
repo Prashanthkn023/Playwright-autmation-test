@@ -65,8 +65,12 @@ async function isLoginFormVisible(page: Page): Promise<boolean> {
 }
 
 async function isCmsNavigationVisible(page: Page): Promise<boolean> {
+  // Authenticated CMS pages render the site navigation with plain hrefs
+  // (e.g. /chennai-news-updates). The "-Cms" suffix only appears on the
+  // content-management module URLs, which the home page never links to,
+  // so requiring it here made a successful login look unauthenticated.
   return page
-    .locator('nav a[href*="-Cms"]')
+    .locator('nav a[href*="-Cms"], nav a[href="/chennai-news-updates"]')
     .first()
     .isVisible()
     .catch(() => false);
