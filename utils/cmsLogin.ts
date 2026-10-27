@@ -281,6 +281,23 @@ export async function loginToCms(
 
       await page.waitForLoadState('domcontentloaded').catch(() => undefined);
 
+      // Clear existing session state to prevent stale cookie/token issues
+      // from interfering with verification in headless environments (Jenkins).
+      await page.context().clearCookies({ domain: targetUrl.hostname }).catch(() => undefined);
+      await page.evaluate(() => {
+        try {
+          localStorage.clear();
+        } catch {}
+      }).catch(() => undefined);
+
+      // Reload home URL after clearing state to get a fresh unauthenticated session
+      await page.goto(cmsHomeUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 120000,
+      });
+
+      await page.waitForLoadState('domcontentloaded').catch(() => undefined);
+
       let loginFormVisible = await isLoginFormVisible(page);
 
       if (!loginFormVisible) {
