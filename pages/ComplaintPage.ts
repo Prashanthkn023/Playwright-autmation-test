@@ -76,7 +76,7 @@ export class ComplaintPage extends BasePage {
       page.getByRole(
         'button',
         {
-          name: 'Submit'
+          name: 'Validate'
         }
       );
 
@@ -247,6 +247,15 @@ export class ComplaintPage extends BasePage {
       if (
         captchaText
       ) {
+        // Wait for CAPTCHA input to become enabled before attempting to fill it.
+        // The form only enables the CAPTCHA block once all preceding mandatory
+        // fields are validated.
+        await expect(
+          this.captchaInput,
+          'CAPTCHA input should become enabled after mandatory fields are filled'
+        ).toBeEnabled({
+          timeout: 15000
+        });
 
         await this.captchaInput.fill(
           captchaText
