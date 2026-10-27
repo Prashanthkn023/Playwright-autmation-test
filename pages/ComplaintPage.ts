@@ -497,6 +497,13 @@ export class ComplaintPage extends BasePage {
       await this.clickSubmit();
       await this.verifyToastMessage();
 
+      const toastText = (await this.toastMessage.textContent().catch(() => '')) || '';
+      if (/captcha|not match|invalid/i.test(toastText)) {
+        throw new Error(
+          `Complaint submission rejected by server (CAPTCHA mismatch/error): ${toastText.trim()}`
+        );
+      }
+
       /*
        * Await and validate the citizen login API response.
        * Expected shape: { status: 200, payload: "OTP sent successfully", message: "Success" }
