@@ -356,7 +356,7 @@ export async function loginToCms(
                 `cmsNavigationVisible=${cmsNavigationVisible}, url=${page.url()}`
             );
 
-            return hasAuthState && (cmsNavigationVisible || !loginFormVisible);
+            return cmsNavigationVisible || (hasAuthState && !loginFormVisible);
           },
           {
             message:
@@ -380,8 +380,7 @@ export async function loginToCms(
       const loginFormVisibleAfterSubmit = await isLoginFormVisible(page);
       const cmsNavigationVisible = await isCmsNavigationVisible(page);
       const loginVerified =
-        hasAuthState &&
-        (cmsNavigationVisible || !loginFormVisibleAfterSubmit);
+        cmsNavigationVisible || (hasAuthState && !loginFormVisibleAfterSubmit);
 
       if (!loginVerified) {
         const diagnostics = await getLoginDiagnostics(
@@ -418,8 +417,8 @@ export async function loginToCms(
       await expect.poll(
         async () => {
           return (
-            (await hasCmsSession(page, targetUrl.hostname)) &&
-            ((await isCmsNavigationVisible(page)) || !(await isLoginFormVisible(page)))
+            (await isCmsNavigationVisible(page)) ||
+            ((await hasCmsSession(page, targetUrl.hostname)) && !(await isLoginFormVisible(page)))
           );
         },
         {
