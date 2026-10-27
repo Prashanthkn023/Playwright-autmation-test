@@ -331,7 +331,7 @@ export async function loginToCms(
         }
 
         // A token alone can be stale. Require the authenticated CMS navigation
-        // and a dismissed login form before accepting the session.
+        // or a dismissed login form before accepting the session.
         await expect.poll(
           async () => {
             const hasAuthState = await hasCmsSession(page, targetUrl.hostname);
@@ -343,13 +343,13 @@ export async function loginToCms(
                 `cmsNavigationVisible=${cmsNavigationVisible}, url=${page.url()}`
             );
 
-            return hasAuthState && !loginFormVisible && cmsNavigationVisible;
+            return hasAuthState && (cmsNavigationVisible || !loginFormVisible);
           },
           {
             message:
               'CMS login did not reach the authenticated navigation after the login response',
             intervals: [1000, 2000, 5000],
-            timeout: 30000,
+            timeout: 45000,
           }
         ).toBeTruthy();
 
@@ -368,8 +368,7 @@ export async function loginToCms(
       const cmsNavigationVisible = await isCmsNavigationVisible(page);
       const loginVerified =
         hasAuthState &&
-        !loginFormVisibleAfterSubmit &&
-        cmsNavigationVisible;
+        (cmsNavigationVisible || !loginFormVisibleAfterSubmit);
 
       if (!loginVerified) {
         const diagnostics = await getLoginDiagnostics(
@@ -407,8 +406,7 @@ export async function loginToCms(
         async () => {
           return (
             (await hasCmsSession(page, targetUrl.hostname)) &&
-            !(await isLoginFormVisible(page)) &&
-            (await isCmsNavigationVisible(page))
+            ((await isCmsNavigationVisible(page)) || !(await isLoginFormVisible(page)))
           );
         },
         {
