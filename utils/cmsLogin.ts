@@ -235,6 +235,19 @@ export async function loginToCms(
   password: string,
   expectedUrlPattern?: RegExp
 ): Promise<void> {
+  // Remove integrity attributes to bypass SRI failures that block JS from loading,
+  // which prevents the app from transitioning to the authenticated state.
+  await page.addInitScript(() => {
+    const removeIntegrity = () => {
+      document.querySelectorAll('script[integrity], link[integrity]').forEach(el => {
+        el.removeAttribute('integrity');
+      });
+    };
+    removeIntegrity();
+    const observer = new MutationObserver(removeIntegrity);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  });
+
   if (
     !username ||
     !password ||
