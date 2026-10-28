@@ -8,6 +8,9 @@ export default defineConfig({
   // Empty placeholder test used only by Playwright agents
   testIgnore: /seed\.spec\.ts/,
 
+  // Global teardown
+  globalTeardown: './global-teardown.ts',
+
   // Global test timeout
   timeout: Number(process.env.TIMEOUT) || 600000,
 

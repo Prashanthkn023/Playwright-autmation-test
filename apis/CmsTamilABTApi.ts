@@ -1,4 +1,5 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
+import { TestAuditLogger } from '../utils/testAuditLogger';
 
 export const cmsAboutUsUrl = 'https://gctp.in/api/fusion-cms-web-backend/about-us?approvalStatus=all';
 export const publishedAboutUsUrl = 'https://gctp.in/api/fusion-public-facing-web-backend/about-us';
@@ -70,12 +71,60 @@ export class CmsTamilABTApi {
     this.request = request;
   }
 
-  async getCmsAboutUs(): Promise<APIResponse> {
-    return await this.request.get(cmsAboutUsUrl, { headers: { Accept: 'application/json' } });
+  async getCmsAboutUs(testName: string = 'CmsTamilABT API Comparison'): Promise<APIResponse> {
+    try {
+      const response = await this.request.get(cmsAboutUsUrl, { headers: { Accept: 'application/json' } });
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: cmsAboutUsUrl,
+        item: 'CMS About Us API GET Request',
+        expected: '200 OK',
+        actual: `${response.status()} ${response.statusText()}`,
+        status: response.ok() ? 'PASS' : 'FAIL',
+      });
+      return response;
+    } catch (error) {
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: cmsAboutUsUrl,
+        item: 'CMS About Us API GET Request',
+        expected: '200 OK',
+        actual: '<request error>',
+        status: 'ERROR',
+        failureReason: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
-  async getPublishedAboutUs(): Promise<APIResponse> {
-    return await this.request.get(publishedAboutUsUrl, { headers: { Accept: 'application/json' } });
+  async getPublishedAboutUs(testName: string = 'CmsTamilABT API Comparison'): Promise<APIResponse> {
+    try {
+      const response = await this.request.get(publishedAboutUsUrl, { headers: { Accept: 'application/json' } });
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: publishedAboutUsUrl,
+        item: 'Published About Us API GET Request',
+        expected: '200 OK',
+        actual: `${response.status()} ${response.statusText()}`,
+        status: response.ok() ? 'PASS' : 'FAIL',
+      });
+      return response;
+    } catch (error) {
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: publishedAboutUsUrl,
+        item: 'Published About Us API GET Request',
+        expected: '200 OK',
+        actual: '<request error>',
+        status: 'ERROR',
+        failureReason: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   isRecord(value: JsonValue): value is { [key: string]: JsonValue } {
@@ -86,25 +135,25 @@ export class CmsTamilABTApi {
     return JSON.stringify(value);
   }
 
-  validateJsonTree(value: JsonValue, path: string, errors: string[]): void {
+  validateJsonTree(value: JsonValue, pathStr: string, errors: string[]): void {
     if (value === null || typeof value === 'string' || typeof value === 'boolean') {
       return;
     }
     if (typeof value === 'number') {
-      if (!Number.isFinite(value)) errors.push(`${path}: number is not finite`);
+      if (!Number.isFinite(value)) errors.push(`${pathStr}: number is not finite`);
       return;
     }
     if (Array.isArray(value)) {
-      value.forEach((item, index) => this.validateJsonTree(item, `${path}[${index}]`, errors));
+      value.forEach((item, index) => this.validateJsonTree(item, `${pathStr}[${index}]`, errors));
       return;
     }
     if (this.isRecord(value)) {
       for (const [key, child] of Object.entries(value)) {
-        this.validateJsonTree(child, `${path}.${key}`, errors);
+        this.validateJsonTree(child, `${pathStr}.${key}`, errors);
       }
       return;
     }
-    errors.push(`${path}: unsupported JSON value`);
+    errors.push(`${pathStr}: unsupported JSON value`);
   }
 
   isUnexpectedEmpty(value: JsonValue): boolean {
@@ -114,15 +163,25 @@ export class CmsTamilABTApi {
   compareValue(
     cmsValue: JsonValue | undefined,
     publishedValue: JsonValue | undefined,
-    path: string,
-    stats: ComparisonStats
+    pathStr: string,
+    stats: ComparisonStats,
+    testName: string = 'CmsTamilABT API Comparison'
   ): void {
     if (cmsValue === undefined || publishedValue === undefined) {
       stats.missing.push({
-        path,
+        path: pathStr,
         kind: 'missing',
         cmsValue: cmsValue === undefined ? '<missing>' : cmsValue,
         publishedValue: publishedValue === undefined ? '<missing>' : publishedValue,
+      });
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: 'API Field Level',
+        item: `Field ${pathStr}`,
+        expected: 'Field present in both CMS & Published',
+        actual: cmsValue === undefined ? 'Missing in CMS' : 'Missing in Published',
+        status: 'FAIL',
       });
       return;
     }
@@ -131,10 +190,19 @@ export class CmsTamilABTApi {
       stats.compared++;
       if (cmsValue.length !== publishedValue.length) {
         stats.mismatches.push({
-          path: `${path}.length`,
+          path: `${pathStr}.length`,
           kind: 'mismatch',
           cmsValue: cmsValue.length,
           publishedValue: publishedValue.length,
+        });
+        TestAuditLogger.log({
+          testName,
+          testType: 'API',
+          target: 'API Array Length',
+          item: `Array Length ${pathStr}`,
+          expected: String(cmsValue.length),
+          actual: String(publishedValue.length),
+          status: 'FAIL',
         });
       } else {
         stats.matching++;
@@ -142,7 +210,7 @@ export class CmsTamilABTApi {
 
       const length = Math.max(cmsValue.length, publishedValue.length);
       for (let index = 0; index < length; index++) {
-        this.compareValue(cmsValue[index], publishedValue[index], `${path}[${index}]`, stats);
+        this.compareValue(cmsValue[index], publishedValue[index], `${pathStr}[${index}]`, stats, testName);
       }
       return;
     }
@@ -150,20 +218,39 @@ export class CmsTamilABTApi {
     if (this.isRecord(cmsValue) && this.isRecord(publishedValue)) {
       const keys = new Set([...Object.keys(cmsValue), ...Object.keys(publishedValue)]);
       for (const key of keys) {
-        this.compareValue(cmsValue[key], publishedValue[key], `${path}.${key}`, stats);
+        this.compareValue(cmsValue[key], publishedValue[key], `${pathStr}.${key}`, stats, testName);
       }
       return;
     }
 
     stats.compared++;
-    if (Object.is(cmsValue, publishedValue)) {
+    const matches = Object.is(cmsValue, publishedValue);
+    if (matches) {
       stats.matching++;
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: 'API Content Field',
+        item: `Field ${pathStr}`,
+        expected: String(cmsValue),
+        actual: String(publishedValue),
+        status: 'PASS',
+      });
     } else {
       stats.mismatches.push({
-        path,
+        path: pathStr,
         kind: 'mismatch',
         cmsValue,
         publishedValue,
+      });
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: 'API Content Field',
+        item: `Field ${pathStr}`,
+        expected: String(cmsValue),
+        actual: String(publishedValue),
+        status: 'FAIL',
       });
     }
   }
@@ -171,7 +258,8 @@ export class CmsTamilABTApi {
   async getJsonResponse(
     response: APIResponse,
     source: string,
-    failures: string[]
+    failures: string[],
+    testName: string = 'CmsTamilABT API Comparison'
   ): Promise<ApiEnvelope | null> {
     const status = response.status();
     const contentType = response.headers()['content-type'] ?? '';
@@ -188,12 +276,33 @@ export class CmsTamilABTApi {
     try {
       parsed = JSON.parse(body);
     } catch (error) {
-      failures.push(`${source}: response is not valid JSON (${error instanceof Error ? error.message : String(error)})`);
+      const msg = `${source}: response is not valid JSON (${error instanceof Error ? error.message : String(error)})`;
+      failures.push(msg);
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: source,
+        item: `${source} JSON Parse`,
+        expected: 'Valid JSON Object',
+        actual: '<invalid JSON>',
+        status: 'ERROR',
+        failureReason: msg,
+      });
       return null;
     }
 
     if (parsed === null || Array.isArray(parsed) || typeof parsed !== 'object') {
-      failures.push(`${source}: expected a JSON envelope object`);
+      const msg = `${source}: expected a JSON envelope object`;
+      failures.push(msg);
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: source,
+        item: `${source} Envelope Structure`,
+        expected: 'JSON Envelope Object',
+        actual: String(parsed),
+        status: 'FAIL',
+      });
       return null;
     }
 
@@ -206,12 +315,33 @@ export class CmsTamilABTApi {
     }
     if (!Array.isArray(envelope.payload)) {
       failures.push(`${source}: envelope.payload must be an array`);
+      TestAuditLogger.log({
+        testName,
+        testType: 'API',
+        target: source,
+        item: `${source} Payload Array Check`,
+        expected: 'Array payload',
+        actual: typeof envelope.payload,
+        status: 'FAIL',
+      });
       return null;
     }
 
     const jsonErrors: string[] = [];
     this.validateJsonTree(parsed as JsonValue, source, jsonErrors);
     failures.push(...jsonErrors);
+
+    const isSuccess = failures.length === 0;
+    TestAuditLogger.log({
+      testName,
+      testType: 'API',
+      target: source,
+      item: `${source} Structure & Envelope Validation`,
+      expected: 'Status 200 & Array payload without structural errors',
+      actual: `Status ${envelope.status}, payload count: ${envelope.payload.length}`,
+      status: isSuccess ? 'PASS' : 'FAIL',
+      failureReason: isSuccess ? undefined : failures.join('; '),
+    });
 
     return envelope as ApiEnvelope;
   }
