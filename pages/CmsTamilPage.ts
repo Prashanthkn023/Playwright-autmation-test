@@ -59,4 +59,9 @@ export class CmsTamilPage extends BasePage {
   async verifyTamilLanguageSelected() {
     await expect(this.page.getByRole('combobox', { name: 'தமிழ்' })).toBeVisible();
   }
+
+  async verifyAboutUsUI(title: string, imageSelector: string) {
+    await expect(this.page.getByText(title)).toBeVisible();
+    await expect(this.page.locator(imageSelector)).toBeVisible();
+  }
 }
