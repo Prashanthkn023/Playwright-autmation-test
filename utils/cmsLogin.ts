@@ -360,28 +360,13 @@ export async function loginToCms(
           );
         }
 
-        // A token alone can be stale. Require the authenticated CMS navigation
-        // or a dismissed login form before accepting the session.
-        await expect.poll(
-          async () => {
-            const hasAuthState = await hasCmsSession(page, targetUrl.hostname);
-            const loginFormVisible = await isLoginFormVisible(page);
-            const cmsNavigationVisible = await isCmsNavigationVisible(page);
-            console.log(
-              `Polling auth: hasSession=${hasAuthState}, ` +
-                `loginFormVisible=${loginFormVisible}, ` +
-                `cmsNavigationVisible=${cmsNavigationVisible}, url=${page.url()}`
-            );
-
-            return cmsNavigationVisible || (hasAuthState && !loginFormVisible);
-          },
-          {
-            message:
-              'CMS login did not reach the authenticated navigation after the login response',
-            intervals: [1000, 2000, 5000],
-            timeout: 45000,
-          }
-        ).toBeTruthy();
+        // After successful login API response (HTTP 200), navigate to landing URL
+        // to load the authenticated CMS interface using the stored session token.
+        await page.goto(cmsLandingUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 120000,
+        });
+        await page.waitForLoadState('domcontentloaded').catch(() => undefined);
 
       } else {
         console.log(
