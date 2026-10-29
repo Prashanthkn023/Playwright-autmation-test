@@ -175,7 +175,7 @@ test(
       new CmsNewsPage(page);
 
     // ========================================================
-    // STEP 1 - LOGIN TO CMS
+    // STEP 1 - NAVIGATE TO CMS
     // ========================================================
 
     console.log('');
@@ -194,11 +194,7 @@ test(
       newsPage.cmsNewsUrl
     );
 
-    await loginToConfiguredCms(
-      page,
-      newsPage.cmsNewsUrl,
-      /chennai-news-updates/i
-    );
+    await page.goto(newsPage.cmsNewsUrl, { waitUntil: 'domcontentloaded' });
 
     // ========================================================
     // STEP 2 - OPEN CMS NEWS

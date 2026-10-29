@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export type AuditTestType = 'CONTENT' | 'API' | 'UI' | 'E2E';
+export type AuditTestType = 'CONTENT' | 'API' | 'UI' | 'E2E' | 'HOME_CONTENT' | 'HOME_API' | 'HOME_UI' | 'HOME_E2E';
 export type AuditStatus = 'PASS' | 'FAIL' | 'ERROR';
 
 export interface AuditEntry {
@@ -28,7 +28,7 @@ export class TestAuditLogger {
 
   static log(entry: AuditEntry): void {
     const timestamp = entry.timestamp || new Date().toISOString();
-    const moduleName = entry.moduleName || 'CmsTamilABT';
+    const moduleName = entry.moduleName || (entry.testType.startsWith('HOME_') ? 'CmsTamilHome' : 'CmsTamilABT');
     const logFile = this.getLogFilePath();
 
     const failureReasonStr = entry.failureReason ? ` | Reason: ${JSON.stringify(entry.failureReason)}` : '';
@@ -41,20 +41,22 @@ export class TestAuditLogger {
     }
   }
 
-  static readLogEntries(): AuditEntry[] {
+  static readLogEntries(): (AuditEntry & { moduleName?: string })[] {
     const logFile = this.getLogFilePath();
     if (!fs.existsSync(logFile)) return [];
 
     const content = fs.readFileSync(logFile, 'utf8');
     const lines = content.split('\n').filter(l => l.trim().length > 0);
-    const entries: AuditEntry[] = [];
+    const entries: (AuditEntry & { moduleName?: string })[] = [];
 
     for (const line of lines) {
       const statusMatch = line.match(/\| Status: (PASS|FAIL|ERROR) \|/);
       const typeMatch = line.match(/\[([A-Z0-9_]+)\] Module:/);
+      const moduleMatch = line.match(/Module:\s*([^\|]+)\|/);
       if (statusMatch && typeMatch) {
         entries.push({
           testName: 'parsed',
+          moduleName: moduleMatch ? moduleMatch[1].trim() : 'CmsTamilABT',
           testType: typeMatch[1] as AuditTestType,
           target: '',
           item: '',
@@ -73,6 +75,7 @@ export class TestAuditLogger {
     failed: number;
     error: number;
     byType: Record<string, { total: number; pass: number; fail: number; error: number }>;
+    byModule: Record<string, { total: number; pass: number; fail: number; error: number }>;
   } {
     const entries = this.readLogEntries();
     const summary = {
@@ -81,6 +84,7 @@ export class TestAuditLogger {
       failed: 0,
       error: 0,
       byType: {} as Record<string, { total: number; pass: number; fail: number; error: number }>,
+      byModule: {} as Record<string, { total: number; pass: number; fail: number; error: number }>,
     };
 
     for (const entry of entries) {
@@ -88,6 +92,7 @@ export class TestAuditLogger {
       else if (entry.status === 'FAIL') summary.failed++;
       else if (entry.status === 'ERROR') summary.error++;
 
+      // By Type
       if (!summary.byType[entry.testType]) {
         summary.byType[entry.testType] = { total: 0, pass: 0, fail: 0, error: 0 };
       }
@@ -95,6 +100,16 @@ export class TestAuditLogger {
       if (entry.status === 'PASS') summary.byType[entry.testType].pass++;
       else if (entry.status === 'FAIL') summary.byType[entry.testType].fail++;
       else if (entry.status === 'ERROR') summary.byType[entry.testType].error++;
+
+      // By Module
+      const mod = entry.moduleName || 'CmsTamilABT';
+      if (!summary.byModule[mod]) {
+        summary.byModule[mod] = { total: 0, pass: 0, fail: 0, error: 0 };
+      }
+      summary.byModule[mod].total++;
+      if (entry.status === 'PASS') summary.byModule[mod].pass++;
+      else if (entry.status === 'FAIL') summary.byModule[mod].fail++;
+      else if (entry.status === 'ERROR') summary.byModule[mod].error++;
     }
 
     return summary;

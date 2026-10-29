@@ -81,7 +81,7 @@ const getComparisonDifferences = (
 test('verify CMS Contact Us page', async ({ page }) => {
     const contactUsPage = new CmsContactUsPage(page);
 
-    await contactUsPage.loginToCms(cmsUrl, CMS_USERNAME, CMS_PASSWORD);
+    await page.goto(cmsUrl, { waitUntil: 'domcontentloaded' });
     await contactUsPage.openCmsContactUs();
 
     const expectedContactDetails = await contactUsPage.getContactRecords('cms');

@@ -7,14 +7,15 @@ export default async function globalTeardown(): Promise<void> {
 
   try {
     const summary = TestAuditLogger.getSummary();
-    console.log('--- CmsTamilABT Test Audit Summary ---');
-    console.log(`Total Validations : ${summary.totalValidations}`);
-    console.log(`Passed Validations: ${summary.passed}`);
-    console.log(`Failed Validations: ${summary.failed}`);
-    console.log(`Error Validations : ${summary.error}`);
-    for (const [type, stats] of Object.entries(summary.byType)) {
-      console.log(`  [${type}] Total: ${stats.total}, Pass: ${stats.pass}, Fail: ${stats.fail}, Error: ${stats.error}`);
+    console.log('--- Test Audit Summary by Module ---');
+    for (const [moduleName, stats] of Object.entries(summary.byModule)) {
+      console.log(`${moduleName}: Total ${stats.total}, Pass ${stats.pass}, Fail ${stats.fail}, Error ${stats.error}`);
     }
+    console.log('--- Test Audit Summary by Category ---');
+    for (const [type, stats] of Object.entries(summary.byType)) {
+      console.log(`[${type}] Total: ${stats.total}, Pass: ${stats.pass}, Fail: ${stats.fail}, Error: ${stats.error}`);
+    }
+    console.log(`Overall: Total ${summary.totalValidations}, Pass ${summary.passed}, Fail ${summary.failed}, Error ${summary.error}`);
     console.log('--------------------------------------');
   } catch (error) {
     console.error('Failed to generate Test Audit Summary:', error);

@@ -98,7 +98,22 @@ export default defineConfig({
   // Browser projects
   projects: [
     {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: 'cms-tests',
+      testMatch: /Cms(ABT|contactus|City|Media|news)\.spec\.ts/,
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        bypassCSP: true,
+        storageState: 'playwright/.auth/cms-state.json',
+      },
+    },
+    {
       name: 'chromium',
+      testIgnore: /Cms(ABT|contactus|City|Media|news)\.spec\.ts|auth\.setup\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         bypassCSP: true,

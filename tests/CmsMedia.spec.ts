@@ -240,8 +240,8 @@ test.setTimeout(300000);
 test('verify CMS media content matches the public website', async ({ page }) => {
   const mediaPage = new CmsMediaPage(page);
 
-  // 1. LOGIN TO CMS AND GET APPROVED RECORDS
-  await mediaPage.loginToCms(CMS_USERNAME, CMS_PASSWORD);
+  // 1. NAVIGATE TO CMS AND GET APPROVED RECORDS
+  await page.goto('https://cms.gctp.in/', { waitUntil: 'domcontentloaded' });
   await closeAwarenessPopup(page);
 
   const cmsMediaRecords = await getMediaRecordsFromApi(

@@ -360,13 +360,27 @@ export async function loginToCms(
           );
         }
 
-        // After successful login API response (HTTP 200), navigate to landing URL
-        // to load the authenticated CMS interface using the stored session token.
-        await page.goto(cmsLandingUrl, {
-          waitUntil: 'domcontentloaded',
-          timeout: 120000,
-        });
-        await page.waitForLoadState('domcontentloaded').catch(() => undefined);
+        // Wait for login form to disappear or session to be stored by the app
+        await expect.poll(
+          async () => {
+            const hasAuth = await hasCmsSession(page, targetUrl.hostname);
+            const formVisible = await isLoginFormVisible(page);
+            return hasAuth || !formVisible;
+          },
+          {
+            timeout: 15000,
+            intervals: [500, 1000],
+          }
+        ).toBeTruthy().catch(() => undefined);
+
+        // If still on login page or not on landing URL, navigate to landing URL
+        if (!page.url().includes('chennai-home')) {
+          await page.goto(cmsLandingUrl, {
+            waitUntil: 'domcontentloaded',
+            timeout: 120000,
+          });
+          await page.waitForLoadState('domcontentloaded').catch(() => undefined);
+        }
 
       } else {
         console.log(
@@ -374,29 +388,24 @@ export async function loginToCms(
         );
       }
 
-      const hasAuthState = await hasCmsSession(
-        page,
-        targetUrl.hostname
-      );
+      console.log('Verifying CMS authentication state...');
 
-      const loginFormVisibleAfterSubmit = await isLoginFormVisible(page);
-      const cmsNavigationVisible = await isCmsNavigationVisible(page);
-      const loginVerified =
-        cmsNavigationVisible || (hasAuthState && !loginFormVisibleAfterSubmit);
+      const targetHostname = targetUrl.hostname;
 
-      if (!loginVerified) {
-        const diagnostics = await getLoginDiagnostics(
-          page,
-          targetUrl.hostname
-        );
-        throw new Error(
-          'CMS login could not be verified.\n' +
-            'The CMS must establish an auth session, dismiss the login form, ' +
-            'and render its CMS navigation. The TS load-balancer cookie is not ' +
-            'an authentication signal.\n\n' +
-            diagnostics
-        );
-      }
+      await expect.poll(
+        async () => {
+          const hasAuthState = await hasCmsSession(page, targetHostname);
+          const loginFormVisible = await isLoginFormVisible(page);
+          const cmsNavigationVisible = await isCmsNavigationVisible(page);
+
+          return cmsNavigationVisible || (hasAuthState && !loginFormVisible);
+        },
+        {
+          message: 'CMS login could not be verified within the timeout.',
+          intervals: [1000, 2000, 5000],
+          timeout: 45000,
+        }
+      ).toBeTruthy();
 
       console.log('CMS login verified via authenticated browser session.');
 

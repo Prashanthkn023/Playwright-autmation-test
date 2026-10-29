@@ -14,7 +14,7 @@ test('verify CMS City Profile content with published website', async ({ page }) 
   const cityPage = new CmsCityPage(page);
 
   // Read expected content from the CMS.
-  await cityPage.loginToCms(cmsUrl, CMS_USERNAME, CMS_PASSWORD);
+  await page.goto(cmsUrl, { waitUntil: 'domcontentloaded' });
   await cityPage.openCmsCityProfile();
 
   const expectedCityProfileHeading = await cityPage.getCityProfileHeading();
