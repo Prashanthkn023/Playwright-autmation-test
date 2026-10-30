@@ -16,6 +16,8 @@ import {
   generateExcelReport,
   type TestResult as ReportTestResult,
   type TestStatus,
+  type ApiPerformanceSheet,
+  type ApiPerformanceRow,
 } from '../utils/excelReportGenerator';
 
 // Change these names if geminiReportWriter.ts reads a different variable.
@@ -44,6 +46,8 @@ class BugReporter implements Reporter {
   private rootDir = '';
   private startedAt = 0;
   private activeSteps = new Map<string, string[]>();
+  private cmsPerformanceData: any = null;
+  private gctpPerformanceData: any = null;
 
   onBegin(config: FullConfig): void {
     this.rootDir = config.rootDir;
@@ -138,6 +142,51 @@ class BugReporter implements Reporter {
       comparisonDifferences,
       steps,
     });
+
+    if (testCase.includes('API performance: five sequential requests for every verified endpoint')) {
+      const attachment = result.attachments.find(item => item.name === 'api-performance-report.json');
+      if (attachment) {
+        let content = '';
+        if (attachment.body) {
+          content = attachment.body.toString('utf8');
+        } else if (attachment.path && fs.existsSync(attachment.path)) {
+          try {
+            content = fs.readFileSync(attachment.path, 'utf8');
+          } catch (err) {
+            console.warn(`Could not read api-performance-report.json attachment file: ${err}`);
+          }
+        }
+        if (content) {
+          try {
+            this.cmsPerformanceData = JSON.parse(content);
+          } catch (e) {
+            console.error('Failed to parse api-performance-report.json attachment:', e);
+          }
+        }
+      }
+    } else if (testCase.includes('GCTP website API performance: verified module endpoints')) {
+      const attachment = result.attachments.find(item => item.name === 'gctp-website-api-performance-report.json');
+      if (attachment) {
+        let content = '';
+        if (attachment.body) {
+          content = attachment.body.toString('utf8');
+        } else if (attachment.path && fs.existsSync(attachment.path)) {
+          try {
+            content = fs.readFileSync(attachment.path, 'utf8');
+          } catch (err) {
+            console.warn(`Could not read gctp-website-api-performance-report.json attachment file: ${err}`);
+          }
+        }
+        if (content) {
+          try {
+            this.gctpPerformanceData = JSON.parse(content);
+          } catch (e) {
+            console.error('Failed to parse gctp-website-api-performance-report.json attachment:', e);
+          }
+        }
+      }
+    }
+
     this.activeSteps.delete(this.stepKey(test, result));
   }
 
@@ -187,8 +236,52 @@ class BugReporter implements Reporter {
       console.error('Excel will retain the recorded Playwright evidence.');
     }
 
+    const apiSheets: ApiPerformanceSheet[] = [];
+
+    if (this.cmsPerformanceData && Array.isArray(this.cmsPerformanceData.endpoints)) {
+      const cmsRows: ApiPerformanceRow[] = this.cmsPerformanceData.endpoints.map((ep: any) => {
+        const calls = Array.isArray(ep.measurements) ? ep.measurements.map((m: any) => m.elapsedMs) : [];
+        const httpErrors = Array.isArray(ep.measurements)
+          ? ep.measurements.filter((m: any) => m.status === null || m.status >= 400).length
+          : 0;
+        return {
+          api: ep.endpoint.id,
+          calls,
+          httpErrors,
+        };
+      });
+      apiSheets.push({
+        sheetName: 'CMS API Response Time',
+        title: 'CMS API Response Time',
+        rows: cmsRows,
+      });
+    } else {
+      console.warn('CMS API performance data is missing or invalid.');
+    }
+
+    if (this.gctpPerformanceData && Array.isArray(this.gctpPerformanceData.endpoints)) {
+      const gctpRows: ApiPerformanceRow[] = this.gctpPerformanceData.endpoints.map((ep: any) => {
+        const calls = Array.isArray(ep.measurements) ? ep.measurements.map((m: any) => m.elapsedMs) : [];
+        const httpErrors = Array.isArray(ep.measurements)
+          ? ep.measurements.filter((m: any) => m.status === null || m.status >= 400).length
+          : 0;
+        return {
+          api: ep.endpoint.id,
+          calls,
+          httpErrors,
+        };
+      });
+      apiSheets.push({
+        sheetName: 'GCTP API Performance',
+        title: 'GCTP API Performance',
+        rows: gctpRows,
+      });
+    } else {
+      console.warn('GCTP website API performance data is missing or invalid.');
+    }
+
     try {
-      const reportPath = await generateExcelReport(reportResults, aiReport, outputPath, aiError);
+      const reportPath = await generateExcelReport(reportResults, aiReport, outputPath, aiError, apiSheets);
       this.printFinalSummary(result, reportPath, Boolean(aiReport));
     } catch (error) {
       console.error('Excel report generation failed: ' + (error instanceof Error ? error.message : String(error)));
