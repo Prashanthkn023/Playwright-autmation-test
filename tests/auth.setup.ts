@@ -1,5 +1,5 @@
 import { test as setup, expect } from '@playwright/test';
-import { loginToConfiguredCms } from '../utils/cmsLogin';
+import { loginToConfiguredCms, hasCmsSession, isLoginFormVisible } from '../utils/cmsLogin';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,6 +8,7 @@ const finalAuthFile = 'playwright/.auth/cms-state.json';
 const tempAuthFile = 'playwright/.auth/temp-cms-state.json';
 
 setup('authenticate CMS session', async ({ page, browser }) => {
+  setup.setTimeout(180000);
   console.log('\n============================================================');
   console.log('CENTRALIZED CMS AUTHENTICATION SETUP');
   console.log('============================================================');
@@ -29,8 +30,9 @@ setup('authenticate CMS session', async ({ page, browser }) => {
         waitUntil: 'domcontentloaded',
         timeout: 15000
       });
-      const cmsNav = existingPage.locator('nav a[href*="-Cms"], nav a[href*="news"], nav a[href*="contact"], nav a[href*="city"]').first();
-      const isValid = await cmsNav.isVisible({ timeout: 5000 }).catch(() => false);
+      const hasAuth = await hasCmsSession(existingPage, targetUrl.hostname);
+      const formVisible = await isLoginFormVisible(existingPage);
+      const isValid = hasAuth && !formVisible;
       await existingContext.close();
 
       if (isValid) {

@@ -3,13 +3,17 @@ import type { TestResult } from './excelReportGenerator';
 
 export interface AiTestSummary {
   overallSummary: string;
+  // One entry for every passed, failed and timed-out test.
+  testDetails: Array<{
+    testId: string;
+    expectedResult: string;
+    actualResult: string;
+    stepsToReproduce: string[];
+  }>;
   passedSummaries: Array<{ testId: string; summary: string }>;
   failedSummaries: Array<{
     testId: string;
     failureSummary: string;
-    expectedResult: string;
-    actualResult: string;
-    stepsToReproduce: string[];
     severity: string;
     priority: string;
     bugTitle: string;
@@ -48,16 +52,22 @@ function extractJson(text: string): AiTestSummary {
     if (firstBrace !== -1 && lastBrace > firstBrace) cleaned = cleaned.slice(firstBrace, lastBrace + 1);
   }
   const parsed = JSON.parse(cleaned) as AiTestSummary;
-  if (typeof parsed.overallSummary !== 'string' || !Array.isArray(parsed.passedSummaries) || !Array.isArray(parsed.failedSummaries)) {
+  if (typeof parsed.overallSummary !== 'string' || !Array.isArray(parsed.testDetails) ||
+    !Array.isArray(parsed.passedSummaries) || !Array.isArray(parsed.failedSummaries)) {
     throw new Error('Antigravity response did not match the expected report format.');
+  }
+  for (const item of parsed.testDetails) {
+    if (typeof item.testId !== 'string' || typeof item.expectedResult !== 'string' ||
+      typeof item.actualResult !== 'string' || !Array.isArray(item.stepsToReproduce) ||
+      !item.stepsToReproduce.every((step: unknown) => typeof step === 'string')) {
+      throw new Error('Antigravity returned an invalid test-detail entry.');
+    }
   }
   for (const item of parsed.passedSummaries) {
     if (typeof item.testId !== 'string' || typeof item.summary !== 'string') throw new Error('Antigravity returned an invalid passed-test summary.');
   }
   for (const item of parsed.failedSummaries) {
     if (typeof item.testId !== 'string' || typeof item.failureSummary !== 'string' ||
-      typeof item.expectedResult !== 'string' || typeof item.actualResult !== 'string' ||
-      !Array.isArray(item.stepsToReproduce) || !item.stepsToReproduce.every((step: unknown) => typeof step === 'string') ||
       typeof item.severity !== 'string' || typeof item.priority !== 'string' || typeof item.bugTitle !== 'string') {
       throw new Error('Antigravity returned an invalid failed-test summary.');
     }
@@ -69,6 +79,7 @@ function buildPrompt(testResults: TestResult[]): string {
   const input = testResults.map(test => ({
     testId: test.testId,
     title: test.title,
+    module: test.module,
     status: test.status,
     durationMs: test.durationMs,
     error: test.error ?? null,
@@ -80,38 +91,43 @@ function buildPrompt(testResults: TestResult[]): string {
   }));
 
   return `
-You are a professional software QA report writer. Write in simple, natural English.
+You are a professional software QA report writer. The report is read by non-technical people, so write in simple, natural English.
 Use only the supplied Playwright test data. Return valid JSON only, without Markdown.
 
 Required JSON shape:
 {
   "overallSummary": "Concise summary based only on supplied statuses",
-  "passedSummaries": [{ "testId": "exact supplied testId", "summary": "What was verified, limited to the evidence" }],
+  "testDetails": [{
+    "testId": "exact supplied testId",
+    "expectedResult": "One plain sentence: what should happen",
+    "actualResult": "One plain sentence: what happened",
+    "stepsToReproduce": ["1. Open the Tamil About Us page.", "2. Go to the Commissioner message.", "3. Check the message shows correctly in Tamil."]
+  }],
+  "passedSummaries": [{ "testId": "exact supplied testId", "summary": "Very short note, under 12 words" }],
   "failedSummaries": [{
     "testId": "exact supplied testId",
-    "failureSummary": "Observed failure in simple English",
-    "expectedResult": "Expected behavior supported by assertion/evidence, otherwise Not specified in test evidence.",
-    "actualResult": "Observed result supported by evidence, otherwise Not available from test evidence.",
-    "stepsToReproduce": ["Only steps present in recordedExecutionSteps"],
+    "failureSummary": "Observed failure in one or two simple sentences",
     "severity": "Unassigned",
     "priority": "Unassigned",
-    "bugTitle": "Short factual title grounded in evidence"
+    "bugTitle": "Short factual title, max 12 words"
   }]
 }
 
-Strict rules:
-- Preserve testId exactly for internal matching. Never display testId in summaries or steps.
-- Include one passed summary per passed test, and one failure summary per failed/timedOut test.
-- Do not include skipped or interrupted tests in either summary array.
-- Do not invent application behavior, expected results, actual results, steps, severity, priority, or root causes.
-- Expected result must be supported by an explicit assertion or expectedEvidence. If not, write exactly "Not specified in test evidence.".
-- Actual result must be supported by error/actualEvidence/comparisonDifferences. If not, write exactly "Not available from test evidence.".
-- Steps must come only from recordedExecutionSteps. Do not turn a test title into a sequence. If no recorded steps exist, return ["Steps not specified in test evidence."].
-- Do not treat file paths, screenshot/video/trace names, or raw stack traces as user-facing facts.
+Rules:
+- Preserve testId exactly for internal matching. Never display testId in any text.
+- testDetails: one entry for every passed, failed and timedOut test. Do not include skipped or interrupted tests.
+- expectedResult: write what should happen, based on the test title and any assertion/expectedEvidence. Example: "The Commissioner message shows correctly in Tamil."
+- actualResult for a passed test: one plain sentence saying the expected behaviour was seen. Example: "The Commissioner message was shown correctly in Tamil."
+- actualResult for a failed or timedOut test: say plainly what went wrong, using only error, actualEvidence and comparisonDifferences. If they do not say, write exactly "Not available from test evidence.".
+- stepsToReproduce: 3 to 5 short numbered steps a person could follow in a browser, each under 15 words.
+  If recordedExecutionSteps exist, rewrite them in plain English (for example page.goto becomes "Open the page.", locator.click becomes "Click the button."), keeping the same order and not adding facts.
+  If none are recorded, base the steps only on the test title. Do not invent button names, URLs, data values or page names that the title does not mention.
+- passedSummaries.summary: a short note such as "Tamil content is fine." or "Content matches.". Include one per passed test.
+- failedSummaries: include one per failed or timedOut test. severity and priority must be exactly "Unassigned".
+- Do not invent application behaviour, root causes, severity, priority, test counts or percentages.
 - Do not recommend fixes or suggest code changes.
-- Severity and priority must remain "Unassigned" unless explicitly supplied (they are not supplied here).
-- For timeouts, describe only the timeout and what could not be verified; do not assert the application is defective without evidence.
-- Do not invent test counts or percentages.
+- For timeouts, describe only the timeout and what could not be verified; do not claim the application is defective without evidence.
+- Avoid technical words such as locator, selector, assertion, timeout error, undefined, null, DOM, stack trace, file paths. Say what a person using the website would see instead.
 
 Playwright results:
 ${JSON.stringify(input, null, 2)}
@@ -120,7 +136,11 @@ ${JSON.stringify(input, null, 2)}
 
 export async function generateAiTestReport(testResults: TestResult[]): Promise<AiTestSummary> {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error('GEMINI_API_KEY was not loaded from .env.');
+  if (!apiKey) {
+    throw new Error(
+      'GEMINI_API_KEY is not set. Locally, add it to the .env file. On Jenkins, bind it as a secret text credential in Build Environment.',
+    );
+  }
 
   const { GoogleGenAI } = await import('@google/genai');
   const ai = new GoogleGenAI({ apiKey });

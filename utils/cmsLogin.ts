@@ -50,7 +50,7 @@ function getPasswordField(page: Page): Locator {
 // HELPER: CHECK WHETHER LOGIN FORM IS VISIBLE
 // ============================================================
 
-async function isLoginFormVisible(page: Page): Promise<boolean> {
+export async function isLoginFormVisible(page: Page): Promise<boolean> {
   try {
     const username = getUsernameField(page);
     const password = getPasswordField(page);
@@ -64,11 +64,7 @@ async function isLoginFormVisible(page: Page): Promise<boolean> {
   }
 }
 
-async function isCmsNavigationVisible(page: Page): Promise<boolean> {
-  // Authenticated CMS pages render the site navigation with plain hrefs
-  // (e.g. /chennai-news-updates or /chennai-contactus). The "-Cms" suffix
-  // only appears on the content-management module URLs, so we accept any
-  // core CMS navigation links here to ensure robust session verification.
+export async function isCmsNavigationVisible(page: Page): Promise<boolean> {
   return page
     .locator('nav a[href*="-Cms"], nav a[href*="news"], nav a[href*="contact"], nav a[href*="city"]')
     .first()
@@ -76,7 +72,7 @@ async function isCmsNavigationVisible(page: Page): Promise<boolean> {
     .catch(() => false);
 }
 
-async function hasCmsSession(
+export async function hasCmsSession(
   page: Page,
   hostname: string
 ): Promise<boolean> {
@@ -94,7 +90,7 @@ async function hasCmsSession(
       return (
         hasDomainMatch &&
         Boolean(cookie.value) &&
-        /^(?:session|token|jwt|auth)/i.test(name)
+        /^(?:session|token|jwt|auth|connect\.sid)/i.test(name)
       );
     });
 
@@ -104,21 +100,36 @@ async function hasCmsSession(
 
     return await page.evaluate(() => {
       try {
-        const session = JSON.parse(
-          localStorage.getItem('session') ?? 'null'
-        ) as {
-          access_token?: unknown;
-          tokens?: { access_token?: unknown } | null;
-        } | null;
-        // The CMS stores the JWT under session.tokens.access_token.
-        // There is no separate 'user' key – do not require it.
-        const accessToken =
-          session?.access_token ?? session?.tokens?.access_token;
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (!key) continue;
+          const val = localStorage.getItem(key);
+          if (!val) continue;
 
-        return (
-          typeof accessToken === 'string' &&
-          accessToken.length > 0
-        );
+          if (/session|token|auth|user/i.test(key)) {
+            try {
+              const parsed = JSON.parse(val);
+              if (parsed && typeof parsed === 'object') {
+                if (
+                  parsed.access_token ||
+                  parsed.token ||
+                  parsed.tokens?.access_token ||
+                  parsed.user ||
+                  parsed.id
+                ) {
+                  return true;
+                }
+              } else if (typeof val === 'string' && val.length > 20) {
+                return true;
+              }
+            } catch {
+              if (typeof val === 'string' && val.length > 20) {
+                return true;
+              }
+            }
+          }
+        }
+        return false;
       } catch {
         return false;
       }
@@ -360,20 +371,19 @@ export async function loginToCms(
           );
         }
 
-        // Wait for login form to disappear or session to be stored by the app
+        // Wait for session tokens to be stored by the app in localStorage or cookies
         await expect.poll(
           async () => {
-            const hasAuth = await hasCmsSession(page, targetUrl.hostname);
-            const formVisible = await isLoginFormVisible(page);
-            return hasAuth || !formVisible;
+            return await hasCmsSession(page, targetUrl.hostname);
           },
           {
+            message: 'CMS session tokens were not stored in localStorage/cookies after successful login response.',
             timeout: 15000,
             intervals: [500, 1000],
           }
-        ).toBeTruthy().catch(() => undefined);
+        ).toBeTruthy();
 
-        // If still on login page or not on landing URL, navigate to landing URL
+        // Navigate to landing URL with authenticated session established
         if (!page.url().includes('chennai-home')) {
           await page.goto(cmsLandingUrl, {
             waitUntil: 'domcontentloaded',

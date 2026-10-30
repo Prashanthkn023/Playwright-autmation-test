@@ -18,6 +18,10 @@ import {
   type TestStatus,
 } from '../utils/excelReportGenerator';
 
+// Change these names if geminiReportWriter.ts reads a different variable.
+const AI_KEY_NAMES = ['GEMINI_API_KEY', 'GOOGLE_API_KEY'];
+const TIME_ZONE = 'Asia/Kolkata';
+
 interface TestRecord {
   testId: string;
   testCase: string;
@@ -47,6 +51,7 @@ class BugReporter implements Reporter {
     this.allTests = [];
     this.activeSteps.clear();
 
+    // Clear old reports so only the newest Excel file is emailed.
     const reportDirectory = path.join(this.rootDir, 'bug-reports');
     if (fs.existsSync(reportDirectory)) {
       try {
@@ -63,6 +68,12 @@ class BugReporter implements Reporter {
     console.log('\n======================================');
     console.log('       QA REPORTER STARTED');
     console.log('======================================');
+    if (!AI_KEY_NAMES.some(name => process.env[name])) {
+      console.warn(
+        `WARNING: AI key not found (${AI_KEY_NAMES.join(' / ')}). ` +
+          'The Excel will be created without AI summaries. On Jenkins, bind the key as a secret text credential.',
+      );
+    }
     console.log('Collecting Playwright results and execution steps...\n');
   }
 
@@ -122,7 +133,8 @@ class BugReporter implements Reporter {
       screenshot,
       video,
       trace,
-      timestamp: new Date().toLocaleString(),
+      // Test start time in IST, e.g. "30/10/2026, 12:16:45 pm" (same as the old report).
+      timestamp: this.formatDate(result.startTime),
       comparisonDifferences,
       steps,
     });
@@ -170,11 +182,17 @@ class BugReporter implements Reporter {
       console.log('AI summaries generated successfully.');
     } catch (error) {
       aiError = error instanceof Error ? error.message : String(error);
-      console.error('AI report generation failed. Excel will retain the recorded Playwright evidence.');
+      // Show the real reason (wrong key, no internet, quota...) in the Jenkins console.
+      console.error('AI report generation failed: ' + aiError);
+      console.error('Excel will retain the recorded Playwright evidence.');
     }
 
-    const reportPath = await generateExcelReport(reportResults, aiReport, outputPath, aiError);
-    this.printFinalSummary(result, reportPath, Boolean(aiReport));
+    try {
+      const reportPath = await generateExcelReport(reportResults, aiReport, outputPath, aiError);
+      this.printFinalSummary(result, reportPath, Boolean(aiReport));
+    } catch (error) {
+      console.error('Excel report generation failed: ' + (error instanceof Error ? error.message : String(error)));
+    }
   }
 
   private stepKey(test: TestCase, result: PlaywrightTestResult): string {
@@ -274,15 +292,17 @@ class BugReporter implements Reporter {
     return value.split(/\r?\n/)[0].trim();
   }
 
+  private formatDate(date: Date): string {
+    return date.toLocaleString('en-IN', { timeZone: TIME_ZONE });
+  }
+
+  // File name timestamp in IST (same on your laptop and on Jenkins): 20261030_121645
   private getTimestamp(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+    return new Date(Date.now() + 5.5 * 60 * 60 * 1000)
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace('T', '_')
+      .slice(0, 15);
   }
 }
 
