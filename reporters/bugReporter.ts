@@ -70,12 +70,22 @@ class BugReporter implements Reporter {
     }
     fs.mkdirSync(reportDirectory, { recursive: true });
 
+    const provider = (process.env.AI_PROVIDER || 'GEMINI').toUpperCase();
     console.log('\n======================================');
     console.log('       QA REPORTER STARTED');
     console.log('======================================');
-    if (!AI_KEY_NAMES.some(name => process.env[name])) {
+    console.log(`Selected AI Provider: ${provider}`);
+
+    let keyFound = false;
+    if (provider === 'GROQ') {
+      keyFound = Boolean(process.env.GROQ_API_KEY);
+    } else {
+      keyFound = Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+    }
+
+    if (!keyFound) {
       console.warn(
-        `WARNING: AI key not found (${AI_KEY_NAMES.join(' / ')}). ` +
+        `WARNING: API key for ${provider} not found. ` +
           'The Excel will be created without AI summaries. On Jenkins, bind the key as a secret text credential.',
       );
     }
