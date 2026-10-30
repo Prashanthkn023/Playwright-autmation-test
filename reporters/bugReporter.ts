@@ -11,7 +11,8 @@ import type {
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
-import { generateAiTestReport } from '../utils/geminiReportWriter';
+import { generateAiTestReport as generateGeminiReport } from '../utils/geminiReportWriter';
+import { generateAiTestReport as generateGroqReport } from '../utils/groqReportWriter';
 import {
   generateExcelReport,
   type TestResult as ReportTestResult,
@@ -21,7 +22,7 @@ import {
 } from '../utils/excelReportGenerator';
 
 // Change these names if geminiReportWriter.ts reads a different variable.
-const AI_KEY_NAMES = ['GEMINI_API_KEY', 'GOOGLE_API_KEY'];
+const AI_KEY_NAMES = ['GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GROQ_API_KEY'];
 const TIME_ZONE = 'Asia/Kolkata';
 
 interface TestRecord {
@@ -143,9 +144,8 @@ class BugReporter implements Reporter {
       steps,
     });
 
-    if (testCase.includes('API performance: five sequential requests for every verified endpoint')) {
-      const attachment = result.attachments.find(item => item.name === 'api-performance-report.json');
-      if (attachment) {
+    for (const attachment of result.attachments) {
+      if (attachment.name === 'api-performance-report.json' || attachment.name.includes('api-performance')) {
         let content = '';
         if (attachment.body) {
           content = attachment.body.toString('utf8');
@@ -164,9 +164,7 @@ class BugReporter implements Reporter {
           }
         }
       }
-    } else if (testCase.includes('GCTP website API performance: verified module endpoints')) {
-      const attachment = result.attachments.find(item => item.name === 'gctp-website-api-performance-report.json');
-      if (attachment) {
+      if (attachment.name === 'gctp-website-api-performance-report.json' || attachment.name.includes('gctp-website-api-performance')) {
         let content = '';
         if (attachment.body) {
           content = attachment.body.toString('utf8');
@@ -226,8 +224,13 @@ class BugReporter implements Reporter {
     console.log('======================================');
 
     try {
-      console.log('Generating AI summaries from captured evidence...');
-      aiReport = await generateAiTestReport(reportResults);
+      const provider = (process.env.AI_PROVIDER || 'GEMINI').toUpperCase();
+      console.log(`Generating AI summaries from captured evidence using ${provider}...`);
+      if (provider === 'GROQ') {
+        aiReport = await generateGroqReport(reportResults);
+      } else {
+        aiReport = await generateGeminiReport(reportResults);
+      }
       console.log('AI summaries generated successfully.');
     } catch (error) {
       aiError = error instanceof Error ? error.message : String(error);

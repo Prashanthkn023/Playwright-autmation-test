@@ -38,6 +38,10 @@ pipeline {
                         credentialsId: 'gctp-cms-credentials',
                         usernameVariable: 'CMS_USERNAME',
                         passwordVariable: 'CMS_PASSWORD'
+                    ),
+                    string(
+                        credentialsId: 'GROQ_API_KEY',
+                        variable: 'GROQ_API_KEY'
                     )
                 ]) {
                     bat 'if not defined CMS_USERNAME (echo CMS_USERNAME is missing from Jenkins credentials & exit /b 1)'
