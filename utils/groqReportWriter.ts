@@ -8,22 +8,11 @@ function getErrorText(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function isDailyQuotaExceeded(errorText: string): boolean {
-  return /quota|rate limit|429/i.test(errorText);
-}
-
 function isRetryable(errorText: string): boolean {
-  return /503|UNAVAILABLE|high demand|temporarily unavailable|timeout|network/i.test(errorText) ||
-    (/429|RESOURCE_EXHAUSTED/i.test(errorText) && !isDailyQuotaExceeded(errorText));
+  return /503|UNAVAILABLE|high demand|temporarily unavailable|timeout|network|429|RESOURCE_EXHAUSTED/i.test(errorText);
 }
 
-function getRetryDelayMs(errorText: string, attempt: number): number {
-  const retryMatch = errorText.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/i);
-  if (retryMatch) return Math.ceil(Number(retryMatch[1]) * 1000) + 1000;
-  return attempt === 1 ? 15_000 : 30_000;
-}
-
-function extractJson(text: string): AiTestSummary {
+function extractJson(text: string, chunkIds: Set<string>): AiTestSummary {
   let cleaned = text.trim()
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```$/i, '')
@@ -34,126 +23,160 @@ function extractJson(text: string): AiTestSummary {
     if (firstBrace !== -1 && lastBrace > firstBrace) cleaned = cleaned.slice(firstBrace, lastBrace + 1);
   }
   const parsed = JSON.parse(cleaned) as AiTestSummary;
-  if (typeof parsed.overallSummary !== 'string' || !Array.isArray(parsed.testDetails) ||
-    !Array.isArray(parsed.passedSummaries) || !Array.isArray(parsed.failedSummaries)) {
-    throw new Error('Groq response did not match the expected report format.');
-  }
-  for (const item of parsed.testDetails) {
-    if (typeof item.testId !== 'string' || typeof item.expectedResult !== 'string' ||
-      typeof item.actualResult !== 'string' || !Array.isArray(item.stepsToReproduce) ||
-      !item.stepsToReproduce.every((step: unknown) => typeof step === 'string')) {
-      throw new Error('Groq returned an invalid test-detail entry.');
+
+  // Validate ID consistency: every ID in the response must belong to this batch
+  const allIds = [
+    ...parsed.testDetails.map(d => d.testId),
+    ...parsed.passedSummaries.map(p => p.testId),
+    ...parsed.failedSummaries.map(f => f.testId)
+  ];
+
+  for (const id of allIds) {
+    if (!chunkIds.has(id)) {
+      throw new Error(`AI response included test ID '${id}' which does not belong to this batch.`);
     }
   }
-  for (const item of parsed.passedSummaries) {
-    if (typeof item.testId !== 'string' || typeof item.summary !== 'string') throw new Error('Groq returned an invalid passed-test summary.');
-  }
-  for (const item of parsed.failedSummaries) {
-    if (typeof item.testId !== 'string' || typeof item.failureSummary !== 'string' ||
-      typeof item.severity !== 'string' || typeof item.priority !== 'string' || typeof item.bugTitle !== 'string') {
-      throw new Error('Groq returned an invalid failed-test summary.');
-    }
-  }
+
   return parsed;
+}
+
+function chunkArray<T>(array: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
+    array.slice(i * size, i * size + size)
+  );
 }
 
 function buildPrompt(testResults: TestResult[]): string {
   const input = testResults.map(test => ({
-    testId: test.testId,
+    id: test.testId,
     title: test.title,
-    module: test.module,
-    status: test.status,
-    durationMs: test.durationMs,
-    error: test.error ?? null,
-    expectedEvidence: test.expectedEvidence ?? null,
-    actualEvidence: test.actualEvidence ?? null,
-    comparisonDifferences: test.comparisonDifferences ?? null,
-    recordedExecutionSteps: test.steps ?? [],
+    mod: test.module,
+    stat: test.status,
+    err: test.error ? test.error.substring(0, 200) : null,
+    exp: test.expectedEvidence ? test.expectedEvidence.substring(0, 200) : null,
+    act: test.actualEvidence ? test.actualEvidence.substring(0, 200) : null,
+    diff: test.comparisonDifferences ? test.comparisonDifferences.substring(0, 200) : null,
   }));
 
   return `
-You are an expert software QA engineer writing a formal test execution report for stakeholders and developers.
-The report is read by non-technical people, so write in simple, natural, and professional English.
+You are an expert Lead QA Engineer. Analyze these test execution results and generate professional manual QA documentation in JSON format.
 
-Use ONLY the supplied Playwright test data. If evidence is missing, state "Evidence unavailable." instead of guessing. Return valid JSON only.
+CRITICAL INSTRUCTIONS:
+1. Explain what functional business capability was tested based on the test title and module.
+2. Derive expected results from assertions/evidence (or "Evidence unavailable." if none).
+3. Describe actual results based on recorded error/evidence (or "Test passed successfully." if passed).
+4. Generate meaningful numbered functional manual testing steps (e.g., "1. Navigate to module", "2. Verify element renders"). DO NOT include internal automation script operations (such as browser launch, context creation, wait for timeout, or press Escape).
+5. Use the exact 'id' from input as 'testId' in output. Do not invent functionality or bugs.
 
 Required JSON shape:
 {
-  "overallSummary": "Professional summary of the test run, mentioning high-level outcomes and key areas tested.",
-  "testDetails": [{
-    "testId": "exact supplied testId",
-    "expectedResult": "Clear, plain English sentence describing the expected functionality based on the test case requirements.",
-    "actualResult": "Clear, plain English sentence describing the actual outcome, referencing behavior, text, or visual components observed.",
-    "stepsToReproduce": ["1. Open the website.", "2. Navigate to the module.", "3. Perform actions.", "4. Verify the result."]
-  }],
-  "passedSummaries": [{ "testId": "exact supplied testId", "summary": "Meaningful summary of the verified functionality (e.g., 'Verified home page slider images load correctly with navigation arrows.')" }],
-  "failedSummaries": [{
-    "testId": "exact supplied testId",
-    "failureSummary": "Clear, professional description of the bug, emphasizing user impact.",
-    "severity": "Unassigned",
-    "priority": "Unassigned",
-    "bugTitle": "Factual, descriptive bug title."
-  }]
+  "overallSummary": "Summary of this batch",
+  "testDetails": [{"testId": "id", "expectedResult": "exp", "actualResult": "act", "stepsToReproduce": ["1. ..."]}],
+  "passedSummaries": [{"testId": "id", "summary": "sum"}],
+  "failedSummaries": [{"testId": "id", "failureSummary": "sum", "severity": "Unassigned", "priority": "Unassigned", "bugTitle": "title"}]
 }
 
-Rules:
-- Preserve testId exactly for internal matching.
-- testDetails: Include all passed, failed, and timedOut tests.
-- stepsToReproduce: Rewrite recorded execution steps into simple, numbered, human-readable manual testing steps. Do not invent steps.
-- For passed tests, generate a meaningful summary explaining what was verified.
-- For failed tests, provide developer-friendly context including the error message (but keep it simple).
-- Do not use technical jargon (e.g., locator, selector, DOM). Describe user-visible behavior.
-- Do not invent bugs or assume causes. Report only the evidence.
-
 Playwright results:
-${JSON.stringify(input, null, 2)}
+${JSON.stringify(input)}
 `;
 }
 
 export async function generateAiTestReport(testResults: TestResult[]): Promise<AiTestSummary> {
   const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      'GROQ_API_KEY is not set. Locally, add it to the .env file. On Jenkins, bind it as a secret text credential in Build Environment.',
-    );
-  }
+  if (!apiKey) throw new Error('GROQ_API_KEY is not set.');
 
   const { Groq } = await import('groq-sdk');
   const groq = new Groq({ apiKey });
-  const prompt = buildPrompt(testResults);
-  let lastError: unknown;
 
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    try {
-      console.log(`Generating QA report with Groq (attempt ${attempt}/2)...`);
-      const startTime = Date.now();
-      const completion = await groq.chat.completions.create({
-        messages: [{ role: 'user', content: prompt }],
-        model: MODEL,
-        response_format: { type: 'json_object' },
-      }, {
-        timeout: 60000, // 60 seconds timeout
-      });
-      const durationMs = Date.now() - startTime;
-      const responseText = completion.choices[0]?.message?.content;
-      if (typeof responseText !== 'string' || !responseText.trim()) {
-        throw new Error('Groq returned no report text.');
+  const chunks = chunkArray(testResults, 5);
+  const allSummaries: AiTestSummary[] = [];
+
+  for (const chunk of chunks) {
+    const chunkIds = new Set(chunk.map(t => t.testId));
+    let batchSuccess = false;
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        console.log(`Processing batch of ${chunk.length} tests with Groq (attempt ${attempt}/2)...`);
+        const completion = await groq.chat.completions.create({
+          messages: [{ role: 'user', content: buildPrompt(chunk) }],
+          model: MODEL,
+          response_format: { type: 'json_object' },
+        }, { timeout: 60000 });
+
+        const responseText = completion.choices[0]?.message?.content;
+        if (!responseText) throw new Error('Groq returned empty response');
+
+        allSummaries.push(extractJson(responseText, chunkIds));
+        batchSuccess = true;
+        break;
+      } catch (error) {
+        const errText = getErrorText(error);
+        console.warn(`Batch processing failed: ${errText}`);
+        if (!isRetryable(errText) || attempt === 2) {
+          console.warn('Batch failed. Using fallback entry.');
+          allSummaries.push({
+            overallSummary: 'AI generation unavailable: ' + errText,
+            testDetails: [],
+            passedSummaries: [],
+            failedSummaries: []
+          });
+          batchSuccess = true;
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 3000));
       }
-      const report = extractJson(responseText);
-      const usage = completion.usage;
-      console.log(`Groq QA report generated successfully in ${durationMs}ms. Tokens used: ${usage?.total_tokens ?? 'unknown'} (Prompt: ${usage?.prompt_tokens ?? 'unknown'}, Completion: ${usage?.completion_tokens ?? 'unknown'}).`);
-      return report;
-    } catch (error) {
-      lastError = error;
-      const message = getErrorText(error);
-      if (isDailyQuotaExceeded(message)) {
-        throw new Error('Groq daily quota or rate limit exhausted. Check project quota or billing. No further retries were attempted.');
-      }
-      if (!isRetryable(message) || attempt === 2) break;
-      const delayMs = getRetryDelayMs(message, attempt);
-      console.warn(`Groq attempt ${attempt}/2 failed. Retrying in ${Math.ceil(delayMs / 1000)} seconds.`);
-      await new Promise<void>(resolve => setTimeout(resolve, delayMs));
     }
   }
-  throw new Error(`Groq report generation failed: ${getErrorText(lastError)}`);
+
+  const aggregated: AiTestSummary = allSummaries.reduce((acc, curr) => ({
+    overallSummary: acc.overallSummary ? acc.overallSummary + ' ' + curr.overallSummary : curr.overallSummary,
+    testDetails: [...acc.testDetails, ...curr.testDetails],
+    passedSummaries: [...acc.passedSummaries, ...curr.passedSummaries],
+    failedSummaries: [...acc.failedSummaries, ...curr.failedSummaries],
+  }), { overallSummary: '', testDetails: [], passedSummaries: [], failedSummaries: [] });
+
+  const finalDetails: typeof aggregated.testDetails = [];
+  const finalPassed: typeof aggregated.passedSummaries = [];
+  const finalFailed: typeof aggregated.failedSummaries = [];
+
+  const seenIds = new Set<string>();
+
+  for (const test of testResults) {
+    if (seenIds.has(test.testId)) continue;
+    seenIds.add(test.testId);
+
+    const detail = aggregated.testDetails.find(d => d.testId === test.testId);
+    if (detail) {
+      finalDetails.push(detail);
+    } else {
+      finalDetails.push({
+        testId: test.testId,
+        expectedResult: "Evidence unavailable.",
+        actualResult: test.error || "Evidence unavailable.",
+        stepsToReproduce: ["Evidence unavailable."]
+      });
+    }
+
+    if (test.status === 'passed') {
+      const summary = aggregated.passedSummaries.find(p => p.testId === test.testId);
+      finalPassed.push(summary || { testId: test.testId, summary: "Evidence unavailable." });
+    } else if (test.status === 'failed' || test.status === 'timedOut') {
+      const fail = aggregated.failedSummaries.find(f => f.testId === test.testId);
+      finalFailed.push(fail || {
+        testId: test.testId,
+        bugTitle: test.title,
+        failureSummary: test.error || "Evidence unavailable.",
+        severity: "Unassigned",
+        priority: "Unassigned"
+      });
+    }
+  }
+
+  return {
+    overallSummary: aggregated.overallSummary,
+    testDetails: finalDetails,
+    passedSummaries: finalPassed,
+    failedSummaries: finalFailed
+  };
 }

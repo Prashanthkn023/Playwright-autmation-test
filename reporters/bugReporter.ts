@@ -155,25 +155,6 @@ class BugReporter implements Reporter {
     });
 
     for (const attachment of result.attachments) {
-      if (attachment.name === 'api-performance-report.json' || attachment.name.includes('api-performance')) {
-        let content = '';
-        if (attachment.body) {
-          content = attachment.body.toString('utf8');
-        } else if (attachment.path && fs.existsSync(attachment.path)) {
-          try {
-            content = fs.readFileSync(attachment.path, 'utf8');
-          } catch (err) {
-            console.warn(`Could not read api-performance-report.json attachment file: ${err}`);
-          }
-        }
-        if (content) {
-          try {
-            this.cmsPerformanceData = JSON.parse(content);
-          } catch (e) {
-            console.error('Failed to parse api-performance-report.json attachment:', e);
-          }
-        }
-      }
       if (attachment.name === 'gctp-website-api-performance-report.json' || attachment.name.includes('gctp-website-api-performance')) {
         let content = '';
         if (attachment.body) {
@@ -188,8 +169,28 @@ class BugReporter implements Reporter {
         if (content) {
           try {
             this.gctpPerformanceData = JSON.parse(content);
+            console.log(`GCTP API Performance: Found ${this.gctpPerformanceData.endpoints?.length || 0} endpoints.`);
           } catch (e) {
             console.error('Failed to parse gctp-website-api-performance-report.json attachment:', e);
+          }
+        }
+      } else if (attachment.name === 'api-performance-report.json' || attachment.name.includes('api-performance')) {
+        let content = '';
+        if (attachment.body) {
+          content = attachment.body.toString('utf8');
+        } else if (attachment.path && fs.existsSync(attachment.path)) {
+          try {
+            content = fs.readFileSync(attachment.path, 'utf8');
+          } catch (err) {
+            console.warn(`Could not read api-performance-report.json attachment file: ${err}`);
+          }
+        }
+        if (content) {
+          try {
+            this.cmsPerformanceData = JSON.parse(content);
+            console.log(`CMS API Performance: Found ${this.cmsPerformanceData.endpoints?.length || 0} endpoints.`);
+          } catch (e) {
+            console.error('Failed to parse api-performance-report.json attachment:', e);
           }
         }
       }
