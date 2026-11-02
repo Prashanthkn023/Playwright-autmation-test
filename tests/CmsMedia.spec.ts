@@ -117,34 +117,28 @@ async function getVisibleMediaRecords(page: Page): Promise<MediaRecord[]> {
 }
 
 async function getVisibleVideoRecords(page: Page): Promise<VideoRecord[]> {
-  return page.locator('iframe:visible').evaluateAll((iframes) =>
-    iframes.map((iframe) => {
-      const iframeElement = iframe as HTMLIFrameElement;
-      const source = iframe.getAttribute('src') || '';
-      const providerId = source.match(/(?:embed\/|youtu\.be\/)([^?&#/]+)/i)?.[1] || source;
+  return page.locator('.home-hero-traffic-cardGTGC:visible').evaluateAll((cards) =>
+    cards
+      .map((card) => {
+        const iframe = card.querySelector('iframe');
+        const video = card.querySelector('video');
+        const mediaElement = iframe || video;
+        if (!mediaElement) return null;
 
-      // The video card DOM mirrors the photo card DOM:
-      //   [div.home-hero-card-imgGTGC > div.mediastyles > iframe]
-      //   [div.media-card-content > div.home-hero-traffic-card-des > div.media-title > div > span]
-      // Walk up to the card root (.home-hero-traffic-cardGTGC) and read the
-      // .media-title span, which contains only the video title — not the full
-      // card text that the original ancestor.innerText walk was producing.
-      let cardRoot: Element | null = iframeElement;
-      for (let i = 0; i < 8 && cardRoot; i++) {
-        if (cardRoot.classList.contains('home-hero-traffic-cardGTGC')) break;
-        cardRoot = cardRoot.parentElement;
-      }
+        let source = '';
+        if (iframe) {
+          source = iframe.getAttribute('src') || '';
+        } else if (video) {
+          source = video.getAttribute('src') || video.querySelector('source')?.getAttribute('src') || '';
+        }
+        const providerId = source.match(/(?:embed\/|youtu\.be\/|watch\?v=)([^?&#/]+)/i)?.[1] || source.split('/').pop()?.split('?')[0] || source;
 
-      const titleSpan = cardRoot?.querySelector('.media-title span') as HTMLElement | null;
-      const title = titleSpan?.innerText?.replace(/\s+/g, ' ').trim()
-        || iframeElement.title
-        || providerId;
+        const titleSpan = card.querySelector('.media-title span') as HTMLElement | null;
+        const title = titleSpan?.innerText?.replace(/\s+/g, ' ').trim() || (iframe as HTMLIFrameElement)?.title || '';
 
-      return {
-        providerId,
-        title,
-      };
-    })
+        return { providerId, title };
+      })
+      .filter((record): record is VideoRecord => record !== null)
   );
 }
 
@@ -220,17 +214,23 @@ async function getVideoRecordsFromApi(
   const body = await response.json();
 
   return (body.payload || [])
-    .filter((record: { f_section?: string; f_url?: string[] }) =>
-      record.f_section === 'VIDEOS' &&
-      Array.isArray(record.f_url) &&
-      record.f_url.length > 0
-    )
-    .map((record: { f_title?: string; f_url?: string[] }) => ({
-      providerId: record.f_url?.[0]?.match(
+    .filter((record: { f_section?: string; f_url?: string[]; f_image?: string[] }) => {
+      if (record.f_section !== 'VIDEOS') return false;
+      const hasUrl = Array.isArray(record.f_url) && record.f_url.length > 0 && Boolean(record.f_url[0]);
+      const hasVideoImage = Array.isArray(record.f_image) && record.f_image.length > 0 && record.f_image.some(img => /\.mp4(\?|$)/i.test(img));
+      return hasUrl || hasVideoImage;
+    })
+    .map((record: { f_title?: string; f_url?: string[]; f_image?: string[] }) => {
+      const source = (record.f_url && record.f_url[0]) || (record.f_image && record.f_image.find(img => /\.mp4(\?|$)/i.test(img))) || '';
+      const providerId = source.match(
         /(?:embed\/|youtu\.be\/|watch\?v=)([^?&#/]+)/i
-      )?.[1] || record.f_url?.[0] || '',
-      title: record.f_title || '',
-    }));
+      )?.[1] || source.split('/').pop()?.split('?')[0] || source;
+
+      return {
+        providerId,
+        title: record.f_title?.trim() || '',
+      };
+    });
 }
 
 // CMS login polls for up to 45s per attempt, so the shared 60s timeout is
@@ -282,7 +282,11 @@ test('verify CMS media content matches the public website', async ({ page }) => 
 
   const publicVideosVisible = await mediaPage.openVideos();
   expect(publicVideosVisible, 'Public Videos section should be visible').toBeTruthy();
-  await page.waitForTimeout(2000); // Wait for videos to load
+
+  // Wait for at least one video card / iframe / video to appear
+  const videoCards = page.locator('.home-hero-traffic-cardGTGC');
+  await expect(videoCards.first()).toBeVisible({ timeout: 15000 });
+
   const publicVideoRecords = await getVisibleVideoRecords(page);
   expect(publicVideoRecords.length, 'Public should have visible videos').toBeGreaterThan(0);
 
