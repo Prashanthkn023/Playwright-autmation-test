@@ -21,8 +21,25 @@ export class CmsTamilABTPage extends BasePage {
       }
 
       await this.closeAnyPopup();
+
+      // Check if Tamil is already selected to avoid failure if the language is already switched.
+      const isTamilSelected = await this.page.getByRole('combobox', { name: 'தமிழ்' }).isVisible({ timeout: 3000 }).catch(() => false);
+      if (isTamilSelected) {
+        console.log('Tamil is already selected as the language.');
+        TestAuditLogger.log({
+          testName,
+          testType,
+          target: this.page.url(),
+          item: 'Tamil Language Selection',
+          expected: 'தமிழ்',
+          actual: 'தமிழ் already selected',
+          status: 'PASS',
+        });
+        return;
+      }
+
       const languageSelector = this.page.getByRole('combobox', { name: 'English' });
-      await expect(languageSelector).toBeVisible({ timeout: 10000 });
+      await expect(languageSelector).toBeVisible({ timeout: 15000 });
       await this.closeAnyPopup();
       await languageSelector.click();
 

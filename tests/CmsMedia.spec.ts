@@ -186,12 +186,22 @@ async function getMediaRecordsFromApi(
   expect(response.ok()).toBeTruthy();
   const body = await response.json();
 
-  return (body.payload || [])
-    .filter((record: { f_section?: string; f_image?: string[] }) =>
-      record.f_section === section &&
-      Array.isArray(record.f_image) &&
-      record.f_image.length > 0
-    )
+  console.log(`\n[DIAGNOSTIC] CMS API Endpoint (${section}): ${endpoint}`);
+  console.log(`[DIAGNOSTIC] Total raw payload records received: ${Array.isArray(body.payload) ? body.payload.length : 'not an array'}`);
+
+  const filtered = (body.payload || [])
+    .filter((record: { f_section?: string; f_image?: string[]; f_approval_status?: string; f_title?: string }) => {
+      const isSectionMatch = record.f_section === section;
+      const status = (record.f_approval_status || '').trim().toUpperCase();
+      const isApproved = status === 'APPROVED';
+      const hasImages = Array.isArray(record.f_image) && record.f_image.length > 0;
+
+      console.log(
+        `[DIAGNOSTIC] Media Record [Title: "${record.f_title}", Section: "${record.f_section}", Status: "${record.f_approval_status}", HasImages: ${hasImages}] -> match: ${isSectionMatch && isApproved && hasImages}`
+      );
+
+      return isSectionMatch && isApproved && hasImages;
+    })
     .map((record: {
       f_title?: string;
       f_description?: string;
@@ -203,6 +213,9 @@ async function getMediaRecordsFromApi(
         .replace(/\s+/g, ' ')
         .trim(),
     }));
+
+  console.log(`[DIAGNOSTIC] Filtered approved ${section} records count: ${filtered.length}`);
+  return filtered;
 }
 
 async function getVideoRecordsFromApi(
@@ -213,12 +226,23 @@ async function getVideoRecordsFromApi(
   expect(response.ok()).toBeTruthy();
   const body = await response.json();
 
-  return (body.payload || [])
-    .filter((record: { f_section?: string; f_url?: string[]; f_image?: string[] }) => {
-      if (record.f_section !== 'VIDEOS') return false;
+  console.log(`\n[DIAGNOSTIC] CMS API Endpoint (VIDEOS): ${endpoint}`);
+  console.log(`[DIAGNOSTIC] Total raw payload records received for videos: ${Array.isArray(body.payload) ? body.payload.length : 'not an array'}`);
+
+  const filtered = (body.payload || [])
+    .filter((record: { f_section?: string; f_url?: string[]; f_image?: string[]; f_approval_status?: string; f_title?: string }) => {
+      const isSectionMatch = record.f_section === 'VIDEOS';
+      const status = (record.f_approval_status || '').trim().toUpperCase();
+      const isApproved = status === 'APPROVED';
       const hasUrl = Array.isArray(record.f_url) && record.f_url.length > 0 && Boolean(record.f_url[0]);
       const hasVideoImage = Array.isArray(record.f_image) && record.f_image.length > 0 && record.f_image.some(img => /\.mp4(\?|$)/i.test(img));
-      return hasUrl || hasVideoImage;
+      const validMedia = hasUrl || hasVideoImage;
+
+      console.log(
+        `[DIAGNOSTIC] Video Record [Title: "${record.f_title}", Section: "${record.f_section}", Status: "${record.f_approval_status}", HasUrl: ${hasUrl}, HasVideoImage: ${hasVideoImage}] -> match: ${isSectionMatch && isApproved && validMedia}`
+      );
+
+      return isSectionMatch && isApproved && validMedia;
     })
     .map((record: { f_title?: string; f_url?: string[]; f_image?: string[] }) => {
       const source = (record.f_url && record.f_url[0]) || (record.f_image && record.f_image.find(img => /\.mp4(\?|$)/i.test(img))) || '';
@@ -231,6 +255,9 @@ async function getVideoRecordsFromApi(
         title: record.f_title?.trim() || '',
       };
     });
+
+  console.log(`[DIAGNOSTIC] Filtered approved video records count: ${filtered.length}`);
+  return filtered;
 }
 
 // CMS login polls for up to 45s per attempt, so the shared 60s timeout is
@@ -310,6 +337,13 @@ test('verify CMS media content matches the public website', async ({ page }) => 
   // Similar comparison for videos
   const cmsVideoByTitle = new Map(cmsVideoRecords.map(r => [r.title.toLowerCase(), r]));
   const publicVideoByTitle = new Map(publicVideoRecords.map(r => [r.title.toLowerCase(), r]));
+
+  console.log('\n================ VIDEO COMPARISON DIAGNOSTICS ================');
+  console.log('CMS Video Titles (Approved):', Array.from(cmsVideoByTitle.keys()));
+  console.log('Public Website Video Titles:', Array.from(publicVideoByTitle.keys()));
+  console.log('CMS Video Records:', cmsVideoRecords);
+  console.log('Public Video Records:', publicVideoRecords);
+  console.log('==============================================================\n');
 
   expect(publicVideoByTitle.size, 'Public site should have same number of video records as CMS API').toBe(cmsVideoByTitle.size);
 

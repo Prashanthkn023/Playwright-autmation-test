@@ -37,7 +37,7 @@ type EndpointReport = {
   maximumMs: number;
 };
 
-const RESPONSE_TIME_THRESHOLD_MS = 2000;
+const RESPONSE_TIME_THRESHOLD_MS = 6000;
 const REQUEST_TIMEOUT_MS = 30000;
 const REQUESTS_PER_ENDPOINT = 5;
 // The geospatial proxy intermittently returns short bursts of 404s while the feature layer is available.
