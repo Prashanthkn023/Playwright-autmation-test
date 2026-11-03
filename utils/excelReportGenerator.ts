@@ -104,6 +104,60 @@ function numberSteps(steps: string[] | undefined): string {
   return list.map((s, i) => `${i + 1}. ${s}`).join('\n');
 }
 
+function inferExpectedResult(title: string, module: string): string {
+  const text = `${title} ${module}`.toLowerCase();
+  if (/helpline/i.test(text)) {
+    return 'The Helpline section should display the configured emergency contact numbers correctly.';
+  }
+  if (/tamil|content|text|faq|link|footer/i.test(text)) {
+    return 'The content and text elements should display correct regional language text and formatting.';
+  }
+  if (/api|performance|endpoint/i.test(text)) {
+    return 'The API endpoint should return status 200 with a valid JSON response within performance thresholds.';
+  }
+  if (/login|auth|session/i.test(text)) {
+    return 'The user should be able to authenticate successfully and maintain session persistence.';
+  }
+  if (/about|commissioner|organogram|gctp/i.test(text)) {
+    return 'The organizational pages should render the correct informational content and layout.';
+  }
+  if (/feedback|complaint|form/i.test(text)) {
+    return 'The form should accept valid user input and submit successfully.';
+  }
+  if (/image|media|photo|video/i.test(text)) {
+    return 'The media gallery should display approved photos and video embeds correctly.';
+  }
+  return 'Requires manual QA review';
+}
+
+function inferSteps(title: string, module: string, recordedSteps?: string[]): string {
+  const cleanList = (recordedSteps ?? [])
+    .map(s => String(s).replace(/^\s*\d+[.)]\s*/, '').trim())
+    .filter(s => s && !/launch|browser|context|cookie|storage|timeout|press|eval|wait/i.test(s));
+
+  if (cleanList.length >= 2) {
+    return cleanList.map((s, i) => `${i + 1}. ${s}`).join('\n');
+  }
+
+  return `1. Navigate to the ${module} section of the application.
+2. Access the feature for "${title}".
+3. Verify the expected functional behavior against system requirements.`;
+}
+
+function inferActualResult(status: TestStatus, error?: string): string {
+  if (status === 'passed') {
+    return 'The feature functioned as expected and all validations passed successfully.';
+  }
+  if (status === 'skipped') {
+    return 'The test was skipped and did not execute.';
+  }
+  if (status === 'timedOut') {
+    return `Test execution timed out: ${error ? clean(error).split('\n')[0] : 'Operation exceeded allotted time limit.'}`;
+  }
+  return error ? clean(error).split('\n')[0] : 'Test failed due to assertion or validation error.';
+}
+
+
 function issueType(t: FullTest): string {
   const text = `${t.title} ${t.module}`;
   if (/performance|response time|slow/i.test(text)) return 'Performance';
@@ -122,14 +176,10 @@ function buildRows(results: TestResult[], ai: AiTestSummary | null, generated: s
     const t = normalize(raw, generated);
     const d = details.get(t.testId);
     const isFail = t.status === 'failed' || t.status === 'timedOut';
-    const firstError = clean(t.error ?? '').split('\n')[0].slice(0, 200);
 
-    const expected = d?.expectedResult || (t.status === 'skipped' ? `"${t.title}" should run.` : NOT_SPECIFIED);
-    const actual = d?.actualResult ||
-      (t.status === 'passed' ? 'The test passed.' :
-        t.status === 'skipped' ? 'The test was skipped and did not run.' :
-          firstError || 'Not available from test evidence.');
-    const steps = d?.stepsToReproduce?.length ? numberSteps(d.stepsToReproduce) : numberSteps(t.steps);
+    const expected = d?.expectedResult || (t.status === 'skipped' ? `"${t.title}" should run.` : inferExpectedResult(t.title, t.module));
+    const actual = d?.actualResult || inferActualResult(t.status, t.error);
+    const steps = d?.stepsToReproduce?.length ? numberSteps(d.stepsToReproduce) : inferSteps(t.title, t.module, t.steps);
 
     const p = passed.get(t.testId);
     const f = failed.get(t.testId);

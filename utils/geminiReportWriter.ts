@@ -116,8 +116,8 @@ Required JSON shape:
 Rules:
 - Preserve testId exactly for internal matching. Never display testId in any text.
 - testDetails: one entry for every passed, failed and timedOut test. Do not include skipped or interrupted tests.
-- expectedResult: write what should happen, based on the test title and any assertion/expectedEvidence. Example: "The Commissioner message shows correctly in Tamil."
-- actualResult for a passed test: one plain sentence saying the expected behaviour was seen. Example: "The Commissioner message was shown correctly in Tamil."
+- expectedResult: Write a clear, plain sentence describing what should happen or be verified in the application based on the test title and module. DO NOT write "Evidence unavailable." or "Not specified.". Example: "The Chennai GCTP About Us page should load successfully and display content in correct Tamil."
+- actualResult for a passed test: Write a clear sentence confirming that the expected behavior was successfully observed and verified. Example: "The Chennai GCTP About Us page loaded correctly and all Tamil text rendered as expected."
 - actualResult for a failed or timedOut test: say plainly what went wrong, using only error, actualEvidence and comparisonDifferences. If they do not say, write exactly "Not available from test evidence.".
 - stepsToReproduce: 3 to 5 short numbered steps a person could follow in a browser, each under 15 words.
   If recordedExecutionSteps exist, rewrite them in plain English (for example page.goto becomes "Open the page.", locator.click becomes "Click the button."), keeping the same order and not adding facts.

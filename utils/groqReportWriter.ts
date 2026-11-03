@@ -61,12 +61,12 @@ function buildPrompt(testResults: TestResult[]): string {
   return `
 You are an expert Lead QA Engineer. Analyze these test execution results and generate professional manual QA documentation in JSON format.
 
-CRITICAL INSTRUCTIONS:
+CRITICAL INSTRUCTION FOR ALL FIELDS:
 1. Explain what functional business capability was tested based on the test title and module.
-2. Derive expected results from assertions/evidence (or "Evidence unavailable." if none).
-3. Describe actual results based on recorded error/evidence (or "Test passed successfully." if passed).
-4. Generate meaningful numbered functional manual testing steps (e.g., "1. Navigate to module", "2. Verify element renders"). DO NOT include internal automation script operations (such as browser launch, context creation, wait for timeout, or press Escape).
-5. Use the exact 'id' from input as 'testId' in output. Do not invent functionality or bugs.
+2. "expectedResult": Write a clear, plain-English sentence describing what should happen or be verified, based on the test title and module. DO NOT write "Evidence unavailable." or "Not specified." if the test passed. Example: "The Chennai GCTP About Us page should load successfully and display content in correct Tamil." or "The GCTP website API endpoints should respond within the threshold of 6000 ms."
+3. "actualResult": For passed tests, write a clear sentence confirming that the expected behavior was successfully observed and verified. Example: "The Chennai GCTP About Us page loaded correctly with all Tamil text rendered as expected." or "All verified module API endpoints responded successfully within the expected time limit." For failed or timed-out tests, describe the actual failure or error observed.
+4. "stepsToReproduce": Generate 3 to 5 clear, logical, short numbered functional manual testing steps to verify the feature (e.g., "1. Navigate to the GCTP Home Page.", "2. Click on the language selector to switch to Tamil.", "3. Verify that the page content changes to Tamil."). DO NOT include automation-specific tasks (e.g., browser launch, playwright fixtures, timeouts, etc.).
+5. Use the exact 'id' from input as 'testId' in output. Do not invent unrelated functionality or mock bugs.
 
 Required JSON shape:
 {
