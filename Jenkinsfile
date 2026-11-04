@@ -54,7 +54,7 @@ pipeline {
                         buildResult: 'UNSTABLE',
                         stageResult: 'UNSTABLE'
                     ) {
-                        bat 'npx playwright test --grep-invert "@manual"'
+                        bat 'npx playwright test --grep-invert "@manual" --workers=1'
                     }
                 }
             }

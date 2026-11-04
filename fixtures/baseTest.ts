@@ -7,6 +7,7 @@ import { ImageValidationPage } from '../pages/ImageValidationPage';
 import { CmsPage } from '../pages/CmsPage';
 import { CityMapPage } from '../pages/CityMapPage';
 import { CmsTamilPage } from '../pages/CmsTamilPage';
+import { CmsTamilCityPage } from '../pages/CmsTamilCityPage';
 import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
 
 type PageObjects = {
@@ -24,6 +25,8 @@ type PageObjects = {
     cityMap: CityMapPage;
 
     cmsTamil: CmsTamilPage;
+
+    cmsTamilCity: CmsTamilCityPage;
 
 };
 
@@ -82,6 +85,12 @@ export const test = base.extend<PageObjects & SharedFixtures>({
     cmsTamil: async ({ page }, use) => {
 
         await use(new CmsTamilPage(page));
+
+    },
+
+    cmsTamilCity: async ({ page }, use) => {
+
+        await use(new CmsTamilCityPage(page));
 
     }
 

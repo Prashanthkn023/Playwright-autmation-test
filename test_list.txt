@@ -1,0 +1,49 @@
+Listing tests:
+  [setup] › auth.setup.ts:10:6 › authenticate CMS session
+  [cms-tests] › CmsABT.spec.ts:109:5 › verify CMS About Us content with published website
+  [cms-tests] › CmsCity.spec.ts:13:5 › verify CMS City Profile content with published website
+  [cms-tests] › Cmscontactus.spec.ts:81:5 › verify CMS Contact Us page
+  [cms-tests] › CmsMedia.spec.ts:292:5 › verify CMS media content matches the public website
+  [cms-tests] › Cmsnews.spec.ts:171:5 › compare CMS approved News with public News
+  [chromium] › 01-content-validation.spec.ts:4:7 › Tamil City Profile Content Validation › verify Tamil City Profile page heading, description and content sections
+  [chromium] › 01-home-content-validation.spec.ts:8:7 › Tamil Home Module – 01 Content Validation › Validate Helpline content
+  [chromium] › 01-home-content-validation.spec.ts:12:7 › Tamil Home Module – 01 Content Validation › Validate Traffic Updates content
+  [chromium] › 01-home-content-validation.spec.ts:16:7 › Tamil Home Module – 01 Content Validation › Validate Important Links content
+  [chromium] › 01-home-content-validation.spec.ts:20:7 › Tamil Home Module – 01 Content Validation › Validate Footer Links content
+  [chromium] › 02-api-data-validation.spec.ts:13:5 › CmsTamilABT API JSON: compare approved CMS records with published About Us data
+  [chromium] › 02-home-api-data-content-validation.spec.ts:13:5 › CmsTamilHome API JSON: compare approved CMS records with published Home data
+  [chromium] › 03-home-ui-validation.spec.ts:8:7 › Tamil Home Module – 03 UI Validation › Verify Tamil language is selected and dropdown shows Tamil
+  [chromium] › 03-home-ui-validation.spec.ts:12:7 › Tamil Home Module – 03 UI Validation › Verify home page content character count and Tamil script
+  [chromium] › 03-home-ui-validation.spec.ts:19:7 › Tamil Home Module – 03 UI Validation › Verify Home Page Sliders
+  [chromium] › 03-home-ui-validation.spec.ts:23:7 › Tamil Home Module – 03 UI Validation › Verify Education Section
+  [chromium] › 03-home-ui-validation.spec.ts:27:7 › Tamil Home Module – 03 UI Validation › Verify Image Loading
+  [chromium] › 03-ui-validation.spec.ts:4:7 › Tamil City Profile UI Validation › verify Tamil City Profile UI visibility, image loading and responsive elements
+  [chromium] › 04-end-to-end.spec.ts:4:7 › Tamil City Profile End-to-End › complete Tamil City Profile journey
+  [chromium] › 04-home-end-to-end.spec.ts:5:7 › Tamil Home Module – 04 End-to-End Workflow Validation › Complete Tamil Home Module User Journey E2E
+  [chromium] › ApiComparison.spec.ts:811:5 › GCTP Complete End-to-End API Validation
+  [chromium] › ApiPerformance.spec.ts:225:5 › API performance: five sequential requests for every verified endpoint
+  [chromium] › Captach.spec.ts:3:5 › Validate the feedback form @manual
+  [chromium] › Cms.spec.ts:7:5 › Important Links
+  [chromium] › Cms.spec.ts:11:5 › Helpline
+  [chromium] › Cms.spec.ts:15:5 › Traffic Updates
+  [chromium] › Cms.spec.ts:19:5 › Empanelment
+  [chromium] › Cms.spec.ts:23:5 › Home Page Sliders
+  [chromium] › Cms.spec.ts:27:5 › FAQ
+  [chromium] › Cms.spec.ts:31:5 › Footer Links
+  [chromium] › CmsTamil.spec.ts:8:9 › Tamil Content Validation › Tamil – Helpline
+  [chromium] › CmsTamil.spec.ts:12:9 › Tamil Content Validation › Tamil – Traffic Updates
+  [chromium] › CmsTamil.spec.ts:16:9 › Tamil Content Validation › Tamil – Important Links
+  [chromium] › CmsTamil.spec.ts:20:9 › Tamil Content Validation › Tamil – Footer Links
+  [chromium] › CmsTamil.spec.ts:25:9 › Tamil Content Validation › Tamil – Empanelment
+  [chromium] › CmsTamil.spec.ts:29:9 › Tamil Content Validation › Tamil – Home Page Sliders
+  [chromium] › CmsTamil.spec.ts:33:9 › Tamil Content Validation › Tamil – FAQ
+  [chromium] › GctpWebsiteApiPerformance.spec.ts:269:5 › GCTP website API performance: verified module endpoints
+  [chromium] › seed.spec.ts:4:7 › Test group › seed
+  [chromium] › tamil.cityprofile.spec.ts:18:5 › verify Tamil City Profile content
+  [chromium] › TC_001_ImageValidation.spec.ts:3:5 › TC_001 Validate Home Page Images
+  [chromium] › TC_002_Feedback.spec.ts:11:7 › TC_002 Feedback Form Submission - undefined @manual
+  [chromium] › TC_003_Complaint.spec.ts:15:7 › TC_003 Complaint Page Submission Flow - Submit complaint with valid details (Validated OTP Dispatch) @manual
+  [chromium] › TC_004_EndToEnd.spec.ts:3:5 › TC_004 End To End Flow @manual
+  [chromium] › TC_005_CityMap.spec.ts:3:5 › TC_005: City Map navigation, controls, and layer interactions
+  [chromium] › validate.spec.ts:31:5 › CMS Home Page API vs GCTP Home Page API Comparison
+Total: 48 tests in 29 files

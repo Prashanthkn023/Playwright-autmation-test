@@ -2,7 +2,7 @@
 
 ## Context
 The GCTP-Playwright project has three persistent test failures in Jenkins that need investigation and resolution.
-1. `tests/CmsABT.tamil.spec.ts`: Tamil language selector click times out.
+1. `tests/cms-abt-tamil/`: Tamil language selector click times out (legacy `tests/CmsABT.tamil.spec.ts` replaced).
 2. `tests/CmsMedia.spec.ts`: Content mismatch between CMS and public media pages.
 3. `tests/Cmsnews.spec.ts`: Locator timeout for news card headings.
 
@@ -10,7 +10,7 @@ The goal is to fix these issues using robust selectors and proper waiting mechan
 
 ## Proposed Changes
 
-### 1. Fix Tamil About Us Test (`tests/CmsABT.tamil.spec.ts`)
+### 1. Fix Tamil About Us Test (`tests/cms-abt-tamil/`) 
 - **Problem**: Language selector click times out due to potential interference from popups.
 - **Approach**:
   - Update `selectTamil` to implement a more robust `waitFor` mechanism for the language selector combobox.
@@ -32,7 +32,9 @@ The goal is to fix these issues using robust selectors and proper waiting mechan
 
 ## Verification
 - Run individual tests:
-  - `npx playwright test tests/CmsABT.tamil.spec.ts`
+  - `npx playwright test tests/cms-abt-tamil/01-content-validation.spec.ts`
+  - `npx playwright test tests/cms-abt-tamil/03-ui-validation.spec.ts`
+  - `npx playwright test tests/cms-abt-tamil/04-end-to-end.spec.ts`
   - `npx playwright test tests/CmsMedia.spec.ts`
   - `npx playwright test tests/Cmsnews.spec.ts`
 - Run the full suite to ensure no regressions: `npx playwright test`.

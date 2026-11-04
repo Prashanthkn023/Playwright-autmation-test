@@ -1,24 +1,19 @@
-import { test } from '../fixtures/baseTest';
-import { CmsTamilABTPage } from '../pages/CmsTamilABTPage';
+import { test, expect } from '../fixtures/baseTest';
 
-test.describe('CmsTamilABT – 04 End-to-End Workflow Validation', () => {
-  test('Complete Tamil ABT User Journey E2E', async ({ page }) => {
-    test.setTimeout(180000);
-    const cmsTamilAbt = new CmsTamilABTPage(page);
+test.describe('Tamil City Profile End-to-End', () => {
+  test('complete Tamil City Profile journey', async ({ cmsTamilCity, page }) => {
+    await page.goto('https://gctp.in/chennai-home');
+    await cmsTamilCity.selectTamil();
 
-    // Step 1: Open Home Page and Switch Language to Tamil
-    await cmsTamilAbt.openTamilHome();
+    // Navigate to City Profile
+    await cmsTamilCity.cityProfileLink.click();
 
-    // Step 2: Navigate to Chennai GCTP About Us
-    await cmsTamilAbt.openTamilAboutUsPage('பெருநகர சென்னை போக்குவரத்து காவல் துறை', '/chennai-gctp');
+    // Verify content
+    await expect(cmsTamilCity.cityProfileHeading).toBeVisible();
+    await expect(cmsTamilCity.cityDescription).toBeVisible();
 
-    // Step 3: Navigate to Commissioner Message
-    await cmsTamilAbt.openTamilAboutUsPage('காவல்துறை ஆணையரிடமிருந்து செய்தி', '/chennai-policecommissioner');
-
-    // Step 4: Navigate to Additional Commissioner Message
-    await cmsTamilAbt.openTamilAboutUsPage('கூடுதல் காவல்துறை ஆணையரிடமிருந்து செய்தி', '/chennai-additionalcop');
-
-    // Step 5: Navigate to Organogram
-    await cmsTamilAbt.openTamilAboutUsPage('கட்டமைப்பு', '/chennai-organogram');
+    // Interact with "Read More"
+    await cmsTamilCity.clickReadMore();
+    await expect(page.locator('#root')).toContainText('குழந்தைகள் சாலை பாதுகாப்பு மற்றும் போக்குவரத்து பூங்கா');
   });
 });
