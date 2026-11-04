@@ -150,8 +150,7 @@ async function getPublicVideoRecords(page: Page, response: Response | APIRespons
     })
     .filter((record: VideoRecord) => Boolean(record.title));
 
-  console.log(`[PUBLIC MEDIA] API extracted video count: ${publicApiVideos.length}`);
-  console.log(`[PUBLIC MEDIA] API extracted titles: ${JSON.stringify(publicApiVideos.map(record => record.title))}`);
+  console.log(`[PUBLIC MEDIA] API video count: ${publicApiVideos.length}`);
 
   const videosTab = page.locator('button:has-text("VIDEOS"), [role="tab"]:has-text("VIDEOS")').first();
   await expect(videosTab).toBeVisible({ timeout: 30000 });
@@ -172,10 +171,8 @@ async function getPublicVideoRecords(page: Page, response: Response | APIRespons
     .map(record => apiByTitle.get(record.title.toLowerCase()))
     .filter((record): record is VideoRecord => Boolean(record));
 
-  console.log(`[PUBLIC MEDIA] DOM extracted video count: ${visibleTitles.length}`);
-  console.log(`[PUBLIC MEDIA] DOM extracted titles: ${JSON.stringify(visibleTitles.map(record => record.title))}`);
+  console.log(`[PUBLIC MEDIA] DOM video count: ${visibleTitles.length}`);
   console.log(`[PUBLIC MEDIA] Matched video count: ${records.length}`);
-  console.log(`[PUBLIC MEDIA] Matched titles: ${JSON.stringify(records.map(record => record.title))}`);
 
   if (visibleTitles.length === 0 && publicApiVideos.length > 0) {
     throw new Error('[PUBLIC MEDIA] DOM extraction failure: public video cards rendered no usable titles');
@@ -228,19 +225,12 @@ async function getMediaRecordsFromApi(
   expect(response.ok()).toBeTruthy();
   const body = await response.json();
 
-  console.log(`\n[DIAGNOSTIC] CMS API Endpoint (${section}): ${endpoint}`);
-  console.log(`[DIAGNOSTIC] Total raw payload records received: ${Array.isArray(body.payload) ? body.payload.length : 'not an array'}`);
-
   const filtered = (body.payload || [])
     .filter((record: { f_section?: string; f_image?: string[]; f_approval_status?: string; f_title?: string }) => {
       const isSectionMatch = record.f_section === section;
       const status = (record.f_approval_status || '').trim().toUpperCase();
       const isApproved = status === 'APPROVED';
       const hasImages = Array.isArray(record.f_image) && record.f_image.length > 0;
-
-      console.log(
-        `[DIAGNOSTIC] Media Record [Title: "${record.f_title}", Section: "${record.f_section}", Status: "${record.f_approval_status}", HasImages: ${hasImages}] -> match: ${isSectionMatch && isApproved && hasImages}`
-      );
 
       return isSectionMatch && isApproved && hasImages;
     })
@@ -256,7 +246,7 @@ async function getMediaRecordsFromApi(
         .trim(),
     }));
 
-  console.log(`[DIAGNOSTIC] Filtered approved ${section} records count: ${filtered.length}`);
+  console.log(`[CMS MEDIA] Approved photos count: ${filtered.length}`);
   return filtered;
 }
 
@@ -268,9 +258,6 @@ async function getVideoRecordsFromApi(
   expect(response.ok()).toBeTruthy();
   const body = await response.json();
 
-  console.log(`\n[DIAGNOSTIC] CMS API Endpoint (VIDEOS): ${endpoint}`);
-  console.log(`[DIAGNOSTIC] Total raw payload records received for videos: ${Array.isArray(body.payload) ? body.payload.length : 'not an array'}`);
-
   const filtered = (body.payload || [])
     .filter((record: { f_section?: string; f_url?: string[]; f_image?: string[]; f_approval_status?: string; f_title?: string }) => {
       const isSectionMatch = record.f_section === 'VIDEOS';
@@ -279,10 +266,6 @@ async function getVideoRecordsFromApi(
       const hasUrl = Array.isArray(record.f_url) && record.f_url.length > 0 && Boolean(record.f_url[0]);
       const hasVideoImage = Array.isArray(record.f_image) && record.f_image.length > 0 && record.f_image.some(img => /\.mp4(\?|$)/i.test(img));
       const validMedia = hasUrl || hasVideoImage;
-
-      console.log(
-        `[DIAGNOSTIC] Video Record [Title: "${record.f_title}", Section: "${record.f_section}", Status: "${record.f_approval_status}", HasUrl: ${hasUrl}, HasVideoImage: ${hasVideoImage}] -> match: ${isSectionMatch && isApproved && validMedia}`
-      );
 
       return isSectionMatch && isApproved && validMedia;
     })
@@ -298,7 +281,7 @@ async function getVideoRecordsFromApi(
       };
     });
 
-  console.log(`[DIAGNOSTIC] Filtered approved video records count: ${filtered.length}`);
+  console.log(`[CMS MEDIA] Approved videos count: ${filtered.length}`);
   return filtered;
 }
 
@@ -377,13 +360,6 @@ test('verify CMS media content matches the public website', async ({ page }) => 
   const cmsVideoByTitle = new Map(cmsVideoRecords.map(r => [r.title.toLowerCase(), r]));
   const publicVideoByTitle = new Map(publicVideoRecords.map(r => [r.title.toLowerCase(), r]));
 
-  console.log('\n================ VIDEO COMPARISON DIAGNOSTICS ================');
-  console.log('CMS Video Titles (Approved):', Array.from(cmsVideoByTitle.keys()));
-  console.log('Public Website Video Titles:', Array.from(publicVideoByTitle.keys()));
-  console.log('CMS Video Records:', cmsVideoRecords);
-  console.log('Public Video Records:', publicVideoRecords);
-  console.log('==============================================================\n');
-
   expect(publicVideoByTitle.size, 'Public site should have same number of video records as CMS API').toBe(cmsVideoByTitle.size);
 
   for (const [title, cmsRecord] of cmsVideoByTitle) {
@@ -393,4 +369,6 @@ test('verify CMS media content matches the public website', async ({ page }) => 
         expect(publicRecord.providerId, `Video provider ID mismatch for: ${title}`).toBe(cmsRecord.providerId);
       }
   }
+
+  console.log('[PUBLIC MEDIA] Video comparison: PASSED');
 });
