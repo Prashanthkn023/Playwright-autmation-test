@@ -9,21 +9,10 @@ export class CmsTamilABTPage extends BasePage {
 
   async selectTamil(testName: string = 'Language Selection', testType: AuditTestType = 'UI') {
     try {
-      const overlay = this.page.locator('.flash-popup-overlay');
-      if (await overlay.isVisible({ timeout: 3000 }).catch(() => false)) {
-        const closeButton = overlay.locator('button, .flash-close-btn, [aria-label="Close"]').first();
-        if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await closeButton.click();
-        }
-        await overlay.waitFor({ state: 'hidden', timeout: 10000 });
-      } else if (await overlay.count() > 0) {
-        await overlay.first().waitFor({ state: 'hidden', timeout: 10000 }).catch(() => undefined);
-      }
-
       await this.closeAnyPopup();
 
       // Check if Tamil is already selected to avoid failure if the language is already switched.
-      const isTamilSelected = await this.page.getByRole('combobox', { name: 'தமிழ்' }).isVisible({ timeout: 3000 }).catch(() => false);
+      const isTamilSelected = await this.page.getByRole('combobox', { name: 'தமிழ்' }).isVisible({ timeout: 5000 }).catch(() => false);
       if (isTamilSelected) {
         console.log('Tamil is already selected as the language.');
         TestAuditLogger.log({
@@ -39,15 +28,24 @@ export class CmsTamilABTPage extends BasePage {
       }
 
       const languageSelector = this.page.getByRole('combobox', { name: 'English' });
+
+      // Wait for language selector to be visible and stable
       await expect(languageSelector).toBeVisible({ timeout: 15000 });
-      await this.closeAnyPopup();
+
+      // Ensure no overlay is blocking the click
+      await expect(this.page.locator('.flash-popup-overlay')).toBeHidden({ timeout: 10000 }).catch(() => undefined);
+
       await languageSelector.click();
 
       const tamilOption = this.page.getByRole('option', { name: 'தமிழ்' });
       await expect(tamilOption).toBeVisible({ timeout: 10000 });
+
+      // If an overlay appears after the menu opens, wait for it to disappear
+      await expect(this.page.locator('.flash-popup-overlay')).toBeHidden({ timeout: 5000 }).catch(() => undefined);
+
       await tamilOption.click();
 
-      await expect(this.page.getByRole('combobox', { name: 'தமிழ்' })).toBeVisible();
+      await expect(this.page.getByRole('combobox', { name: 'தமிழ்' })).toBeVisible({ timeout: 10000 });
 
       TestAuditLogger.log({
         testName,

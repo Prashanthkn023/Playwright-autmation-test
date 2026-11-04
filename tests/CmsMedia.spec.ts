@@ -1,4 +1,4 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Page, Response, APIResponse, test } from '@playwright/test';
 import { CmsMediaPage } from '../pages/CmsMediaPage';
 import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
 import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
@@ -120,26 +120,68 @@ async function getVisibleVideoRecords(page: Page): Promise<VideoRecord[]> {
   return page.locator('.home-hero-traffic-cardGTGC:visible').evaluateAll((cards) =>
     cards
       .map((card) => {
-        const iframe = card.querySelector('iframe');
-        const video = card.querySelector('video');
-        const mediaElement = iframe || video;
-        if (!mediaElement) return null;
-
-        let source = '';
-        if (iframe) {
-          source = iframe.getAttribute('src') || '';
-        } else if (video) {
-          source = video.getAttribute('src') || video.querySelector('source')?.getAttribute('src') || '';
-        }
-        const providerId = source.match(/(?:embed\/|youtu\.be\/|watch\?v=)([^?&#/]+)/i)?.[1] || source.split('/').pop()?.split('?')[0] || source;
-
         const titleSpan = card.querySelector('.media-title span') as HTMLElement | null;
-        const title = titleSpan?.innerText?.replace(/\s+/g, ' ').trim() || (iframe as HTMLIFrameElement)?.title || '';
-
-        return { providerId, title };
+        const title = titleSpan?.innerText?.replace(/\s+/g, ' ').trim() || '';
+        return title ? { providerId: '', title } : null;
       })
       .filter((record): record is VideoRecord => record !== null)
   );
+}
+
+async function getPublicVideoRecords(page: Page, response: Response | APIResponse): Promise<VideoRecord[]> {
+  console.log(`[PUBLIC MEDIA] API status: ${response.status()} ${response.statusText()}`);
+
+  if (!response.ok()) {
+    throw new Error(`[PUBLIC MEDIA] API request failed with status ${response.status()} ${response.statusText()}`);
+  }
+
+  const body = await response.json();
+  const publicApiVideos: VideoRecord[] = (body.payload || [])
+    .filter((record: { f_section?: string; f_approval_status?: string; f_title?: string }) =>
+      record.f_section === 'VIDEOS' &&
+      (record.f_approval_status || '').trim().toUpperCase() === 'APPROVED'
+    )
+    .map((record: { f_title?: string; f_url?: string[]; f_image?: string[] }) => {
+      const source = (record.f_url?.[0]) || record.f_image?.find(image => /\.mp4(?:\?|$)/i.test(image)) || '';
+      const providerId = source.match(/(?:embed\/|youtu\.be\/|watch\?v=)([^?&#/]+)/i)?.[1]
+        || source.split('/').pop()?.split('?')[0]
+        || source;
+      return { providerId, title: (record.f_title || '').replace(/\s+/g, ' ').trim() };
+    })
+    .filter((record: VideoRecord) => Boolean(record.title));
+
+  console.log(`[PUBLIC MEDIA] API extracted video count: ${publicApiVideos.length}`);
+  console.log(`[PUBLIC MEDIA] API extracted titles: ${JSON.stringify(publicApiVideos.map(record => record.title))}`);
+
+  const videosTab = page.locator('button:has-text("VIDEOS"), [role="tab"]:has-text("VIDEOS")').first();
+  await expect(videosTab).toBeVisible({ timeout: 30000 });
+  await videosTab.click({ force: true });
+
+  const visibleCards = page.locator('.home-hero-traffic-cardGTGC:visible');
+  await expect(visibleCards.first()).toBeVisible({ timeout: 30000 });
+  await expect
+    .poll(async () => visibleCards.count(), {
+      message: 'Wait for public media cards to finish rendering',
+      timeout: 30000,
+    })
+    .toBeGreaterThan(0);
+
+  const visibleTitles = await getVisibleVideoRecords(page);
+  const apiByTitle = new Map(publicApiVideos.map(record => [record.title.toLowerCase(), record]));
+  const records = visibleTitles
+    .map(record => apiByTitle.get(record.title.toLowerCase()))
+    .filter((record): record is VideoRecord => Boolean(record));
+
+  console.log(`[PUBLIC MEDIA] DOM extracted video count: ${visibleTitles.length}`);
+  console.log(`[PUBLIC MEDIA] DOM extracted titles: ${JSON.stringify(visibleTitles.map(record => record.title))}`);
+  console.log(`[PUBLIC MEDIA] Matched video count: ${records.length}`);
+  console.log(`[PUBLIC MEDIA] Matched titles: ${JSON.stringify(records.map(record => record.title))}`);
+
+  if (visibleTitles.length === 0 && publicApiVideos.length > 0) {
+    throw new Error('[PUBLIC MEDIA] DOM extraction failure: public video cards rendered no usable titles');
+  }
+
+  return records;
 }
 
 async function checkReadMoreAndBackNavigation(
@@ -286,6 +328,7 @@ test('verify CMS media content matches the public website', async ({ page }) => 
 
   // 2. NAVIGATE TO PUBLIC SITE AND SCRAPE PUBLISHED RECORDS
   await mediaPage.openMediaPage();
+  const publicVideosResponse = await page.request.get('https://gctp.in/api/fusion-public-facing-web-backend/media');
   await expect(page).toHaveURL(/gctp\.in\/chennai-media/i, { timeout: 30000 });
 
   // UI CHECKS
@@ -310,11 +353,7 @@ test('verify CMS media content matches the public website', async ({ page }) => 
   const publicVideosVisible = await mediaPage.openVideos();
   expect(publicVideosVisible, 'Public Videos section should be visible').toBeTruthy();
 
-  // Wait for at least one video card / iframe / video to appear
-  const videoCards = page.locator('.home-hero-traffic-cardGTGC');
-  await expect(videoCards.first()).toBeVisible({ timeout: 15000 });
-
-  const publicVideoRecords = await getVisibleVideoRecords(page);
+  const publicVideoRecords = await getPublicVideoRecords(page, publicVideosResponse);
   expect(publicVideoRecords.length, 'Public should have visible videos').toBeGreaterThan(0);
 
   // 3. COMPARE CMS APPROVED RECORDS (API) WITH PUBLISHED RECORDS (DOM)

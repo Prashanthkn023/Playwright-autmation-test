@@ -132,6 +132,42 @@ export class CmsNewsPage extends BasePage {
     await this.closeAwarenessPopup();
   }
 
+  async navigateCmsWithTransientRetry(): Promise<void> {
+    const transientErrors = [
+      /ERR_NETWORK_CHANGED/i,
+      /ERR_NAME_NOT_RESOLVED/i,
+      /ERR_INTERNET_DISCONNECTED/i,
+      /ERR_CONNECTION_RESET/i,
+      /ERR_CONNECTION_CLOSED/i,
+      /ERR_CONNECTION_TIMED_OUT/i,
+      /ERR_TIMED_OUT/i,
+      /navigation timeout.*exceeded/i,
+      /page\.goto: timeout/i,
+    ];
+
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await this.page.goto(this.cmsNewsUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 120000,
+        });
+        await expect(this.page).toHaveURL(/chennai-news-updates-Cms/i, { timeout: 30000 });
+        return;
+      } catch (error) {
+        lastError = error;
+        const message = error instanceof Error ? error.message : String(error);
+        const isTransient = transientErrors.some(pattern => pattern.test(message));
+        if (!isTransient || attempt === 3) {
+          throw error;
+        }
+        console.warn(`[CMS NEWS] Transient navigation failure on attempt ${attempt}: ${message}. Retrying...`);
+      }
+    }
+
+    throw lastError;
+  }
+
   async openCmsNewsPage() {
     // The CMS is a React SPA. Direct page.goto('/chennai-news-updates') causes
     // the SPA to reload and its router may redirect to /chennai-home before the

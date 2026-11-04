@@ -194,7 +194,7 @@ test(
       newsPage.cmsNewsUrl
     );
 
-    await page.goto(newsPage.cmsNewsUrl, { waitUntil: 'domcontentloaded' });
+    await newsPage.navigateCmsWithTransientRetry();
 
     // ========================================================
     // STEP 2 - OPEN CMS NEWS
