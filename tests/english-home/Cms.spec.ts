@@ -1,4 +1,4 @@
-import { test } from '../fixtures/baseTest';
+import { test } from '../../fixtures/baseTest';
 
 test.beforeEach(async ({ cms }) => {
   await cms.navigate();

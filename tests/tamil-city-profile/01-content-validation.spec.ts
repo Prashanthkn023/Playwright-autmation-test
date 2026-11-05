@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseTest';
+import { test, expect } from '../../fixtures/baseTest';
 
 test.describe('Tamil City Profile Content Validation', () => {
   test('verify Tamil City Profile page heading, description and content sections', async ({ cmsTamilCity, page }) => {

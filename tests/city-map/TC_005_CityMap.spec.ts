@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseTest';
+import { test, expect } from '../../fixtures/baseTest';
 
 test('TC_005: City Map navigation, controls, and layer interactions', async ({ cityMap }) => {
   await cityMap.openCityMapFromHomePage();

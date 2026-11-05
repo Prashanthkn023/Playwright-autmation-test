@@ -8,7 +8,7 @@ import {
   type JsonValue,
   type ApiEnvelope,
   type ComparisonStats,
-} from '../apis/CmsTamilHomeApi';
+} from '../../apis/CmsTamilHomeApi';
 
 test('CmsTamilHome API JSON: compare approved CMS records with published Home data', async ({ request }, testInfo) => {
   const apiService = new CmsTamilHomeApi(request);

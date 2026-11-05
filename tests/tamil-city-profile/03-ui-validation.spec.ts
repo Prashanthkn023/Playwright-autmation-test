@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseTest';
+import { test, expect } from '../../fixtures/baseTest';
 
 test.describe('Tamil City Profile UI Validation', () => {
   test('verify Tamil City Profile UI visibility, image loading and responsive elements', async ({ cmsTamilCity, page }) => {

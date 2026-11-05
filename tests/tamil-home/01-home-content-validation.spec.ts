@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseTest';
+import { test, expect } from '../../fixtures/baseTest';
 
 test.describe('Tamil Home Module – 01 Content Validation', () => {
   test.beforeEach(async ({ cmsTamil }) => {

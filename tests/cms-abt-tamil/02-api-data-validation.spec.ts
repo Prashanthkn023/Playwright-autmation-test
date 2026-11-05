@@ -8,7 +8,7 @@ import {
   type JsonValue,
   type ApiEnvelope,
   type ComparisonStats,
-} from '../apis/CmsTamilABTApi';
+} from '../../apis/CmsTamilABTApi';
 
 test('CmsTamilABT API JSON: compare approved CMS records with published About Us data', async ({ request }, testInfo) => {
   const apiService = new CmsTamilABTApi(request);

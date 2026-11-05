@@ -1,4 +1,4 @@
-import { test } from '../fixtures/baseTest';
+import { test } from '../../fixtures/baseTest';
 
 test('TC_001 Validate Home Page Images', async ({ home, image }) => {
 

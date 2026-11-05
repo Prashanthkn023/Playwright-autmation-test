@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { CmsCityPage } from '../pages/CmsCityPage';
-import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
-import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
+import { CmsCityPage } from '../../pages/CmsCityPage';
+import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
+import { CMS_PASSWORD, CMS_USERNAME } from '../../utils/cmsLogin';
 
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 const publishedUrl = 'https://gctp.in/chennai-home';

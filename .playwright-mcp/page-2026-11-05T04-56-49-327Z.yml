@@ -1,0 +1,123 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e11] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e22]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "தமிழ்" [ref=e27] [cursor=pointer]
+            - textbox [aria-hidden]: tl
+            - group [aria-hidden]
+          - button [ref=e28] [cursor=pointer]:
+            - img "Play Store" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e31]
+          - link "account of current user" [ref=e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e33]
+          - link "account of current user" [ref=e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e35]
+          - link "account of current user" [ref=e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e37]
+    - navigation [ref=e39]:
+      - link "முகப்பு" [ref=e41] [cursor=pointer]:
+        - /url: /chennai-home
+      - button "துறை பற்றி" [ref=e43] [cursor=pointer]
+      - link "நகர சுயவிவரம்" [ref=e47] [cursor=pointer]:
+        - /url: /city-profile
+      - link "நகர வரைபடம்" [ref=e49] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "ஊடகம்" [ref=e51] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "செய்திகள்" [active] [ref=e53] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "வாகன சலன்" [ref=e55] [cursor=pointer]
+      - link "தமிழ்நாடு காவல்துறை" [ref=e60] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "தொடர்பு" [ref=e62] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=e233]:
+    - generic [ref=e234]:
+      - generic [ref=e236]:
+        - generic [ref=e237]:
+          - heading "ஓ.எம்.ஆர் மற்றும் துரைப்பாக்கம் பகுதிகளில் போக்குவரத்து மாற்றம் மற்றும் யூ-டர்ன் கட்டுப்பாடுகள்" [level=2] [ref=e238]
+          - paragraph [ref=e239]:
+            - generic [ref=e240]: போக்குவரத்து நெரிசலைக் குறைத்து, வாகனங்களின் சீரான இயக்கத்தை உறுதி செய்வதற்காக, 23.09.2026 முதல் ஓ.எம்.ஆர் (ராஜீவ் காந்தி சாலை) மற்றும் துரைப்பாக்கம் ...
+          - button "மேலும் வாசிக்க" [ref=e241] [cursor=pointer]
+        - img "Greater Chennai Traffic Police" [ref=e242]
+      - generic [ref=e244]:
+        - generic [ref=e245]:
+          - heading "நிலுவையிலுள்ள மின்னணு அபராத (E-Challan) சரிபார்ப்பு" [level=2] [ref=e246]
+          - paragraph [ref=e247]:
+            - generic [ref=e248]: நிலுவையிலுள்ள E-Challan அபராதங்களை அங்கீகரிக்கப்பட்ட மையங்கள் அல்லது ஆன்லைன் சேவைகள் மூலம் சரிபார்த்து செலுத்துங்கள். கூடுதல் அபராதங்களைத் தவிர்க்க,...
+          - button "மேலும் வாசிக்க" [ref=e249] [cursor=pointer]
+        - img "Greater Chennai Traffic Police" [ref=e250]
+      - generic [ref=e252]:
+        - generic [ref=e253]:
+          - heading "சாலை பாதுகாப்புக்காக மெகா பைக் ராலி" [level=2] [ref=e254]
+          - paragraph [ref=e255]:
+            - generic [ref=e256]: சாலை பாதுகாப்புக்காக மாகா பைக் ராலி, பெரிய சென்னை போக்குவரத்து போலீசார் ஏற்பாடு செய்தும், 2026 தொடக்கத்தில் திட்டமிடப்பட்டுள்ளது.
+          - button "மேலும் வாசிக்க" [ref=e257] [cursor=pointer]
+        - img "Greater Chennai Traffic Police" [ref=e258]
+    - generic [ref=e259]:
+      - button "Scroll important links left" [ref=e260] [cursor=pointer]
+      - generic [ref=e264]:
+        - link "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம் தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=e267] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e268]:
+            - img "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=e270]
+            - generic [ref=e271]: தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்
+        - link "பரிவு பரிவு" [ref=e277] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e278]:
+            - img "பரிவு" [ref=e280]
+            - generic [ref=e281]: பரிவு
+        - link "TN அரசு இணையம் TN அரசு இணையம்" [ref=e287] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e288]:
+            - img "TN அரசு இணையம்" [ref=e290]
+            - generic [ref=e291]: TN அரசு இணையம்
+        - link "டிஎன் ஆர்டிஓ டிஎன் ஆர்டிஓ" [ref=e297] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e298]:
+            - img "டிஎன் ஆர்டிஓ" [ref=e300]
+            - generic [ref=e301]: டிஎன் ஆர்டிஓ
+      - button "Scroll important links right" [ref=e305] [cursor=pointer]
+    - generic [ref=e308]:
+      - generic [ref=e309]:
+        - link "பின்னூட்டம்" [ref=e311] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "தள வரைபடம்" [ref=e313] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "தனியுரிமைக் கொள்கை" [ref=e315] [cursor=pointer]:
+          - /url: /chennai-PRIVACYPOLICY
+        - link "புகார்கள்" [ref=e317] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "அடிக்கடி கேட்கப்படும் கேள்விகள்" [ref=e319] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e320]:
+        - generic [ref=e321]:
+          - generic [ref=e322]: "இணையதள உள்ளடக்கம் உருவாக்கப்பட்டது, நிர்வகிக்கப்பட்டது மற்றும் உள்ளடக்க உரிமை: சென்னை பெருநகர போக்குவரத்து காவல் துறை"
+          - generic [ref=e323]: "வடிவமைக்கப்பட்டது, உருவாக்கப்பட்டது மற்றும் வழங்கப்பட்டது: எல் & டி டெக்னாலஜி சர்வீசஸ் (LTTS)இறுதியாக புதுப்பிக்கப்பட்டது: 05-11-2026 10:06:06 சிறந்த பார்வை: Google Chrome, Firefox"
+          - generic [ref=e324]: "பதிப்பு : ஃப்யூஷன் வி1.2"
+        - generic [ref=e325]:
+          - generic [ref=e326]:
+            - link [ref=e327] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e328]
+            - link [ref=e329] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e330]
+          - generic [ref=e331]:
+            - paragraph [ref=e332]: "வருகையாளர் எண்ணிக்கை : 26135"
+            - img "Group Icon" [ref=e334]

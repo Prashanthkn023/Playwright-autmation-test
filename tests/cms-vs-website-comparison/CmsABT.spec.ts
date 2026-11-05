@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
+import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 import {
   loginToConfiguredCms,
   openCmsAboutUsDropdown,
   openCmsAboutUsGctp,
-} from '../utils/cmsLogin';
+} from '../../utils/cmsLogin';
 
 const cmsurl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 const baseurl = 'https://gctp.in/chennai-home';

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { CmsContactUsPage } from '../pages/CmsContactUsPage';
-import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
+import { CmsContactUsPage } from '../../pages/CmsContactUsPage';
+import { CMS_PASSWORD, CMS_USERNAME } from '../../utils/cmsLogin';
 
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 

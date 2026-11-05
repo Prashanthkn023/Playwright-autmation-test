@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
+import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 
 const baseUrl = 'https://gctp.in';
 

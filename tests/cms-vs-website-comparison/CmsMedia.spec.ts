@@ -1,7 +1,7 @@
 import { expect, Page, Response, APIResponse, test } from '@playwright/test';
-import { CmsMediaPage } from '../pages/CmsMediaPage';
-import { CMS_PASSWORD, CMS_USERNAME } from '../utils/cmsLogin';
-import { closeAwarenessPopup } from '../utils/closeAwarenessPopup';
+import { CmsMediaPage } from '../../pages/CmsMediaPage';
+import { CMS_PASSWORD, CMS_USERNAME } from '../../utils/cmsLogin';
+import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 
 const expectedPhotoTitles = [
   'Helmet Awareness Drive',

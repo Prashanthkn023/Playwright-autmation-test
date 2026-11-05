@@ -103,7 +103,7 @@ export default defineConfig({
     },
     {
       name: 'cms-tests',
-      testMatch: /Cms.*\.spec\.ts|02-.*\.spec\.ts|validate\.spec\.ts/,
+      testMatch: /(?:cms-vs-website-comparison[\\/].*\.(?:spec\.ts)|cms-abt-tamil[\\/].*\.spec\.ts)/,
       dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
@@ -113,7 +113,7 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      testIgnore: /Cms.*\.spec\.ts|02-.*\.spec\.ts|validate\.spec\.ts|auth\.setup\.ts/,
+      testIgnore: /(?:cms-vs-website-comparison[\\/].*\.spec\.ts|cms-abt-tamil[\\/].*\.spec\.ts|auth\.setup\.ts)/,
       use: {
         ...devices['Desktop Chrome'],
         bypassCSP: true,

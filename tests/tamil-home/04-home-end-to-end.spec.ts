@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/baseTest';
-import { CmsTamilHomeApi, type JsonValue, type ComparisonStats } from '../apis/CmsTamilHomeApi';
+import { test, expect } from '../../fixtures/baseTest';
+import { CmsTamilHomeApi, type JsonValue, type ComparisonStats } from '../../apis/CmsTamilHomeApi';
 
 test.describe('Tamil Home Module – 04 End-to-End Workflow Validation', () => {
   test('Complete Tamil Home Module User Journey E2E', async ({ cmsTamil, request }) => {

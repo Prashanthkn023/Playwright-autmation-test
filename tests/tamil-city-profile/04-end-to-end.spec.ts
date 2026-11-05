@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseTest';
+import { test, expect } from '../../fixtures/baseTest';
 
 test.describe('Tamil City Profile End-to-End', () => {
   test('complete Tamil City Profile journey', async ({ cmsTamilCity, page }) => {

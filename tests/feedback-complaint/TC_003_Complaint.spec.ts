@@ -1,5 +1,5 @@
-import { test } from '../fixtures/baseTest';
-import { getTestCases } from '../utils/testData';
+import { test } from '../../fixtures/baseTest';
+import { getTestCases } from '../../utils/testData';
 
 const complaintCases = getTestCases<{
   scenario: string;

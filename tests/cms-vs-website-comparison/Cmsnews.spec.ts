@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 import {
   CmsNewsPage,
   NewsRecord,
-} from '../pages/CmsNewsPage';
-import { loginToConfiguredCms } from '../utils/cmsLogin';
+} from '../../pages/CmsNewsPage';
+import { loginToConfiguredCms } from '../../utils/cmsLogin';
 
 // ============================================================
 // NORMALIZE COMPARISON VALUE

@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/baseTest';
+import { test, expect } from '../../fixtures/baseTest';
 
 test("Validate the feedback form @manual", async ({ home, feedback }) => {
   await home.openHomePage();
