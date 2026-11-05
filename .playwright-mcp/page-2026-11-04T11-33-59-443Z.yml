@@ -1,0 +1,92 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - banner [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e10]:
+            - img "Nature" [ref=e11] [cursor=pointer]
+            - generic [ref=e12]:
+              - generic [ref=e13]: Greater Chennai Traffic Police
+              - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=e21]:
+            - combobox "Search..." [ref=e22]
+            - group [aria-hidden]
+          - generic [ref=e23]:
+            - generic [ref=e26]:
+              - combobox "English" [ref=e27] [cursor=pointer]
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button [ref=e28] [cursor=pointer]:
+              - img "Play Store" [ref=e29]
+            - link "account of current user" [ref=e30] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+              - img "Facebook" [ref=e31]
+            - link "account of current user" [ref=e32] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+              - img "Instagram" [ref=e33]
+            - link "account of current user" [ref=e34] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+              - img "Twitter" [ref=e35]
+            - link "account of current user" [ref=e36] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+              - img "Youtube" [ref=e37]
+      - navigation [ref=e39]:
+        - link "Home" [ref=e41] [cursor=pointer]:
+          - /url: /chennai-home
+        - button "About Us" [ref=e43] [cursor=pointer]
+        - link "City Profile" [ref=e47] [cursor=pointer]:
+          - /url: /city-profile
+        - link "City Map" [ref=e49] [cursor=pointer]:
+          - /url: /chennai_map
+        - link "Media" [ref=e51] [cursor=pointer]:
+          - /url: /chennai-media
+        - link "News" [ref=e53] [cursor=pointer]:
+          - /url: /chennai-news-updates
+        - button "Vehicle Challan" [ref=e55] [cursor=pointer]
+        - link "Tamil Nadu Police" [ref=e60] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+        - link "Contact Us" [ref=e62] [cursor=pointer]:
+          - /url: /chennai-contactus
+    - generic [ref=e64]:
+      - generic [ref=e67]:
+        - generic [ref=e71]:
+          - generic [ref=e72]: Greater Chennai Traffic Police
+          - paragraph [ref=e74]:
+            - paragraph [ref=e75]: In 1659, when Chennai (then called Madras) was just a group of fishing villages, Pedda Naik formed a group of peons to guard the town. By 1780 the post of Superintendent of Police was created to manage the markets. After the Indian Rebellion of 1857, the British Raj in India formed the modern Madras Police as part of its reforms. In the due course the Government had to realize the need of improving the Traffic Department by increasing its staff strength. Thus a seed was sown for creating a separate 'Traffic' Police. In the year 1929, the entire organization was recast and remodeled on 'Functional Division' as designed by Sir Charles Cunningham, the then Commissioner of Police. With effect from 1st September 1929, Policing was divided into three divisions namely L&O, Crime and Traffic. The year 1929 is a landmark in the history of Madras City Traffic Police. As the prevailing system of work and the territorial division.
+        - heading "Updates" [level=1] [ref=e80]
+        - generic [ref=e81]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: "Traffic Police: A Century of Service and Safety"
+            - generic [ref=e87]:
+              - text: Madras was among the first Indian cities to recognise traffic as a specialised policing function. By...
+              - generic [ref=e88]: Read More
+          - generic [ref=e92]:
+            - generic [ref=e93]: First traffic police station in Chennai
+            - generic [ref=e95]:
+              - text: The 1929 "Functional Division" Reform and overhaul was designed by Sir Charles Banks Cunningham, the...
+              - generic [ref=e96]: Read More
+          - generic [ref=e100]:
+            - generic [ref=e101]: Establishment of the Chennai City Traffic Police
+            - generic [ref=e103]:
+              - text: This photograph dates to 1929, during the late British period in India, when Madras (now Chennai) wa...
+              - generic [ref=e104]: Read More
+      - generic [ref=e106]:
+        - button "Scroll important links left" [ref=e107] [cursor=pointer]
+        - button "Scroll important links right" [ref=e111] [cursor=pointer]
+      - generic [ref=e115]:
+        - generic [ref=e116]:
+          - generic [ref=e117]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e118]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 04-11-2026 16:41:06 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e119]: "Version : Fusion V1.2"
+        - generic [ref=e120]:
+          - generic [ref=e121]:
+            - link [ref=e122] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e123]
+            - link [ref=e124] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e125]
+          - generic [ref=e126]:
+            - paragraph [ref=e127]: "Number Of Visitors : 26019"
+            - img "Group Icon" [ref=e129]
+  - generic [ref=e130]: Loading visitor count...

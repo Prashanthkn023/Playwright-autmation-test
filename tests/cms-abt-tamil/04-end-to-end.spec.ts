@@ -18,7 +18,7 @@ test.describe('Tamil CMS ABT - End-to-End Validation', () => {
       'E2E Navigate to GCTP About Us',
       'E2E'
     );
-    await abtPage.expectTamilPageContent(800, 'E2E GCTP Content Check', 'E2E');
+    await abtPage.expectTamilPageContent('E2E GCTP Content Completeness', 'E2E');
     await expect(page.locator('.GCTPImg')).toBeVisible();
 
     // Step 3: Navigate to Commissioner page & verify
@@ -28,7 +28,7 @@ test.describe('Tamil CMS ABT - End-to-End Validation', () => {
       'E2E Navigate to Commissioner Page',
       'E2E'
     );
-    await abtPage.expectTamilPageContent(400, 'E2E Commissioner Content Check', 'E2E');
+    await abtPage.expectTamilPageContent('E2E Commissioner Content Completeness', 'E2E');
     await expect(page.locator('.CopPolice')).toBeVisible();
 
     // Step 4: Navigate to Additional COP page & verify
@@ -38,7 +38,7 @@ test.describe('Tamil CMS ABT - End-to-End Validation', () => {
       'E2E Navigate to Additional COP Page',
       'E2E'
     );
-    await abtPage.expectTamilPageContent(400, 'E2E Additional COP Content Check', 'E2E');
+    await abtPage.expectTamilPageContent('E2E Additional COP Content Completeness', 'E2E');
     await expect(page.locator('.addcopPolice')).toBeVisible();
 
     // Step 5: Navigate to Organogram & verify
@@ -48,7 +48,7 @@ test.describe('Tamil CMS ABT - End-to-End Validation', () => {
       'E2E Navigate to Organogram Page',
       'E2E'
     );
-    await abtPage.expectTamilPageContent(200, 'E2E Organogram Content Check', 'E2E');
+    await abtPage.expectTamilPageContent('E2E Organogram Content Completeness', 'E2E');
 
     const organogramItems = page.locator('li:visible');
     await expect(organogramItems).not.toHaveCount(0);

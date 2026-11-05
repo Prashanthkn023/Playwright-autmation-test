@@ -143,21 +143,74 @@ export class CmsTamilABTPage extends BasePage {
     return matches;
   }
 
-  async expectTamilPageContent(minimumCharacters: number, testName: string = 'Tamil Page Content Check', testType: AuditTestType = 'UI') {
+  async expectTamilPageContent(testName: string = 'Tamil Page Content Completeness', testType: AuditTestType = 'CONTENT') {
     try {
+      const currentUrl = this.page.url();
+
+      // Ensure content is loaded and visible
+      await this.page.waitForLoadState('domcontentloaded');
+
+      // Verify Tamil Unicode validation using /[஀-௿]/
       const bodyText = await this.page.locator('body').innerText();
       const normalizedText = bodyText.replace(/\s+/g, ' ').trim();
+      expect(normalizedText.length, 'Page body must contain content').toBeGreaterThan(0);
+      expect(normalizedText, 'Page must contain Tamil script unicode [஀-௿]').toMatch(/[஀-௿]/);
 
-      expect(normalizedText.length).toBeGreaterThan(minimumCharacters);
-      expect(normalizedText).toMatch(/[஀-௿]/);
+      if (currentUrl.includes('chennai-gctp')) {
+        // Validate GCTP About Us mandatory content & sections with meaningful error messages
+        await expect(this.page.getByText('கிரேட்டர் சென்னை போக்குவரத்து போலீஸ்.', { exact: false }), 'Missing mandatory GCTP Heading').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('1659 ஆம் ஆண்டு', { exact: false }), 'Missing mandatory GCTP Historical Introduction (1659 ஆம் ஆண்டு)').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByRole('heading', { name: 'புதுப்பிப்புகள்' }), 'Missing mandatory Updates Heading (புதுப்பிப்புகள்)').toBeVisible({ timeout: 15000 });
+
+        // Validate all 3 approved update titles individually
+        await expect(this.page.getByText('போக்குவரத்து போலீசார்: சேவை மற்றும் சுகாதாரத்தில் ஒரு நூற்றாண்டு', { exact: false }), 'Missing Update 1 Title').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('சென்னையில் முதல் போக்குவரத்து காவல் நிலையம்', { exact: false }), 'Missing Update 2 Title').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('பிரிட்டிஷ் இராணுவ மற்றும் நிர்வாகப் பாரம்பர்யங்கள்.', { exact: false }), 'Missing Update 3 Title').toBeVisible({ timeout: 15000 });
+
+        // Validate all 3 update descriptions against approved CMS API descriptions
+        const updateDescriptions = this.page.locator('.home-hero-traffic-card-des');
+        await expect(updateDescriptions, 'Missing update descriptions container').toHaveCount(3, { timeout: 15000 });
+
+        const expectedCmsSnippets = [
+          'சென்னை இந்தியாவின் முதன்மை நகர்களில் ஒன்று',
+          '1929 ஆம் ஆண்டு',
+          'இந்த புகைப்படம் 1929 ஆம் ஆண்டை சார்ந்தது'
+        ];
+
+        for (let i = 0; i < 3; i++) {
+          const desc = updateDescriptions.nth(i);
+          await expect(desc, `Update description ${i + 1} must be visible`).toBeVisible({ timeout: 15000 });
+          const descText = (await desc.textContent()) || '';
+          const normalizedDescText = descText.replace(/\s+/g, ' ').trim();
+          expect(normalizedDescText.length, `Update description ${i + 1} content length`).toBeGreaterThan(10);
+          expect(
+            normalizedDescText.includes(expectedCmsSnippets[i]),
+            `Update description ${i + 1} must match approved CMS API description snippet ("${expectedCmsSnippets[i]}"). Actual: "${normalizedDescText}"`
+          ).toBe(true);
+        }
+      } else if (currentUrl.includes('chennai-policecommissioner')) {
+        // Validate Commissioner Page mandatory content
+        await expect(this.page.getByText('காவல்துறை ஆணையரின் செய்தி-போக்குவரத்து', { exact: false }), 'Missing Commissioner Heading').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('அன்புடைய சென்னை மக்களே', { exact: false }), 'Missing Commissioner Message').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('திரு டாக்டர் ஏ. அமல்ராஜ், ஐபிஎஸ்', { exact: false }), 'Missing Commissioner Name').toBeVisible({ timeout: 15000 });
+      } else if (currentUrl.includes('chennai-additionalcop')) {
+        // Validate Additional COP Page mandatory content
+        await expect(this.page.getByText('கூடுதல் காவல் ஆணையரின் செய்தி-போக்குவரத்து', { exact: false }), 'Missing Additional COP Heading').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('அன்புள்ள சென்னை குடிமக்களே', { exact: false }), 'Missing Additional COP Message').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('டாக்டர் பி. ஷமூந்திரேச்வரி, ஐபிஎஸ்', { exact: false }), 'Missing Additional COP Name').toBeVisible({ timeout: 15000 });
+      } else if (currentUrl.includes('chennai-organogram')) {
+        // Validate Organogram Page mandatory content
+        await expect(this.page.getByText('அமைப்பியல்', { exact: false }), 'Missing Organogram Heading').toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText('துணை காவல் ஆணையர்', { exact: false }), 'Missing Organogram Subtext').toBeVisible({ timeout: 15000 });
+      }
 
       TestAuditLogger.log({
         testName,
         testType,
-        target: this.page.url(),
-        item: 'Page Character Count & Tamil Script Validation',
-        expected: `> ${minimumCharacters} chars & contains Tamil script`,
-        actual: `${normalizedText.length} chars verified`,
+        target: currentUrl,
+        item: 'Tamil Content Completeness & Script Validation',
+        expected: 'All required Tamil sections, headings, updates, and script visible',
+        actual: 'All mandatory sections verified visible and loaded',
         status: 'PASS',
       });
     } catch (error) {
@@ -165,9 +218,9 @@ export class CmsTamilABTPage extends BasePage {
         testName,
         testType,
         target: this.page.url(),
-        item: 'Page Character Count & Tamil Script Validation',
-        expected: `> ${minimumCharacters} chars & contains Tamil script`,
-        actual: '<content criteria failed>',
+        item: 'Tamil Content Completeness & Script Validation',
+        expected: 'All required Tamil sections, headings, updates, and script visible',
+        actual: '<content completeness check failed>',
         status: 'FAIL',
         failureReason: error instanceof Error ? error.message : String(error),
       });

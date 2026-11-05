@@ -65,7 +65,7 @@ test.describe('Tamil CMS ABT - Content Validation', () => {
       'CONTENT'
     );
 
-    await abtPage.expectTamilPageContent(1000, 'GCTP Page Tamil Content Length', 'CONTENT');
+    await abtPage.expectTamilPageContent('GCTP Page Tamil Content Completeness', 'CONTENT');
 
     // Commissioner Page Content
     await abtPage.openTamilAboutUsPage(
@@ -99,7 +99,7 @@ test.describe('Tamil CMS ABT - Content Validation', () => {
       'CONTENT'
     );
 
-    await abtPage.expectTamilPageContent(500, 'Commissioner Page Tamil Content Length', 'CONTENT');
+    await abtPage.expectTamilPageContent('Commissioner Page Tamil Content Completeness', 'CONTENT');
 
     // Additional COP Page Content
     await abtPage.openTamilAboutUsPage(
@@ -133,7 +133,7 @@ test.describe('Tamil CMS ABT - Content Validation', () => {
       'CONTENT'
     );
 
-    await abtPage.expectTamilPageContent(500, 'Additional COP Page Tamil Content Length', 'CONTENT');
+    await abtPage.expectTamilPageContent('Additional COP Page Tamil Content Completeness', 'CONTENT');
 
     // Organogram Page Content
     await abtPage.openTamilAboutUsPage(
@@ -159,6 +159,6 @@ test.describe('Tamil CMS ABT - Content Validation', () => {
       'CONTENT'
     );
 
-    await abtPage.expectTamilPageContent(300, 'Organogram Page Tamil Content Length', 'CONTENT');
+    await abtPage.expectTamilPageContent('Organogram Page Tamil Content Completeness', 'CONTENT');
   });
 });
