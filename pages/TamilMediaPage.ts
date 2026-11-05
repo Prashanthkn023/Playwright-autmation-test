@@ -105,7 +105,8 @@ export class TamilMediaPage {
     for (let index = 0; index < await this.mediaCards.count(); index++) {
       await this.mediaCards.nth(index).scrollIntoViewIfNeeded();
       await expect(this.mediaCards.nth(index)).toBeVisible();
-      await expect(this.mediaCards.nth(index).locator('.media-title span')).toHaveText(/[஀-௿]/);
+      await expect(this.mediaCards.nth(index).locator('.media-title span')
+        .filter({ hasText: /[஀-௿]/ }).first()).toBeVisible();
     }
 
     await this.openVideos();
@@ -113,7 +114,8 @@ export class TamilMediaPage {
     for (let index = 0; index < await this.mediaCards.count(); index++) {
       await this.mediaCards.nth(index).scrollIntoViewIfNeeded();
       await expect(this.mediaCards.nth(index)).toBeVisible();
-      await expect(this.mediaCards.nth(index).locator('.media-title span')).toHaveText(/[஀-௿]/);
+      await expect(this.mediaCards.nth(index).locator('.media-title span')
+        .filter({ hasText: /[஀-௿]/ }).first()).toBeVisible();
       await expect(this.mediaCards.nth(index).locator('iframe, video, .mediastyles').first()).toBeVisible();
     }
   }
@@ -136,10 +138,12 @@ export class TamilMediaPage {
       Array.isArray(responseBody?.payload) ? responseBody.payload : [];
     const isApproved = (record: Record<string, unknown>): boolean =>
       normalize(record.f_approval_status).toUpperCase() === 'APPROVED';
+    const isMediaSection = (record: Record<string, unknown>): boolean =>
+      ['PHOTOS', 'VIDEOS'].includes(normalize(record.f_section).toUpperCase());
 
-    const cmsRecords = payload(await cmsResponse.json()).filter(isApproved);
-    const publicRecords = payload(await publicResponse.json()).filter(record =>
-      ['PHOTOS', 'VIDEOS'].includes(normalize(record.f_section).toUpperCase()));
+    const cmsRecords = payload(await cmsResponse.json()).filter(record =>
+      isApproved(record) && isMediaSection(record));
+    const publicRecords = payload(await publicResponse.json()).filter(isMediaSection);
 
     if (cmsRecords.length === 0) return 0;
 

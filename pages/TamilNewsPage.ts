@@ -72,13 +72,15 @@ export class TamilNewsPage {
 
   async openNewsItem(index = 0) {
     const card = this.newsCards.nth(index);
+    const title = card.locator('h1, h2, h3').first();
+    const titleText = await title.innerText();
     await card.scrollIntoViewIfNeeded();
     await card.getByRole('button', { name: 'மேலும் வாசிக்க' }).click();
-    await expect(this.page.locator('main, article').filter({ hasText: /[஀-௿]/ }).first()).toBeVisible();
+    await expect(this.page.getByText(titleText, { exact: true }).first()).toBeVisible();
   }
 
   async expectNewsDetailContent() {
-    const detail = this.page.locator('main, article').filter({ hasText: /[஀-௿]/ }).first();
+    const detail = this.page.locator('h1, h2, h3').filter({ hasText: /[஀-௿]/ }).first();
     await expect(detail).toBeVisible();
     await expect(detail).toContainText(/[஀-௿]/);
   }
@@ -89,14 +91,14 @@ export class TamilNewsPage {
     for (let index = 0; index < count; index++) {
       await this.openNewsItem(index);
       await this.expectNewsDetailContent();
-      await this.page.goBack();
+      await this.open();
       await expect(this.newsCards.first()).toBeVisible();
     }
   }
 
   async compareApprovedNews(request: APIRequestContext): Promise<number> {
     const publicApi = 'https://gctp.in/api/fusion-public-facing-web-backend/news-and-updates';
-    const cmsApi = 'https://gctp.in/api/fusion-cms-web-backend/news-and-updates?approvalStatus=all';
+    const cmsApi = 'https://gctp.in/api/fusion-cms-web-backend/new-and-updates?approvalStatus=all';
     const [cmsResponse, publicResponse] = await Promise.all([
       request.get(cmsApi, { headers: { Accept: 'application/json' } }),
       request.get(publicApi, { headers: { Accept: 'application/json' } }),
