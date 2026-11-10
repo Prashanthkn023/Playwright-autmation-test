@@ -1,6 +1,6 @@
 import { expect, Page, Response, APIResponse, test } from '@playwright/test';
 import { CmsMediaPage } from '../../pages/CmsMediaPage';
-import { CMS_PASSWORD, CMS_USERNAME } from '../../utils/cmsLogin';
+import { hasCmsSession, isLoginFormVisible } from '../../utils/cmsLogin';
 import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 
 const expectedPhotoTitles = [
@@ -293,7 +293,16 @@ test('verify CMS media content matches the public website', async ({ page }) => 
   const mediaPage = new CmsMediaPage(page);
 
   // 1. NAVIGATE TO CMS AND GET APPROVED RECORDS
-  await page.goto('https://cms.gctp.in/', { waitUntil: 'domcontentloaded' });
+  const cmsUrl = 'https://cms.gctp.in/';
+  await page.goto(cmsUrl, { waitUntil: 'domcontentloaded' });
+  const targetUrl = new URL(cmsUrl);
+
+  // Verify stored session is valid
+  const isValidSession = (await hasCmsSession(page, targetUrl.hostname)) && !(await isLoginFormVisible(page));
+  if (!isValidSession) {
+    throw new Error(`Authentication Error: Stored CMS session is invalid or expired for ${cmsUrl}.`);
+  }
+
   await closeAwarenessPopup(page);
 
   const cmsMediaRecords = await getMediaRecordsFromApi(

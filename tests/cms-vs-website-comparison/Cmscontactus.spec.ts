@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { CmsContactUsPage } from '../../pages/CmsContactUsPage';
-import { CMS_PASSWORD, CMS_USERNAME } from '../../utils/cmsLogin';
+import { hasCmsSession, isLoginFormVisible } from '../../utils/cmsLogin';
 
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 
@@ -82,6 +82,14 @@ test('verify CMS Contact Us page', async ({ page }) => {
     const contactUsPage = new CmsContactUsPage(page);
 
     await page.goto(cmsUrl, { waitUntil: 'domcontentloaded' });
+    const targetUrl = new URL(cmsUrl);
+
+    // Verify stored session is valid
+    const isValidSession = (await hasCmsSession(page, targetUrl.hostname)) && !(await isLoginFormVisible(page));
+    if (!isValidSession) {
+      throw new Error(`Authentication Error: Stored CMS session is invalid or expired for ${cmsUrl}.`);
+    }
+
     await contactUsPage.openCmsContactUs();
 
     const expectedContactDetails = await contactUsPage.getContactRecords('cms');

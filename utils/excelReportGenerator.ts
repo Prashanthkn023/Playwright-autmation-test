@@ -60,6 +60,7 @@ interface Row {
   label: Label;
   expected: string;
   actual: string;
+  aiSummary: string; // NEW: Holds AI analysis
   steps: string;
   notes: string;
   bugTitle: string;
@@ -177,18 +178,24 @@ function buildRows(results: TestResult[], ai: AiTestSummary | null, generated: s
     const d = details.get(t.testId);
     const isFail = t.status === 'failed' || t.status === 'timedOut';
 
-    const expected = d?.expectedResult || (t.status === 'skipped' ? `"${t.title}" should run.` : inferExpectedResult(t.title, t.module));
-    const actual = d?.actualResult || inferActualResult(t.status, t.error);
-    const steps = d?.stepsToReproduce?.length ? numberSteps(d.stepsToReproduce) : inferSteps(t.title, t.module, t.steps);
+    // 1. STRICT PRIORITY: Captured evidence > AI override > Inference
+    const expected = t.expectedEvidence?.trim() || inferExpectedResult(t.title, t.module);
+    const actual = t.actualEvidence?.trim() || inferActualResult(t.status, t.error);
 
     const p = passed.get(t.testId);
     const f = failed.get(t.testId);
+
+    // 2. AI Summary stored separately (never overwrites raw expected/actual evidence)
+    const aiSummary = f?.failureSummary || p?.summary || d?.expectedResult || (isFail ? 'AI failure analysis not available.' : 'AI execution summary available.');
+
+    const steps = d?.stepsToReproduce?.length ? numberSteps(d.stepsToReproduce) : inferSteps(t.title, t.module, t.steps);
+
     const notes = isFail ? (f?.failureSummary || actual)
       : t.status === 'skipped' ? 'Test was skipped.'
         : (p?.summary || 'No issue found.');
 
     return {
-      no: i + 1, t, label: LABEL[t.status], expected, actual, steps, notes,
+      no: i + 1, t, label: LABEL[t.status], expected, actual, aiSummary, steps, notes,
       bugTitle: f?.bugTitle || t.title,
       description: f?.failureSummary || actual,
       severity: normalizeSeverity(f?.severity),
@@ -381,37 +388,37 @@ export async function generateExcelReport(
   // 2. All Test Results
   {
     const ws = wb.addWorksheet('All Test Results');
-    const W = [9.01, 44, 30, 13, 24, 12, 24, 44, 44, 44, 37, 16, 15, 15];
+    const W = [9.01, 44, 30, 13, 24, 12, 24, 44, 44, 44, 44, 37, 16, 15, 15];
     header(ws, 1, ['No.', 'Test Name', 'Module', 'Browser', 'Execution Date', 'Result', 'Duration (Seconds)',
-      'Expected Result', 'Actual Result', 'Steps to Reproduce', 'Notes', 'Screenshot', 'Video', 'Trace'], W);
+      'Expected Result', 'Actual Result', 'AI Summary', 'Steps to Reproduce', 'Notes', 'Screenshot', 'Video', 'Trace'], W);
     rows.forEach((r, i) => dataRow(ws, i + 2,
       [r.no, r.t.title, r.t.module, r.t.browser, r.t.timestamp, r.label,
         Math.round((r.t.durationMs / 1000) * 100) / 100,
-        r.expected, r.actual, r.steps, r.notes, r.t.screenshot, r.t.video, r.t.trace],
+        r.expected, r.actual, r.aiSummary, r.steps, r.notes, r.t.screenshot, r.t.video, r.t.trace],
       [1, 4, 5, 6, 7], W, i % 2 === 0, { boldCol: 6, resultCol: 6, label: r.label }));
     ws.views = [{ state: 'frozen', ySplit: 1 }];
-    ws.autoFilter = 'A1:N1';
+    ws.autoFilter = 'A1:O1';
   }
 
   // 3. Bug Report (failed and timed out tests; header only when everything passes)
   {
     const ws = wb.addWorksheet('Bug Report');
     // Same widths as the original; text columns widened because the original sheet had no bug rows.
-    const W = [12, 16, 30, 14, 40, 40, 30, 34, 14, 14, 12, 17, 19, 40, 16, 11, 11, 30];
-    header(ws, 1, ['Bug ID', 'Issue Type', 'Summary', 'Module', 'Description', 'Steps to Reproduce',
+    const W = [12, 16, 30, 14, 40, 40, 40, 30, 34, 14, 14, 12, 17, 19, 40, 16, 11, 11, 30];
+    header(ws, 1, ['Bug ID', 'Issue Type', 'Summary', 'Module', 'Description', 'AI Summary', 'Steps to Reproduce',
       'Expected Result', 'Actual Result', 'Severity', 'Priority', 'Status', 'Reported By', 'Reported Date',
       'Technical Error', 'Screenshot', 'Video', 'Trace', 'Comparison Differences'], W);
     rows.filter(r => r.label === 'Failed' || r.label === 'Timed Out').forEach((r, i) => {
       const diff = (r.t.comparisonDifferences ?? '').trim();
       dataRow(ws, i + 2,
         [`BUG-${String(i + 1).padStart(3, '0')}`, issueType(r.t), r.bugTitle, r.t.module, r.description,
-          r.steps, r.expected, r.actual, r.severity, r.priority, r.label === 'Timed Out' ? 'Needs Review' : 'Open', REPORTED_BY, generated,
+          r.aiSummary, r.steps, r.expected, r.actual, r.severity, r.priority, r.label === 'Timed Out' ? 'Needs Review' : 'Open', REPORTED_BY, generated,
           clean(r.t.error ?? '').slice(0, 2000) || 'Not available', r.t.screenshot, r.t.video, r.t.trace,
           diff && diff !== 'Not provided.' ? diff : 'Not applicable'],
         [1, 9, 10, 11], W, i % 2 === 0);
     });
     ws.views = [{ state: 'frozen', ySplit: 1 }];
-    ws.autoFilter = 'A1:R1';
+    ws.autoFilter = 'A1:S1';
   }
 
   // 4 + 5. API performance sheets (only when the tests attached timing data)

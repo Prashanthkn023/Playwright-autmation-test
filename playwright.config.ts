@@ -22,7 +22,7 @@ export default defineConfig({
   // Test execution
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 0 : 0,
+  retries: 1,
   workers: process.env.CI ? 1 : Number(process.env.WORKERS) || 1,
 
   // Terminal + HTML + JUnit + Allure + Excel Bug Report
@@ -116,6 +116,14 @@ export default defineConfig({
       testIgnore: /(?:cms-vs-website-comparison[\\/].*\.spec\.ts|cms-abt-tamil[\\/].*\.spec\.ts|auth\.setup\.ts)/,
       use: {
         ...devices['Desktop Chrome'],
+        bypassCSP: true,
+      },
+    },
+    {
+      name: 'firefox',
+      testIgnore: /(?:cms-vs-website-comparison[\\/].*\.spec\.ts|cms-abt-tamil[\\/].*\.spec\.ts|auth\.setup\.ts)/,
+      use: {
+        ...devices['Desktop Firefox'],
         bypassCSP: true,
       },
     },

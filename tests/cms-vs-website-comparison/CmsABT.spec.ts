@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 import {
-  loginToConfiguredCms,
+  hasCmsSession,
+  isLoginFormVisible,
   openCmsAboutUsDropdown,
   openCmsAboutUsGctp,
 } from '../../utils/cmsLogin';
@@ -112,7 +113,15 @@ test('verify CMS About Us content with published website', async ({ page }) => {
   // CMS CONTENT → EXPECTED
   // =====================================================
 
-  await loginToConfiguredCms(page, cmsurl);
+  await page.goto(cmsurl, { waitUntil: 'domcontentloaded' });
+  const targetUrl = new URL(cmsurl);
+
+  // Verify stored session is valid
+  const isValidSession = (await hasCmsSession(page, targetUrl.hostname)) && !(await isLoginFormVisible(page));
+  if (!isValidSession) {
+    throw new Error(`Authentication Error: Stored CMS session is invalid or expired for ${cmsurl}.`);
+  }
+
   await openCmsAboutUsGctp(page);
 
   const expectedImageLoadFailures: string[] = [];

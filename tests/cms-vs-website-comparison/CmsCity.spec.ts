@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { CmsCityPage } from '../../pages/CmsCityPage';
 import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
-import { CMS_PASSWORD, CMS_USERNAME } from '../../utils/cmsLogin';
+import { hasCmsSession, isLoginFormVisible } from '../../utils/cmsLogin';
 
 const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
 const publishedUrl = 'https://gctp.in/chennai-home';
@@ -15,6 +15,14 @@ test('verify CMS City Profile content with published website', async ({ page }) 
 
   // Read expected content from the CMS.
   await page.goto(cmsUrl, { waitUntil: 'domcontentloaded' });
+  const targetUrl = new URL(cmsUrl);
+
+  // Verify stored session is valid
+  const isValidSession = (await hasCmsSession(page, targetUrl.hostname)) && !(await isLoginFormVisible(page));
+  if (!isValidSession) {
+    throw new Error(`Authentication Error: Stored CMS session is invalid or expired for ${cmsUrl}.`);
+  }
+
   await cityPage.openCmsCityProfile();
 
   const expectedCityProfileHeading = await cityPage.getCityProfileHeading();

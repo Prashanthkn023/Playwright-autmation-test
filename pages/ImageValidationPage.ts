@@ -15,17 +15,13 @@ export class ImageValidationPage {
         console.log("======================================");
 
         const brokenImages: string[] = [];
+        const incompleteImages: string[] = [];
         const loadedImages: string[] = [];
 
-        // Wait for page to be fully loaded with extended timeout
-        console.log("Waiting for networkidle state (up to 120s)...");
+        // Wait for page to be fully loaded
         await this.page.waitForLoadState('networkidle', { timeout: 120000 });
-        console.log("Page reached networkidle state");
 
-        // Many images below the fold use native/JS lazy-loading, so the
-        // browser never requests them until they enter the viewport.
-        // Scroll the full page in steps to trigger those loads before we
-        // check naturalWidth/naturalHeight — no timeout increase fixes this.
+        // Trigger lazy-loading
         console.log("Scrolling page to trigger lazy-loaded images...");
         await this.page.evaluate(async () => {
             await new Promise<void>((resolve) => {
@@ -37,73 +33,49 @@ export class ImageValidationPage {
                     totalHeight += distance;
                     if (totalHeight >= scrollHeight) {
                         clearInterval(timer);
-                        window.scrollTo(0, 0); // back to top for consistent state
+                        window.scrollTo(0, 0);
                         resolve();
                     }
                 }, 150);
             });
         });
-        console.log("Finished scrolling page");
 
-        // Add additional wait time for images to load
-        console.log("Additional 5s wait for image rendering...");
-        await this.page.waitForTimeout(5000);
-        console.log("Ready to validate images");
-
-        if (count === 0) {
-            console.log("WARNING: No images found on the page with src starting with https://gctp.in/");
-            console.log("Check if:");
-            console.log("  1. The website is accessible");
-            console.log("  2. Images exist with src starting with https://gctp.in/");
-            console.log("  3. Images aren't loaded dynamically after page load");
-            console.log("======================================\n");
-            return;
+        // Condition-based wait for images to complete loading attempts
+        console.log("Waiting for all images to complete loading (up to 30s)...");
+        try {
+            await this.page.waitForFunction(() => {
+                const imgs = Array.from(document.querySelectorAll('img[src^="https://gctp.in/"]')) as HTMLImageElement[];
+                return imgs.every((img) => img.complete);
+            }, { timeout: 30000 });
+        } catch (e) {
+            console.log("WARNING: Timeout reached while waiting for images to complete. Checking partial results.");
         }
 
+        // Bulk evaluation
         const imageDetailsList = await images.evaluateAll((elements: HTMLImageElement[]) =>
             elements.map((img) => ({
                 src: img.getAttribute('src'),
                 naturalWidth: img.naturalWidth,
                 naturalHeight: img.naturalHeight,
                 complete: img.complete,
-                currentSrc: img.currentSrc,
                 isLoaded: img.naturalWidth > 0 && img.naturalHeight > 0 && img.complete,
             }))
         );
 
+        // Process results
         for (let i = 0; i < imageDetailsList.length; i++) {
-
             const item = imageDetailsList[i];
-            const src = item?.src;
+            const src = item?.src || 'Unknown URL';
 
-            if (!src) {
-                console.log(`SKIP - Image ${i + 1} - No src attribute`);
-                continue;
-            }
-
-            try {
-                await this.page.locator(`img[src="${src}"]`).first().scrollIntoViewIfNeeded({ timeout: 10000 }).catch(() => {});
-                await this.page.waitForTimeout(300);
-
-                console.log(`\nImage ${i + 1}:`);
-                console.log(`   URL: ${src}`);
-                console.log(`   Dimensions: ${item.naturalWidth}x${item.naturalHeight}px`);
-                console.log(`   Complete: ${item.complete}`);
-
-                if (item.isLoaded) {
-                    console.log(`   PASS - Image loaded successfully`);
-                    loadedImages.push(src);
-                } else {
-                    console.log(`   FAIL - Image not loaded or has zero dimensions`);
-                    brokenImages.push(src);
-                }
-
-            } catch (error) {
-
-                console.log(`\nImage ${i + 1}:`);
-                console.log(`   URL: ${src}`);
-                console.log(`   EXCEPTION: ${error}`);
-
+            if (!item.complete) {
+                console.log(`\nImage ${i + 1}: ${src} - Incomplete loading.`);
+                incompleteImages.push(src);
+                brokenImages.push(src);
+            } else if (item.isLoaded) {
+                console.log(`\nImage ${i + 1}: ${src} - PASS`);
+                loadedImages.push(src);
+            } else {
+                console.log(`\nImage ${i + 1}: ${src} - FAIL (Broken or zero dimensions)`);
                 brokenImages.push(src);
             }
         }
@@ -113,25 +85,22 @@ export class ImageValidationPage {
         console.log(`   Total Images: ${count}`);
         console.log(`   Loaded: ${loadedImages.length}`);
         console.log(`   Broken: ${brokenImages.length}`);
+        if (incompleteImages.length > 0) {
+            console.log(`   Incomplete: ${incompleteImages.length}`);
+        }
 
         if (brokenImages.length > 0) {
-
             console.log(`\nBroken Images (${brokenImages.length}):`);
-
             brokenImages.forEach((img, idx) => console.log(`   ${idx + 1}. ${img}`));
-
         } else {
-
             console.log("\nAll Images Loaded Successfully!");
-
         }
 
         console.log("======================================\n");
 
-        // Detailed assertion message for debugging
         expect(
             brokenImages,
-            `TEST FAILED: ${brokenImages.length} broken image(s) found out of ${count} total images. ` +
+            `TEST FAILED: ${brokenImages.length} broken/incomplete image(s) found out of ${count} total images. ` +
             `Broken images: ${brokenImages.join(', ')}`
         ).toEqual([]);
     }

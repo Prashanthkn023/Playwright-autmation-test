@@ -3,7 +3,7 @@ import {
   CmsNewsPage,
   NewsRecord,
 } from '../../pages/CmsNewsPage';
-import { loginToConfiguredCms } from '../../utils/cmsLogin';
+import { hasCmsSession, isLoginFormVisible } from '../../utils/cmsLogin';
 
 // ============================================================
 // NORMALIZE COMPARISON VALUE
@@ -194,7 +194,14 @@ test(
       newsPage.cmsNewsUrl
     );
 
-    await newsPage.navigateCmsWithTransientRetry();
+    await page.goto(newsPage.cmsNewsUrl, { waitUntil: 'domcontentloaded' });
+    const targetUrl = new URL(newsPage.cmsNewsUrl);
+
+    // Verify stored session is valid
+    const isValidSession = (await hasCmsSession(page, targetUrl.hostname)) && !(await isLoginFormVisible(page));
+    if (!isValidSession) {
+      throw new Error(`Authentication Error: Stored CMS session is invalid or expired for ${newsPage.cmsNewsUrl}.`);
+    }
 
     // ========================================================
     // STEP 2 - OPEN CMS NEWS

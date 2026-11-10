@@ -33,9 +33,10 @@ pipeline {
                 bat 'if exist allure-report rmdir /s /q allure-report'
                 bat 'if exist playwright-report rmdir /s /q playwright-report'
                 bat 'if exist test-results rmdir /s /q test-results'
-                bat 'if exist bug-reports rmdir /s /q bug-reports'
+                bat 'if exist tests\\bug-reports rmdir /s /q tests\\bug-reports'
 
                 bat 'mkdir allure-results'
+                bat 'mkdir tests\\bug-reports'
             }
         }
 
@@ -154,7 +155,6 @@ pipeline {
                         mimeType: 'text/plain',
 
                         attachmentsPattern: '''
-                            bug-reports/Automation_Bug_Report_*.xlsx,
                             tests/bug-reports/Automation_Bug_Report_*.xlsx
                         ''',
 
