@@ -107,9 +107,11 @@ test.describe('Negative Testing Suite', () => {
       await complaint.verifyComplaintPage();
       await complaint.enterName('Test User');
       await complaint.enterMobile('12345');
-      await complaint.clickSubmit();
-      // Expect validation error or failure to send OTP for short mobile number
-      await complaint.verifyToastMessage().catch(() => {});
+      await complaint.selectIncident('Traffic Violation', 'Parking Violation');
+      await complaint.selectLocation('Chennai');
+      await complaint.enterComplaint('Testing 5-digit mobile number validation');
+      // Verify validate button remains disabled specifically for invalid 10-digit mobile requirement
+      await expect(complaint.submitButton).toBeDisabled();
     });
   });
 
@@ -126,15 +128,31 @@ test.describe('Negative Testing Suite', () => {
       expect(page.url()).toContain('complaints');
     });
 
-    test('NEG-09: Upload PDF instead of supported JPG/PNG in complaint form', async ({ home, complaint }) => {
+    test('NEG-09: Upload PDF instead of supported JPG/PNG in complaint form', async ({ home, complaint, page }) => {
       await home.openHomePage();
       await home.openComplaint();
       await complaint.verifyComplaintPage();
       const pdfPath = path.resolve('assets/test.pdf');
+
       await complaint.uploadComplaintFile(pdfPath);
-      // Verify file type restriction or validation error
-      const feedbackText = await complaint.uploadInput.evaluate((el: HTMLInputElement) => el.value);
-      expect(feedbackText).toBeTruthy();
+
+      // Verify UI validation error or toast message showing unsupported file type / rejection
+      const errorToast = page.locator('.MuiAlert-message, .alert-danger, .invalid-feedback, [role="alert"]').first();
+      await expect(errorToast).toBeVisible({ timeout: 5000 });
+      const errorText = await errorToast.textContent();
+      expect(errorText).toMatch(/format|type|supported|invalid|pdf|jpg|png|image/i);
+    });
+
+    test('NEG-09b: Upload valid JPG/PNG in complaint form', async ({ home, complaint }) => {
+      await home.openHomePage();
+      await home.openComplaint();
+      await complaint.verifyComplaintPage();
+
+      const jpgPath = path.resolve('assets/test.jpg');
+      await complaint.uploadComplaintFile(jpgPath);
+
+      const val = await complaint.uploadInput.inputValue();
+      expect(val).toBeTruthy();
     });
 
     test('NEG-10: Enter invalid OTP during complaint verification', async ({ home, complaint }) => {

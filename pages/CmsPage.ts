@@ -256,12 +256,14 @@ export class CmsPage extends BasePage {
   async verifyFAQ() {
     await this.closeAnyPopup();
 
-    await this.page
+    const faqLink = this.page
       .getByRole("link", {
         name: /FAQ/i,
       })
-      .first()
-      .click();
+      .first();
+
+    await faqLink.scrollIntoViewIfNeeded();
+    await faqLink.click();
 
     await this.page.waitForURL(/chennai-FAQs/i);
     await this.closeAnyPopup();
