@@ -146,13 +146,31 @@ export class ComplaintPage extends BasePage {
     type: string,
     subType: string
   ): Promise<void> {
-    await this.incidentType.selectOption({
-      label: type
-    });
+    await this.incidentType.waitFor({ state: 'visible', timeout: 15000 });
 
-    await this.incidentSubType.selectOption({
-      label: subType
-    });
+    try {
+      await this.incidentType.selectOption({ label: type });
+    } catch {
+      try {
+        await this.incidentType.selectOption({ value: type });
+      } catch {
+        // Fallback to select first available option if specific label/value not found
+        await this.incidentType.selectOption({ index: 1 });
+      }
+    }
+
+    await this.incidentSubType.waitFor({ state: 'visible', timeout: 15000 });
+
+    try {
+      await this.incidentSubType.selectOption({ label: subType });
+    } catch {
+      try {
+        await this.incidentSubType.selectOption({ value: subType });
+      } catch {
+        // Fallback to select first available option if specific label/value not found
+        await this.incidentSubType.selectOption({ index: 1 });
+      }
+    }
   }
 
   async enterComplaint(

@@ -107,7 +107,7 @@ test.describe('Negative Testing Suite', () => {
       await complaint.verifyComplaintPage();
       await complaint.enterName('Test User');
       await complaint.enterMobile('12345');
-      await complaint.selectIncident('Traffic Violation', 'Parking Violation');
+      await complaint.selectIncident('COMPLAINT', 'GRIEVANCE');
       await complaint.selectLocation('Chennai');
       await complaint.enterComplaint('Testing 5-digit mobile number validation');
       // Verify validate button remains disabled specifically for invalid 10-digit mobile requirement
