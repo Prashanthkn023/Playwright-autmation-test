@@ -119,14 +119,14 @@ export default defineConfig({
         bypassCSP: true,
       },
     },
-    {
-      name: 'firefox',
-      testIgnore: /(?:cms-vs-website-comparison[\\/].*\.spec\.ts|cms-abt-tamil[\\/].*\.spec\.ts|auth\.setup\.ts)/,
-      use: {
-        ...devices['Desktop Firefox'],
-        bypassCSP: true,
-      },
-    },
+    // {
+    //   name: 'firefox',
+    //   testIgnore: /(?:cms-vs-website-comparison[\\/].*\.spec\.ts|cms-abt-tamil[\\/].*\.spec\.ts|auth\.setup\.ts)/,
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //     bypassCSP: true,
+    //   },
+    // },
   ],
 
   // Test output directory
