@@ -1,0 +1,146 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e11] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e22]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "English" [ref=e27] [cursor=pointer]
+            - textbox [aria-hidden]: en
+            - group [aria-hidden]
+          - button [ref=e28] [cursor=pointer]:
+            - img "Play Store" [ref=e29]
+          - link "account of current user" [ref=e30] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e31]
+          - link "account of current user" [ref=e32] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e33]
+          - link "account of current user" [ref=e34] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e35]
+          - link "account of current user" [ref=e36] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e37]
+    - button "Toggle navigation" [ref=e39] [cursor=pointer]
+  - generic [ref=e44]:
+    - generic [ref=e46]:
+      - generic [ref=e47]: ORGANOGRAM
+      - list [ref=e52]:
+        - listitem [ref=e53]:
+          - generic "Commissioner of Police" [ref=e54]
+          - list [ref=e56]:
+            - listitem [ref=e57]:
+              - generic "Additional Commissioner of Police, Traffic" [ref=e58]
+              - list [ref=e60]:
+                - listitem [ref=e61]:
+                  - generic "Joint Commissioner Of Police, Traffic North" [ref=e62]
+                  - list [ref=e64]:
+                    - listitem [ref=e65]:
+                      - generic "DC Traffic (North)" [ref=e66]
+                      - list [ref=e68]:
+                        - listitem [ref=e69]:
+                          - generic "AC (Flower Bazar)" [ref=e70]
+                        - listitem [ref=e72]:
+                          - generic "AC (Washermenpet)" [ref=e73]
+                        - listitem [ref=e75]:
+                          - generic "AC (Puliyanthope)" [ref=e76]
+                        - listitem [ref=e78]:
+                          - generic "AC TW North" [ref=e79]
+                    - listitem [ref=e81]:
+                      - generic "AC Planning" [ref=e82]
+                    - listitem [ref=e84]:
+                      - generic "DC Traffic (West)" [ref=e85]
+                      - list [ref=e87]:
+                        - listitem [ref=e88]:
+                          - generic "AC (Kolathur)" [ref=e89]
+                        - listitem [ref=e91]:
+                          - generic "AC (Anna Nagar)" [ref=e92]
+                        - listitem [ref=e94]:
+                          - generic "AC (Koyambedu)" [ref=e95]
+                        - listitem [ref=e97]:
+                          - generic "AC TIW West" [ref=e98]
+                - listitem [ref=e100]:
+                  - generic "Joint Commissioner Of Police, Traffic South" [ref=e101]
+                  - list [ref=e103]:
+                    - listitem [ref=e104]:
+                      - generic "DC Traffic (East)" [ref=e105]
+                      - list [ref=e107]:
+                        - listitem [ref=e108]:
+                          - generic "AC (Triplicane)" [ref=e109]
+                        - listitem [ref=e111]:
+                          - generic "AC (Mylapore)" [ref=e112]
+                        - listitem [ref=e114]:
+                          - generic "AC (Kilpauk)" [ref=e115]
+                        - listitem [ref=e117]:
+                          - generic "AC TIW East" [ref=e118]
+                    - listitem [ref=e120]:
+                      - generic "DC Traffic (South)" [ref=e121]
+                      - list [ref=e123]:
+                        - listitem [ref=e124]:
+                          - generic "AC (Tnagar)" [ref=e125]
+                        - listitem [ref=e127]:
+                          - generic "AC (Mount)" [ref=e128]
+                        - listitem [ref=e130]:
+                          - generic "AC (Adyar )" [ref=e131]
+                        - listitem [ref=e133]:
+                          - generic "AC TW South" [ref=e134]
+    - generic [ref=e136]:
+      - button "Scroll important links left" [ref=e137] [cursor=pointer]
+      - generic [ref=e141]:
+        - link "Tamilnadu Police Citizen Portal Tamilnadu Police Citizen Portal" [ref=e144] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e145]:
+            - img "Tamilnadu Police Citizen Portal" [ref=e147]
+            - generic [ref=e148]: Tamilnadu Police Citizen Portal
+        - link "Parivahan Parivahan" [ref=e154] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e155]:
+            - img "Parivahan" [ref=e157]
+            - generic [ref=e158]: Parivahan
+        - link "TN Govt Web TN Govt Web" [ref=e164] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e165]:
+            - img "TN Govt Web" [ref=e167]
+            - generic [ref=e168]: TN Govt Web
+        - link "TNRTO TNRTO" [ref=e174] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e175]:
+            - img "TNRTO" [ref=e177]
+            - generic [ref=e178]: TNRTO
+      - button "Scroll important links right" [ref=e182] [cursor=pointer]
+    - generic [ref=e185]:
+      - generic [ref=e186]:
+        - link "Feedback" [ref=e188] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "Site Map" [ref=e190] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "Privacy Policy" [ref=e192] [cursor=pointer]:
+          - /url: /chennai-PRIVACYPOLICY
+        - link "Complaints" [ref=e194] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "FAQ'S" [ref=e196] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - generic [ref=e199]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=e200]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: Loading... Best Viewed: Google Chrome, Firefox"
+          - generic [ref=e201]: "Version : Fusion V1.2"
+        - generic [ref=e202]:
+          - generic [ref=e203]:
+            - link [ref=e204] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e205]
+            - link [ref=e206] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e207]
+          - generic [ref=e208]:
+            - paragraph [ref=e209]: "Number Of Visitors : Loading visitor count..."
+            - img "Group Icon" [ref=e211]

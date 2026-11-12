@@ -224,12 +224,9 @@ test('verify CMS About Us content with published website', async ({ page }) => {
 
   expectedImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
-  const expectedOrganogram =
-    await page
-      .getByText(
-        'Commissioner of PoliceAdditional Commissioner of Police, TrafficJoint'
-      )
-      .textContent();
+  const expectedOrganogramElements = page.locator('//ul[.//li[contains(text(), "Commissioner")]]//li');
+  const expectedOrganogramTexts = await expectedOrganogramElements.allTextContents();
+  const expectedOrganogram = expectedOrganogramTexts.map(t => t.trim()).join(' ');
 
 
   // =====================================================
@@ -367,12 +364,9 @@ test('verify CMS About Us content with published website', async ({ page }) => {
 
   actualImageLoadFailures.push(...await getVisibleImageLoadFailures(page));
 
-  const actualOrganogram =
-    await page
-      .getByText(
-        'Commissioner of PoliceAdditional Commissioner of Police, TrafficJoint'
-      )
-      .textContent();
+  const actualOrganogramElements = page.locator('//ul[.//li[contains(text(), "Commissioner")]]//li');
+  const actualOrganogramTexts = await actualOrganogramElements.allTextContents();
+  const actualOrganogram = actualOrganogramTexts.map(t => t.trim()).join(' ');
 
 
   const expectedContent: AboutUsContent[] = [

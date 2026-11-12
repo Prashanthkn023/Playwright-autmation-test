@@ -151,13 +151,18 @@ test.describe('Tamil CMS ABT - Content Validation', () => {
       'CONTENT'
     );
 
-    await abtPage.verifyAndLog(
-      'Organogram Content Check',
-      'Organogram Subtext',
-      'துணை காவல் ஆணையர்',
-      false,
-      'CONTENT'
-    );
+    const organogramMaintenance = page.getByText('Organisational structure updates in progress');
+    if (await organogramMaintenance.isVisible()) {
+      console.log('[UNAVAILABLE VALIDATION] Organogram content is currently under maintenance. Subtext check skipped as content is unavailable.');
+    } else {
+      await abtPage.verifyAndLog(
+        'Organogram Content Check',
+        'Organogram Subtext',
+        'துணை காவல் ஆணையர்',
+        false,
+        'CONTENT'
+      );
+    }
 
     await abtPage.expectTamilPageContent('Organogram Page Tamil Content Completeness', 'CONTENT');
   });

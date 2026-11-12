@@ -12,7 +12,11 @@ import { hasCmsSession, isLoginFormVisible } from '../../utils/cmsLogin';
 const normalizeComparisonValue = (
   value: string | undefined | null
 ): string => {
-  return String(value ?? '')
+  const str = String(value ?? '').trim();
+  if (str === '<p></p>' || str === '<p><br></p>') {
+    return '';
+  }
+  return str
     .replace(/\s+/g, ' ')
     .trim();
 };
