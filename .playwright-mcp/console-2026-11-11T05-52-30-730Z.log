@@ -1,0 +1,17 @@
+[      81ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cdn.jsdelivr.net/npm/apexcharts' with computed SHA-384 integrity 'agrvJL3CLxmTD6GK4ZLJlpq8NPyaxOE3eED1AafKRRBOe53OgZKXBXqXP3UzQpR1'. The resource has been blocked. @ https://gctp.in/city-profile:1
+[      81ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cdn.jsdelivr.net/npm/react-apexcharts/dist/react-apexcharts.iife.min.js' with computed SHA-384 integrity 'bAfhIhCBhmCEB+ABD9oRt9MPWeM8JrbRpAlM9A8mo3jUQ/eFlHxKvZrpLI0h1fpQ'. The resource has been blocked. @ https://gctp.in/city-profile:1
+[  189443ms] [WARNING] Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://www.youtube.com') does not match the recipient window's origin ('https://gctp.in'). @ https://www.youtube.com/s/player/a5c2aafe/www-widgetapi.vflset/www-widgetapi.js:164
+[  189443ms] [WARNING] Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://www.youtube.com') does not match the recipient window's origin ('https://gctp.in'). @ https://www.youtube.com/s/player/a5c2aafe/www-widgetapi.vflset/www-widgetapi.js:164
+[  189694ms] [WARNING] Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://www.youtube.com') does not match the recipient window's origin ('https://gctp.in'). @ https://www.youtube.com/s/player/a5c2aafe/www-widgetapi.vflset/www-widgetapi.js:164
+[  189695ms] [WARNING] Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://www.youtube.com') does not match the recipient window's origin ('https://gctp.in'). @ https://www.youtube.com/s/player/a5c2aafe/www-widgetapi.vflset/www-widgetapi.js:164
+[  191265ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ :1
+[  191417ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ :1
+[  592956ms] [ERROR] Failed to load resource: net::ERR_NETWORK_CHANGED @ https://www.youtube.com/generate_204:1
+[  592958ms] [ERROR] Failed to load resource: net::ERR_NETWORK_CHANGED @ https://www.youtube.com/generate_204:1
+[  611022ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://www.youtube.com/generate_204:1
+[  612048ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://www.youtube.com/generate_204:1
+[  625244ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://www.youtube.com/generate_204:1
+[  653202ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://www.youtube.com/generate_204:1
+[  653202ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://www.youtube.com/generate_204:1
+[  695432ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://www.youtube.com/generate_204:1
+[  695434ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://www.youtube.com/generate_204:1

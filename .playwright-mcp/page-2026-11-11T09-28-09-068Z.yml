@@ -1,0 +1,160 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e8]:
+        - generic [ref=e10]:
+          - img "Nature" [ref=e289] [cursor=pointer]
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+        - generic [ref=e21]:
+          - combobox "Search..." [ref=e290]
+          - group [aria-hidden]
+        - generic [ref=e23]:
+          - generic [ref=e26]:
+            - combobox "தமிழ்" [ref=e291] [cursor=pointer]
+            - textbox [aria-hidden]: tl
+            - group [aria-hidden]
+          - button [ref=e292] [cursor=pointer]:
+            - img "Play Store" [ref=e293]
+          - link "account of current user" [ref=e294] [cursor=pointer]:
+            - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - img "Facebook" [ref=e295]
+          - link "account of current user" [ref=e296] [cursor=pointer]:
+            - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - img "Instagram" [ref=e297]
+          - link "account of current user" [ref=e298] [cursor=pointer]:
+            - /url: https://twitter.com/chennaitraffic
+            - img "Twitter" [ref=e299]
+          - link "account of current user" [ref=e300] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+            - img "Youtube" [ref=e301]
+    - navigation [ref=e39]:
+      - link "முகப்பு" [ref=e302] [cursor=pointer]:
+        - /url: /chennai-home
+      - button "துறை பற்றி" [ref=e303] [cursor=pointer]
+      - link "நகர சுயவிவரம்" [ref=e304] [cursor=pointer]:
+        - /url: /city-profile
+      - link "நகர வரைபடம்" [ref=e305] [cursor=pointer]:
+        - /url: /chennai_map
+      - link "ஊடகம்" [ref=e306] [cursor=pointer]:
+        - /url: /chennai-media
+      - link "செய்திகள்" [ref=e307] [cursor=pointer]:
+        - /url: /chennai-news-updates
+      - button "வாகன சலன்" [ref=e308] [cursor=pointer]
+      - link "தமிழ்நாடு காவல்துறை" [ref=e309] [cursor=pointer]:
+        - /url: https://www.police.tn.gov.in/citizenportal
+      - link "தொடர்பு" [active] [ref=e310] [cursor=pointer]:
+        - /url: /chennai-contactus
+  - generic [ref=e343]:
+    - table "customized table" [ref=e347]:
+      - rowgroup [ref=e348]:
+        - row [ref=e349]:
+          - columnheader "GCTP தொடர்பு விவரங்கள்" [ref=e350]
+        - row [ref=e353]:
+          - columnheader "வரிசை எண்" [ref=e354]
+          - columnheader "அதிகாரி பெயர்" [ref=e355]
+          - columnheader "பதவி" [ref=e356]
+          - columnheader "அலுவலக தொலைபேசி எண்கள்" [ref=e357]
+          - columnheader "மின்னஞ்சல் முகவரி" [ref=e358]
+      - rowgroup [ref=e359]:
+        - row [ref=e360]:
+          - rowheader "1" [ref=e361]
+          - cell "டாக்டர் A. அமல்ராஜ், ஐ.பி.எஸ்." [ref=e362]
+          - cell "காவல் ஆணையர்" [ref=e363]
+          - cell "044-23452320" [ref=e364]
+          - cell "tncopchennai@gmail.com" [ref=e365]
+        - row [ref=e366]:
+          - rowheader "2" [ref=e367]
+          - cell "டாக்டர் பி. ஷமூந்தேஸ்வரி, ஐ.பி.எஸ்" [ref=e368]
+          - cell "கூடுதல் காவல் ஆணையர் (போக்குவரத்து)" [ref=e369]
+          - cell "044-25615081" [ref=e370]
+          - cell "addlcop.traffic@gmail.com" [ref=e371]
+        - row [ref=e372]:
+          - rowheader "3" [ref=e373]
+          - cell "டி.ஆர்.பி. பாகலவன், ஐ.பி.எஸ்" [ref=e374]
+          - cell "காவல் இணை ஆணையர் போக்குவரத்து (தெற்கு)" [ref=e375]
+          - cell "044-2345266" [ref=e376]
+          - cell "jcop2011traffic@gmail.com" [ref=e377]
+        - row [ref=e378]:
+          - rowheader "4" [ref=e379]
+          - cell "காலியிடம்" [ref=e380]
+          - cell "காவல்துறை இணை ஆணையர் - போக்குவரத்து (வடக்கு)" [ref=e381]
+          - cell "044-2345262" [ref=e382]
+          - cell "jcop.trnorth@gmail.com" [ref=e383]
+        - row [ref=e384]:
+          - rowheader "5" [ref=e385]
+          - cell "டி.ஆர்.கே.கே. ஃபெரோஸ் கான் அப்துல்லாஹ், ஐ.பி.எஸ்" [ref=e386]
+          - cell "டிசிஓபி -போக்குவரத்து (மேற்கு)" [ref=e387]
+          - cell "9498133663" [ref=e388]
+          - cell "dcoptrafficwest@gmail.com" [ref=e389]
+        - row [ref=e390]:
+          - rowheader "6" [ref=e391]
+          - cell "டிஆர்.பி. பாலாஜி" [ref=e392]
+          - cell "டிசிஓபி போக்குவரத்து (வடக்கு)" [ref=e393]
+          - cell "044-2345270" [ref=e394]
+          - cell "dcpnorthtraffic@gmail.com" [ref=e395]
+        - row [ref=e396]:
+          - rowheader "7" [ref=e397]
+          - cell "திரு. முத்துகுமார்" [ref=e398]
+          - cell "டிசிஓபி -போக்குவரத்து (தெற்கு)" [ref=e399]
+          - cell "044-2345264" [ref=e400]
+          - cell "dcpsouthtraffic@gmail.com" [ref=e401]
+        - row [ref=e402]:
+          - rowheader "8" [ref=e403]
+          - cell "திருமதி. எஸ். மெகலினா ஐடன்" [ref=e404]
+          - cell "டிசிஓபி -போக்குவரத்து (கிழக்கு)" [ref=e405]
+          - cell "044-2345434" [ref=e406]
+          - cell "dcpeasttraffic@gmail.com" [ref=e407]
+    - generic [ref=e408]:
+      - button "Scroll important links left" [ref=e409] [cursor=pointer]
+      - generic [ref=e413]:
+        - link "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம் தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=e416] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+          - generic [ref=e417]:
+            - img "தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்" [ref=e419]
+            - generic [ref=e420]: தமிழ்நாடு காவல்துறை குடிமக்கள் இணையதளம்
+        - link "பரிவு பரிவு" [ref=e426] [cursor=pointer]:
+          - /url: https://parivahan.gov.in/
+          - generic [ref=e427]:
+            - img "பரிவு" [ref=e429]
+            - generic [ref=e430]: பரிவு
+        - link "TN அரசு இணையம் TN அரசு இணையம்" [ref=e436] [cursor=pointer]:
+          - /url: https://www.tn.gov.in/
+          - generic [ref=e437]:
+            - img "TN அரசு இணையம்" [ref=e439]
+            - generic [ref=e440]: TN அரசு இணையம்
+        - link "டிஎன் ஆர்டிஓ டிஎன் ஆர்டிஓ" [ref=e446] [cursor=pointer]:
+          - /url: https://tnsta.gov.in/
+          - generic [ref=e447]:
+            - img "டிஎன் ஆர்டிஓ" [ref=e449]
+            - generic [ref=e450]: டிஎன் ஆர்டிஓ
+      - button "Scroll important links right" [ref=e454] [cursor=pointer]
+    - generic [ref=e457]:
+      - generic [ref=e458]:
+        - link "பின்னூட்டம்" [ref=e460] [cursor=pointer]:
+          - /url: /chennai-feedback
+        - link "தள வரைபடம்" [ref=e462] [cursor=pointer]:
+          - /url: /chennai-sitemap
+        - link "தனியுரிமைக் கொள்கை" [ref=e464] [cursor=pointer]:
+          - /url: /chennai-PRIVACYPOLICY
+        - link "புகார்கள்" [ref=e466] [cursor=pointer]:
+          - /url: /chennai-complaints
+        - link "அடிக்கடி கேட்கப்படும் கேள்விகள்" [ref=e468] [cursor=pointer]:
+          - /url: /chennai-FAQs
+      - generic [ref=e469]:
+        - generic [ref=e470]:
+          - generic [ref=e471]: "இணையதள உள்ளடக்கம் உருவாக்கப்பட்டது, நிர்வகிக்கப்பட்டது மற்றும் உள்ளடக்க உரிமை: சென்னை பெருநகர போக்குவரத்து காவல் துறை"
+          - generic [ref=e472]: "வடிவமைக்கப்பட்டது, உருவாக்கப்பட்டது மற்றும் வழங்கப்பட்டது: எல் & டி டெக்னாலஜி சர்வீசஸ் (LTTS)இறுதியாக புதுப்பிக்கப்பட்டது: 10-11-2026 16:50:51 சிறந்த பார்வை: Google Chrome, Firefox"
+          - generic [ref=e473]: "பதிப்பு : ஃப்யூஷன் வி1.2"
+        - generic [ref=e474]:
+          - generic [ref=e475]:
+            - link [ref=e476] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=e477]
+            - link [ref=e478] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=e479]
+          - generic [ref=e480]:
+            - paragraph [ref=e481]: "வருகையாளர் எண்ணிக்கை : 27797"
+            - img "Group Icon" [ref=e483]

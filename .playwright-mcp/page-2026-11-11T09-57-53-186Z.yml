@@ -1,0 +1,81 @@
+- generic [ref=f10e3]:
+  - generic [ref=f10e4]:
+    - generic [ref=f10e5]:
+      - banner [ref=f10e6]:
+        - generic [ref=f10e8]:
+          - generic [ref=f10e10]:
+            - img "Nature" [ref=f10e11] [cursor=pointer]
+            - generic [ref=f10e12]:
+              - generic [ref=f10e13]: Greater Chennai Traffic Police
+              - generic [ref=f10e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=f10e21]:
+            - combobox "Search..." [ref=f10e22]
+            - group [aria-hidden]
+          - generic [ref=f10e23]:
+            - generic [ref=f10e26]:
+              - combobox "English" [ref=f10e27] [cursor=pointer]
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button [ref=f10e28] [cursor=pointer]:
+              - img "Play Store" [ref=f10e29]
+            - link "account of current user" [ref=f10e30] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+              - img "Facebook" [ref=f10e31]
+            - link "account of current user" [ref=f10e32] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+              - img "Instagram" [ref=f10e33]
+            - link "account of current user" [ref=f10e34] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+              - img "Twitter" [ref=f10e35]
+            - link "account of current user" [ref=f10e36] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+              - img "Youtube" [ref=f10e37]
+      - navigation [ref=f10e39]:
+        - link "Home" [ref=f10e41] [cursor=pointer]:
+          - /url: /chennai-home
+        - button "About Us" [ref=f10e43] [cursor=pointer]
+        - link "City Profile" [ref=f10e47] [cursor=pointer]:
+          - /url: /city-profile
+        - link "City Map" [ref=f10e49] [cursor=pointer]:
+          - /url: /chennai_map
+        - link "Media" [ref=f10e51] [cursor=pointer]:
+          - /url: /chennai-media
+        - link "News" [ref=f10e53] [cursor=pointer]:
+          - /url: /chennai-news-updates
+        - button "Vehicle Challan" [ref=f10e55] [cursor=pointer]
+        - link "Tamil Nadu Police" [ref=f10e60] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+        - link "Contact Us" [ref=f10e62] [cursor=pointer]:
+          - /url: /chennai-contactus
+    - generic [ref=f10e64]:
+      - table "customized table" [ref=f10e68]:
+        - rowgroup [ref=f10e69]:
+          - row [ref=f10e70]:
+            - columnheader "GCTP CONTACT DETAILS" [ref=f10e71]
+          - row [ref=f10e74]:
+            - columnheader "S.No." [ref=f10e75]
+            - columnheader "Officer Name" [ref=f10e76]
+            - columnheader "Designation" [ref=f10e77]
+            - columnheader "Office Phone Numbers" [ref=f10e78]
+            - columnheader "Email ID" [ref=f10e79]
+        - rowgroup
+      - generic [ref=f10e80]:
+        - button "Scroll important links left" [ref=f10e81] [cursor=pointer]
+        - button "Scroll important links right" [ref=f10e85] [cursor=pointer]
+      - generic [ref=f10e89]:
+        - generic [ref=f10e90]:
+          - generic [ref=f10e91]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=f10e92]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: 10-11-2026 16:50:51 Best Viewed: Google Chrome, Firefox"
+          - generic [ref=f10e93]: "Version : Fusion V1.2"
+        - generic [ref=f10e94]:
+          - generic [ref=f10e95]:
+            - link [ref=f10e96] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f10e97]
+            - link [ref=f10e98] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f10e99]
+          - generic [ref=f10e100]:
+            - paragraph [ref=f10e101]: "Number Of Visitors : 27806"
+            - img "Group Icon" [ref=f10e103]
+  - generic [ref=f10e104]: Loading visitor count...

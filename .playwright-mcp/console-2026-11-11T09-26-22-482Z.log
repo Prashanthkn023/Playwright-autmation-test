@@ -1,0 +1,5 @@
+[    1836ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cdn.jsdelivr.net/npm/apexcharts' with computed SHA-384 integrity 'agrvJL3CLxmTD6GK4ZLJlpq8NPyaxOE3eED1AafKRRBOe53OgZKXBXqXP3UzQpR1'. The resource has been blocked. @ https://gctp.in/:0
+[    1836ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cdn.jsdelivr.net/npm/react-apexcharts/dist/react-apexcharts.iife.min.js' with computed SHA-384 integrity 'bAfhIhCBhmCEB+ABD9oRt9MPWeM8JrbRpAlM9A8mo3jUQ/eFlHxKvZrpLI0h1fpQ'. The resource has been blocked. @ https://gctp.in/:0
+[    1929ms] [WARNING] No routes matched location "/"  @ https://gctp.in/static/js/main.d4b1ba1b.js:1
+[  719573ms] [ERROR] Access to fetch at 'https://cms.gctp.in/api/fusion-cms-web-backend/contact-us?approvalStatus=all' from origin 'https://gctp.in' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ https://gctp.in/chennai-home:0
+[  719582ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://cms.gctp.in/api/fusion-cms-web-backend/contact-us?approvalStatus=all:0

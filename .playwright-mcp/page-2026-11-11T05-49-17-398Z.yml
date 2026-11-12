@@ -1,0 +1,47 @@
+- generic [ref=e5]:
+  - banner [ref=e6]:
+    - generic [ref=e8]:
+      - generic [ref=e10]:
+        - img "Nature" [ref=e11] [cursor=pointer]
+        - generic [ref=e12]:
+          - generic [ref=e13]: Greater Chennai Traffic Police
+          - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+      - generic [ref=e21]:
+        - combobox "Search..." [ref=e22]
+        - group [aria-hidden]
+      - generic [ref=e23]:
+        - generic [ref=e26]:
+          - combobox "English" [ref=e27] [cursor=pointer]
+          - textbox [aria-hidden]: en
+          - group [aria-hidden]
+        - button "Play Store" [ref=e28] [cursor=pointer]:
+          - img "Play Store"
+        - link "account of current user" [ref=e29] [cursor=pointer]:
+          - /url: https://www.facebook.com/ChennaiTrafficPolice/
+          - img "Facebook" [ref=e30]
+        - link "account of current user" [ref=e31] [cursor=pointer]:
+          - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+          - img "Instagram"
+        - link "account of current user" [ref=e32] [cursor=pointer]:
+          - /url: https://twitter.com/chennaitraffic
+          - img "Twitter" [ref=e33]
+        - link "account of current user" [ref=e34] [cursor=pointer]:
+          - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+          - img "Youtube" [ref=e35]
+  - navigation [ref=e37]:
+    - link "Home" [ref=e39] [cursor=pointer]:
+      - /url: /chennai-home
+    - button "About Us" [ref=e41] [cursor=pointer]
+    - link "City Profile" [ref=e45] [cursor=pointer]:
+      - /url: /city-profile
+    - link "City Map" [ref=e47] [cursor=pointer]:
+      - /url: /chennai_map
+    - link "Media" [ref=e49] [cursor=pointer]:
+      - /url: /chennai-media
+    - link "News" [ref=e51] [cursor=pointer]:
+      - /url: /chennai-news-updates
+    - button "Vehicle Challan" [ref=e53] [cursor=pointer]
+    - link "Tamil Nadu Police" [ref=e58] [cursor=pointer]:
+      - /url: https://www.police.tn.gov.in/citizenportal
+    - link "Contact Us" [ref=e60] [cursor=pointer]:
+      - /url: /chennai-contactus

@@ -1,0 +1,70 @@
+- generic [ref=f13e3]:
+  - generic [ref=f13e4]:
+    - generic [ref=f13e5]:
+      - banner [ref=f13e6]:
+        - generic [ref=f13e8]:
+          - generic [ref=f13e10]:
+            - img "Nature" [ref=f13e11] [cursor=pointer]
+            - generic [ref=f13e12]:
+              - generic [ref=f13e13]: Greater Chennai Traffic Police
+              - generic [ref=f13e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=f13e21]:
+            - combobox "Search..." [ref=f13e22]
+            - group [aria-hidden]
+          - generic [ref=f13e23]:
+            - generic [ref=f13e26]:
+              - combobox "English" [ref=f13e27] [cursor=pointer]
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button [ref=f13e28] [cursor=pointer]:
+              - img "Play Store" [ref=f13e29]
+            - link "account of current user" [ref=f13e30] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+              - img "Facebook" [ref=f13e31]
+            - link "account of current user" [ref=f13e32] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+              - img "Instagram" [ref=f13e33]
+            - link "account of current user" [ref=f13e34] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+              - img "Twitter" [ref=f13e35]
+            - link "account of current user" [ref=f13e36] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+              - img "Youtube" [ref=f13e37]
+      - navigation [ref=f13e39]:
+        - link "Home" [ref=f13e41] [cursor=pointer]:
+          - /url: /chennai-home
+        - button "About Us" [ref=f13e43] [cursor=pointer]
+        - link "City Profile" [ref=f13e47] [cursor=pointer]:
+          - /url: /city-profile
+        - link "City Map" [ref=f13e49] [cursor=pointer]:
+          - /url: /chennai_map
+        - link "Media" [ref=f13e51] [cursor=pointer]:
+          - /url: /chennai-media
+        - link "News" [ref=f13e53] [cursor=pointer]:
+          - /url: /chennai-news-updates
+        - button "Vehicle Challan" [ref=f13e55] [cursor=pointer]
+        - link "Tamil Nadu Police" [ref=f13e60] [cursor=pointer]:
+          - /url: https://www.police.tn.gov.in/citizenportal
+        - link "Contact Us" [ref=f13e62] [cursor=pointer]:
+          - /url: /chennai-contactus
+    - generic [ref=f13e64]:
+      - generic [ref=f13e67]:
+        - button "Scroll important links left" [ref=f13e68] [cursor=pointer]
+        - button "Scroll important links right" [ref=f13e72] [cursor=pointer]
+      - generic [ref=f13e76]:
+        - generic [ref=f13e77]:
+          - generic [ref=f13e78]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+          - generic [ref=f13e79]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS)Last Updated: Loading... Best Viewed: Google Chrome, Firefox"
+          - generic [ref=f13e80]: "Version : Fusion V1.2"
+        - generic [ref=f13e81]:
+          - generic [ref=f13e82]:
+            - link [ref=f13e83] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.cscl.chennaiits.itms
+              - img "Get it on Google Play" [ref=f13e84]
+            - link [ref=f13e85] [cursor=pointer]:
+              - /url: https://apps.apple.com/in/app/gctp-its/id6760329491
+              - img "Get it on Apple store" [ref=f13e86]
+          - generic [ref=f13e87]:
+            - paragraph [ref=f13e88]: "Number Of Visitors : Loading visitor count..."
+            - img "Group Icon" [ref=f13e90]
+  - generic [ref=f13e91]: Loading visitor count...
