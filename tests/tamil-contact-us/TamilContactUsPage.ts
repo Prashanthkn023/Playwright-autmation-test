@@ -6,10 +6,18 @@ export class TamilContactUsPage {
 
   async openInTamil() {
     await this.page.goto('/chennai-home');
-    const awarenessClose = this.page.getByRole('button', { name: '✕' });
-    if (await awarenessClose.isVisible()) await awarenessClose.click();
+
+    // Dismiss popup reliably
+    const awarenessOverlay = this.page.locator('.flash-popup-overlay');
+    if (await awarenessOverlay.isVisible()) {
+      await awarenessOverlay.getByRole('button', { name: '✕' }).click();
+      await expect(awarenessOverlay).toBeHidden();
+    }
+
     await this.page.locator('#language-select').click();
     await this.page.getByRole('option', { name: tamilContactUsLabels.language }).click();
+
+    // Wait for navigation stability
     const contactLink = this.page.getByRole('link', { name: tamilContactUsLabels.navigation });
     await expect(contactLink).toBeVisible();
     await contactLink.click();

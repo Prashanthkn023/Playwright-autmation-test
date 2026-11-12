@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { TamilContactUsPage } from './TamilContactUsPage';
 
 test('Stage 2: Final Evidence Review', async ({ page }) => {
@@ -43,7 +43,12 @@ test('Stage 2: Final Evidence Review', async ({ page }) => {
       console.log('DEF-02_POPUP_DISMISSED: true');
   }
 
-  const navLink = page.getByRole('link', { name: 'தொடர்பு' });
-  await navLink.click();
+  await page.locator('#language-select').click();
+  await page.getByRole('option', { name: 'தமிழ்' }).click();
+
+  // Verify Tamil navigation visibility before clicking
+  const tamilNav = page.getByRole('link', { name: 'தொடர்பு' });
+  await expect(tamilNav).toBeVisible();
+  await tamilNav.click();
   console.log('DEF-02_NAV_SUCCESS: true');
 });

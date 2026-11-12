@@ -66,7 +66,7 @@ type AboutUsContent = {
 };
 
 const normalizeContent = (value: string | null) =>
-  value?.trim() || '';
+  (value || '').replace(/\s+/g, ' ').trim();
 
 const getContentDifferences = (
   expected: AboutUsContent[],
