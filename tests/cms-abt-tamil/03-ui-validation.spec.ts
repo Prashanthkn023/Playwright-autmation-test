@@ -64,7 +64,7 @@ test.describe('Tamil CMS ABT - UI Validation', () => {
 
     const maintenanceMessage = page.getByText('Organisational structure updates in progress');
     if (await maintenanceMessage.isVisible()) {
-      console.log('Organogram content is currently in maintenance state.');
+      console.log('[UNAVAILABLE VALIDATION] Organogram content is currently under maintenance. Validation skipped as content is unavailable.');
     } else {
       const organogramItems = page.locator('li:visible');
       await expect(organogramItems).not.toHaveCount(0);

@@ -34,19 +34,17 @@ test('Stage 2: Final Evidence Review', async ({ page }) => {
 
   // 3. DEF-02: Popup Dismissal & Navigation
   await page.goto('/chennai-home');
-  const popupClose = page.getByRole('button', { name: '✕' });
-  const isPopupVisible = await popupClose.isVisible();
-  console.log('DEF-02_POPUP_VISIBLE:', isPopupVisible);
-
-  if (isPopupVisible) {
-      await popupClose.click();
-      console.log('DEF-02_POPUP_DISMISSED: true');
+  const awarenessOverlay = page.locator('.flash-popup-overlay');
+  if (await awarenessOverlay.isVisible()) {
+    await awarenessOverlay.getByRole('button', { name: '✕' }).click();
+    await expect(awarenessOverlay).toBeHidden();
+    console.log('DEF-02_POPUP_DISMISSED: true');
   }
 
+  // Language selection to Tamil must happen before locating/clicking the Tamil Contact Us link
   await page.locator('#language-select').click();
   await page.getByRole('option', { name: 'தமிழ்' }).click();
 
-  // Verify Tamil navigation visibility before clicking
   const tamilNav = page.getByRole('link', { name: 'தொடர்பு' });
   await expect(tamilNav).toBeVisible();
   await tamilNav.click();
