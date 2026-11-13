@@ -119,40 +119,40 @@ test('TC_005: City Map navigation, controls, layer interactions, toolbar buttons
   const touristTitle = 'Tourist_locations';
   const cmrlTitle = 'CMRL_Phase1';
 
-  // Test Button 1: Shield/star icon (Traffic Police Boundary)
-  await expect(cityMap.policeBoundaryButton).toBeVisible();
-  await expect(cityMap.policeBoundaryButton).toBeEnabled();
-  const initialPoliceVis = await cityMap.getLayerVisibility(policeTitle);
-  await cityMap.togglePoliceBoundary();
-  const policeAfterToggle = await cityMap.getLayerVisibility(policeTitle);
-  expect(policeAfterToggle).toBe(!initialPoliceVis);
-  // Restore
-  await cityMap.togglePoliceBoundary();
-  expect(await cityMap.getLayerVisibility(policeTitle)).toBe(initialPoliceVis);
+  // Test Layers: Traffic Police, Tourist/Parking, CMRL
+  const layersToTest = [
+    { title: policeTitle, button: cityMap.policeBoundaryButton, toggle: () => cityMap.togglePoliceBoundary() },
+    { title: touristTitle, button: cityMap.keyLocationsButton, toggle: () => cityMap.toggleKeyLocations() },
+    { title: cmrlTitle, button: cityMap.cmrlButton, toggle: () => cityMap.toggleCmrl() }
+  ];
 
-  // Test Button 2: Location pin icon (Key Locations / Tourist locations)
-  await expect(cityMap.keyLocationsButton).toBeVisible();
-  await expect(cityMap.keyLocationsButton).toBeEnabled();
-  const initialTouristVis = await cityMap.getLayerVisibility(touristTitle);
-  await cityMap.toggleKeyLocations();
-  const touristAfterToggle = await cityMap.getLayerVisibility(touristTitle);
-  expect(touristAfterToggle).toBe(!initialTouristVis);
-  // Restore
-  await cityMap.toggleKeyLocations();
-  expect(await cityMap.getLayerVisibility(touristTitle)).toBe(initialTouristVis);
+  for (const layer of layersToTest) {
+    await expect(layer.button).toBeVisible();
+    await expect(layer.button).toBeEnabled();
 
-  // Test Button 3: Bus/Train icon (CMRL)
-  await expect(cityMap.cmrlButton).toBeVisible();
-  await expect(cityMap.cmrlButton).toBeEnabled();
-  const initialCmrlVis = await cityMap.getLayerVisibility(cmrlTitle);
-  await cityMap.toggleCmrl();
-  const cmrlAfterToggle = await cityMap.getLayerVisibility(cmrlTitle);
-  expect(cmrlAfterToggle).toBe(!initialCmrlVis);
-  // Restore
-  await cityMap.toggleCmrl();
-  expect(await cityMap.getLayerVisibility(cmrlTitle)).toBe(initialCmrlVis);
+    // Capture initial visibilities of all layers
+    const allLayersBefore = await cityMap.getAllLayerInfo();
+    const initialTargetVis = await cityMap.getLayerVisibility(layer.title);
 
-  // Close Layers panel (Button 4 / Layers toggle)
+    // Toggle layer
+    await layer.toggle();
+    expect(await cityMap.getLayerVisibility(layer.title)).toBe(!initialTargetVis);
+
+    // Verify toggling this layer does not unexpectedly change other independent layers (ignoring coupled CMRL sub-layers)
+    const allLayersAfter = await cityMap.getAllLayerInfo();
+    for (const info of allLayersAfter) {
+      if (info.title === layer.title) continue;
+      if (layer.title.startsWith('CMRL_') && info.title.startsWith('CMRL_')) continue;
+      const prevInfo = allLayersBefore.find(l => l.title === info.title);
+      expect(info.visible, `Layer "${info.title}" should not change when toggling "${layer.title}"`).toBe(prevInfo?.visible);
+    }
+
+    // Restore layer state
+    await layer.toggle();
+    expect(await cityMap.getLayerVisibility(layer.title)).toBe(initialTargetVis);
+  }
+
+  // Close Layers panel
   await cityMap.clickLayersButton();
   await expect(cityMap.keyLocationsButton).toBeHidden();
 

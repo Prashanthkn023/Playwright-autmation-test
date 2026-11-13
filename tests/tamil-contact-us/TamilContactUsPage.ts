@@ -1,20 +1,16 @@
 import { expect, type Page } from '@playwright/test';
 import { tamilContactUsLabels, tamilContactUsRoute } from './tamilContactUsLabels';
+import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 
 export class TamilContactUsPage {
   constructor(private readonly page: Page) {}
 
   private async dismissPopup() {
-    const awarenessOverlay = this.page.locator('.flash-popup-overlay');
-    if (await awarenessOverlay.isVisible()) {
-      await awarenessOverlay.getByRole('button', { name: '✕' }).click();
-      await expect(awarenessOverlay).toBeHidden();
-    }
-    await expect(awarenessOverlay).toBeHidden();
+    await closeAwarenessPopup(this.page);
   }
 
   async openInTamil() {
-    await this.page.goto('/chennai-home');
+    await this.page.goto('/');
     await this.dismissPopup();
 
     await this.page.locator('#language-select').click();
@@ -31,7 +27,7 @@ export class TamilContactUsPage {
     const homeLink = this.page.getByRole('link', { name: tamilContactUsLabels.home });
     await expect(homeLink).toBeVisible();
     await homeLink.click();
-    await expect(this.page).toHaveURL(/\/chennai-home$/);
+    await this.page.waitForURL(/\/chennai-home$/);
 
     await this.dismissPopup();
 
