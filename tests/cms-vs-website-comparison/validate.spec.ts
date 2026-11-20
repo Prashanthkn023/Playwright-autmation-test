@@ -507,14 +507,80 @@ test(
 
     try {
 
+      // 1. Explicit Record-Count Equality Assertion
+      expect(
+        normalizedGctpPayload.length,
+        `Record count mismatch: Approved CMS has ${normalizedCmsPayload.length} records, but published GCTP has ${normalizedGctpPayload.length} records`
+      ).toBe(normalizedCmsPayload.length);
+
+      // Build lookup for published GCTP records by unique ID
+      const gctpRecordMap = new Map<unknown, Record<string, unknown>>();
+      const gctpSeenIds = new Set<unknown>();
+      const gctpUnmatchedIds = new Set<unknown>();
+
+      for (const item of normalizedGctpPayload) {
+        if (typeof item === 'object' && item !== null) {
+          const rec = item as Record<string, unknown>;
+          const id = rec['id'];
+
+          // 3. Fail clearly if any record has a missing or undefined ID
+          expect(id, 'GCTP record is missing an "id" field').toBeDefined();
+
+          // 2. Explicitly detect duplicate IDs
+          expect(gctpSeenIds.has(id), `Duplicate ID detected in GCTP response: ${id}`).toBe(false);
+          gctpSeenIds.add(id);
+
+          gctpRecordMap.set(id, rec);
+          gctpUnmatchedIds.add(id);
+        }
+      }
+
+      // 2. Explicitly detect duplicate IDs in CMS response
+      const cmsSeenIds = new Set<unknown>();
+
+      // 2. Verify every normalized CMS record matches the corresponding published record
+      for (const item of normalizedCmsPayload) {
+        if (typeof item === 'object' && item !== null) {
+          const cmsRec = item as Record<string, unknown>;
+          const recordId = cmsRec['id'];
+
+          // 3. Fail clearly if any record has a missing or undefined ID
+          expect(recordId, 'CMS record is missing an "id" field').toBeDefined();
+
+          // 2. Explicitly detect duplicate IDs
+          expect(cmsSeenIds.has(recordId), `Duplicate ID detected in CMS response: ${recordId}`).toBe(false);
+          cmsSeenIds.add(recordId);
+
+          const recordTitle = (cmsRec['f_title'] as string) || (cmsRec['title'] as string) || 'Untitled';
+
+          const matchingGctp = gctpRecordMap.get(recordId);
+
+          expect(
+            matchingGctp,
+            `Record ID ${recordId} ("${recordTitle}") exists in approved CMS records but is missing from published GCTP payload`
+          ).toBeDefined();
+
+          // Field-by-field verification of normalized record
+          expect(
+            matchingGctp,
+            `Record ID ${recordId} ("${recordTitle}") content mismatch between approved CMS and published GCTP`
+          ).toEqual(cmsRec);
+
+          gctpUnmatchedIds.delete(recordId);
+        }
+      }
+
+      // 3. Ensure extra published records cannot pass silently
+      expect(
+        Array.from(gctpUnmatchedIds),
+        `Extra published records found in GCTP that are not in approved CMS records: ${Array.from(gctpUnmatchedIds).join(', ')}`
+      ).toHaveLength(0);
+
+      // 4. Full bidirectional array verification (strict equality)
       expect(
         normalizedGctpPayload,
-        'Published CMS content should match GCTP content'
-      ).toEqual(
-        expect.arrayContaining(
-          normalizedCmsPayload
-        )
-      );
+        'Published GCTP content should match approved CMS content exactly'
+      ).toEqual(normalizedCmsPayload);
 
       console.log('');
       console.log('========================================');

@@ -39,7 +39,7 @@ export async function closeAwarenessPopup(page: Page) {
   for (let attempt = 0; attempt < 4; attempt++) {
     if (!(await popup.isVisible({ timeout: 1500 }).catch(() => false))) {
       await page.waitForTimeout(500);
-      if (!(await popup.isVisible().catch(() => false))) {
+      if (!(await popup.isVisible({ timeout: 500 }).catch(() => false))) {
         return;
       }
       continue;
@@ -84,7 +84,7 @@ export async function closeAwarenessPopup(page: Page) {
 
     if (!(await popup.isVisible({ timeout: 1000 }).catch(() => false))) {
       await page.waitForTimeout(500);
-      if (!(await popup.isVisible().catch(() => false))) {
+      if (!(await popup.isVisible({ timeout: 500 }).catch(() => false))) {
         return;
       }
     }
