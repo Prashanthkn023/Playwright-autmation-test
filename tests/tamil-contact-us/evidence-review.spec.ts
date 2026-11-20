@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { TamilContactUsPage } from './TamilContactUsPage';
+import { closeAwarenessPopup } from '../../utils/closeAwarenessPopup';
 
 test('Stage 2: Final Evidence Review', async ({ page }) => {
   const contactPage = new TamilContactUsPage(page);
@@ -34,12 +35,7 @@ test('Stage 2: Final Evidence Review', async ({ page }) => {
 
   // 3. DEF-02: Popup Dismissal & Navigation
   await page.goto('/chennai-home');
-  const awarenessOverlay = page.locator('.flash-popup-overlay');
-  if (await awarenessOverlay.isVisible()) {
-    await awarenessOverlay.getByRole('button', { name: '✕' }).click();
-    await expect(awarenessOverlay).toBeHidden();
-    console.log('DEF-02_POPUP_DISMISSED: true');
-  }
+  await closeAwarenessPopup(page);
 
   // Language selection to Tamil must happen before locating/clicking the Tamil Contact Us link
   await page.locator('#language-select').click();

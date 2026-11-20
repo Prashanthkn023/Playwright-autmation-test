@@ -11,6 +11,8 @@ export class TamilContactUsPage {
 
   async openInTamil() {
     await this.page.goto('/');
+
+    await expect(this.page.locator('#language-select')).toBeVisible();
     await this.dismissPopup();
 
     await this.page.locator('#language-select').click();
