@@ -11,57 +11,6 @@ export class BasePage {
   // Navigate to URL
   async closeAnyPopup() {
     await closeAwarenessPopup(this.page);
-    await this.page.waitForTimeout(1000);
-
-    const awarenessPopup = this.page.locator('.flash-popup-overlay:visible').first();
-    const awarenessCloseButton = awarenessPopup.getByRole('button', { name: '✕' }).first();
-
-    if (await awarenessCloseButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await awarenessCloseButton.click({ force: true, timeout: 5000 });
-      await expect(awarenessPopup).toBeHidden({ timeout: 10000 });
-    }
-
-    const closeSelectors = [
-      '[aria-label="Close"]',
-      '[aria-label="close"]',
-      '[title="Close"]',
-      '[title="close"]',
-      '.btn-close',
-      '.close',
-      'button.close',
-      'button[aria-label*="close" i]',
-      'button[title*="close" i]',
-      'button:has-text("Close")',
-      'button:has-text("Dismiss")',
-      'button:has-text("OK")',
-    ];
-
-    for (const selector of closeSelectors) {
-      const locator = this.page.locator(selector);
-      const count = await locator.count().catch(() => 0);
-
-      for (let i = 0; i < count; i++) {
-        const element = locator.nth(i);
-        const visible = await element.isVisible().catch(() => false);
-
-        if (!visible) continue;
-
-        try {
-          await element.click({ force: true, timeout: 3000 });
-          await this.page.waitForTimeout(300);
-          return;
-        } catch {
-          // continue trying other selectors
-        }
-      }
-    }
-
-    try {
-      await this.page.keyboard.press('Escape');
-      await this.page.waitForTimeout(300);
-    } catch {
-      // ignore keyboard failures
-    }
   }
 
   async navigate(url: string) {
