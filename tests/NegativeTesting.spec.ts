@@ -72,13 +72,33 @@ test.describe('Negative Testing Suite', () => {
       if (!ALLOW_PRODUCTION_SUBMISSIONS) {
         test.skip(true, 'Skipping feedback submission test to protect production data (set ALLOW_PRODUCTION_SUBMISSIONS=true to run).');
       }
-      // Expected: Form validation prevents submission without required fields
+
+      // Setup route interception to ensure no submission API call reaches the server.
+      // We will look for requests sent during form submission.
+      let interceptedFeedbackApi = false;
+      await page.route('**/api/feedback/**', async route => {
+        interceptedFeedbackApi = true;
+        await route.abort('blockedbyplaywright');
+      });
+
       await home.openHomePage();
       await home.openFeedback();
       await feedback.verifyFeedbackPage();
-      await feedback.clickSubmit();
-      // Should remain on feedback page or show validation error
+
+      // Verify empty message input is invalid by default
+      const messageField = feedback.message;
+      await expect(messageField).toHaveAttribute('required', '');
+
+      // Try to submit without filling any fields
+      await feedback.submitButton.click();
+
+      // Ensure the browser validation prevents the form from submitting (i.e., message field is invalid)
+      const isInvalid = await messageField.evaluate((el: HTMLTextAreaElement) => !el.checkValidity());
+      expect(isInvalid).toBe(true);
+
+      // Verify page stays on feedback and no API request was attempted
       expect(page.url()).toContain('feedback');
+      expect(interceptedFeedbackApi).toBe(false);
     });
 
     test('NEG-05: Enter invalid email or text format in feedback', async ({ home, feedback }) => {
