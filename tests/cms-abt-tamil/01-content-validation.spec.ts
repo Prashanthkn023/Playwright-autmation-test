@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { CmsTamilABTPage } from '../../pages/CmsTamilABTPage';
 
 test.describe('Tamil CMS ABT - Content Validation', () => {
-  test.setTimeout(120000);
+  test.setTimeout(90000);
 
   test('validate Tamil content across About Us and related pages', async ({ page }) => {
     const abtPage = new CmsTamilABTPage(page);

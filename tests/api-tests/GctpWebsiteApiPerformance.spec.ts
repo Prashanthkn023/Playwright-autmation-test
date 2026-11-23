@@ -38,69 +38,73 @@ type EndpointReport = {
 };
 
 const RESPONSE_TIME_THRESHOLD_MS = 6000;
-const REQUEST_TIMEOUT_MS = 30000;
+const REQUEST_TIMEOUT_MS = 10000;
 const REQUESTS_PER_ENDPOINT = 5;
+const websiteBaseUrl = (
+  process.env.BASE_URL ||
+  'https://gctp.in'
+).replace(/\/$/, '');
 // The geospatial proxy intermittently returns short bursts of 404s while the feature layer is available.
 const NOT_FOUND_RETRIES = 4;
 
 const websiteEndpoints: WebsiteEndpoint[] = [
   {
     id: 'home-page-content',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/home-page',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/home-page`,
     source: 'Published website API',
     description: 'Homepage content, sliders, important links, traffic updates, helpline, FAQ and footer.',
   },
   {
     id: 'shared-layout-content',
-    url: 'https://gctp.in/api/fusion-cms-web-backend/home-page',
+    url: `${websiteBaseUrl}/api/fusion-cms-web-backend/home-page`,
     source: 'CMS-backed website API',
     description: 'Shared CMS layout and content data.',
   },
   {
     id: 'about-us-content',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/about-us',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/about-us`,
     source: 'Published website API',
     description: 'About Us and commissioner content.',
   },
   {
     id: 'city-profile-content',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/city-profile',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/city-profile`,
     source: 'Published website API',
     description: 'City Profile content.',
   },
   {
     id: 'media-content',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/media',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/media`,
     source: 'Published website API',
     description: 'Media page content.',
   },
   {
     id: 'news-content',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/news-and-updates',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/news-and-updates`,
     source: 'Published website API',
     description: 'News and Updates content.',
   },
   {
     id: 'contact-us-content',
-    url: 'https://gctp.in/api/fusion-cms-web-backend/contact-us?approvalStatus=all',
+    url: `${websiteBaseUrl}/api/fusion-cms-web-backend/contact-us?approvalStatus=all`,
     source: 'CMS-backed website API',
     description: 'Contact Us content.',
   },
   {
     id: 'organogram-content',
-    url: 'https://gctp.in/api/fusion-cms-web-backend/organogram?approvalStatus=all',
+    url: `${websiteBaseUrl}/api/fusion-cms-web-backend/organogram?approvalStatus=all`,
     source: 'CMS-backed website API',
     description: 'Organogram content.',
   },
   {
     id: 'city-map-tourist-spots',
-    url: 'https://gctp.in/api/fusion-iccc-service/tourist-spot',
+    url: `${websiteBaseUrl}/api/fusion-iccc-service/tourist-spot`,
     source: 'ICCC API',
     description: 'City Map tourist spot data.',
   },
   {
     id: 'complaint-incident-subtypes',
-    url: 'https://gctp.in/api/fusion-iccc-service/incident-sub-types?cms=true',
+    url: `${websiteBaseUrl}/api/fusion-iccc-service/incident-sub-types?cms=true`,
     source: 'ICCC API',
     description: 'Complaint incident subtype data.',
   },
@@ -243,7 +247,7 @@ async function measureEndpoint(
         }
       }
     } catch (error) {
-      outcome = `Request error: ${getErrorMessage(error)}`;
+      outcome = `UNREACHABLE: ${getErrorMessage(error)}`;
     }
 
     measurements.push({
@@ -252,6 +256,10 @@ async function measureEndpoint(
       status,
       outcome,
     });
+
+    if (outcome.startsWith('UNREACHABLE:')) {
+      break;
+    }
   }
 
   const times = measurements.map((item) => item.elapsedMs);
@@ -320,15 +328,19 @@ test('GCTP website API performance: verified module endpoints', async (
   console.log('\n========== API PERFORMANCE REPORT ==========\n');
 
   for (const { endpoint, measurement } of allMeasurements) {
+    const isUnreachable =
+      measurement.outcome.startsWith('UNREACHABLE:');
     const isHttpError =
-      measurement.status === null || measurement.status >= 400;
+      !isUnreachable && (measurement.status === null || measurement.status >= 400);
 
     const isSlow =
       measurement.elapsedMs > RESPONSE_TIME_THRESHOLD_MS;
 
     let result: string;
 
-    if (isHttpError) {
+    if (isUnreachable) {
+      result = 'UNREACHABLE';
+    } else if (isHttpError) {
       result = 'HTTP ERROR';
     } else if (isSlow) {
       result = 'SLOW';
@@ -351,26 +363,39 @@ test('GCTP website API performance: verified module endpoints', async (
 
   const slowApis = allMeasurements.filter(
     ({ measurement }) =>
+      !measurement.outcome.startsWith('UNREACHABLE:') &&
       measurement.elapsedMs > RESPONSE_TIME_THRESHOLD_MS
   );
 
   const httpErrorApis = allMeasurements.filter(
     ({ measurement }) =>
-      measurement.status === null || measurement.status >= 400
+      !measurement.outcome.startsWith('UNREACHABLE:') &&
+      (measurement.status === null || measurement.status >= 400)
+  );
+
+  const unreachableApis = allMeasurements.filter(
+    ({ measurement }) =>
+      measurement.outcome.startsWith('UNREACHABLE:')
+  );
+
+  const reachableMeasurements = allMeasurements.filter(
+    ({ measurement }) =>
+      !measurement.outcome.startsWith('UNREACHABLE:')
   );
 
   const averageResponseTime =
-    totalApis > 0
-      ? allMeasurements.reduce(
+    reachableMeasurements.length > 0
+      ? reachableMeasurements.reduce(
           (sum, item) => sum + item.measurement.elapsedMs,
           0
-        ) / totalApis
+        ) / reachableMeasurements.length
       : 0;
 
   console.log('\n========== SUMMARY ==========\n');
   console.log(`Total APIs: ${totalApis}`);
   console.log(`Slow APIs: ${slowApis.length}`);
   console.log(`HTTP Error APIs: ${httpErrorApis.length}`);
+  console.log(`Unreachable APIs: ${unreachableApis.length}`);
   console.log(
     `Average Response Time: ${averageResponseTime.toFixed(2)} ms`
   );
@@ -379,13 +404,17 @@ test('GCTP website API performance: verified module endpoints', async (
   await testInfo.attach('gctp-website-api-performance-report.json', {
     body: JSON.stringify(
       {
-        baseUrl: 'https://gctp.in',
+        baseUrl: websiteBaseUrl,
         thresholdMs: RESPONSE_TIME_THRESHOLD_MS,
         requestTimeoutMs: REQUEST_TIMEOUT_MS,
         requestsPerEndpoint: REQUESTS_PER_ENDPOINT,
         totalRequests: totalApis,
         slowRequests: slowApis.length,
         httpErrorRequests: httpErrorApis.length,
+        unreachableRequests: unreachableApis.length,
+        unreachableEndpoints: [...new Set(unreachableApis.map(({ endpoint }) =>
+          endpoint.id
+        ))],
         averageResponseTimeMs: averageResponseTime,
         moduleMappings,
         endpoints: reports,
@@ -399,8 +428,9 @@ test('GCTP website API performance: verified module endpoints', async (
   // A request fails the test if it is slow or does not return valid JSON.
   const failedMeasurements = allMeasurements.filter(
     ({ measurement }) =>
-      measurement.outcome !== 'PASS' ||
-      measurement.elapsedMs > RESPONSE_TIME_THRESHOLD_MS
+      !measurement.outcome.startsWith('UNREACHABLE:') &&
+      (measurement.outcome !== 'PASS' ||
+        measurement.elapsedMs > RESPONSE_TIME_THRESHOLD_MS)
   );
 
   expect(

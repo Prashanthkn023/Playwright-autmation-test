@@ -276,8 +276,9 @@ export async function loginToCms(
   const cmsLandingUrl =
     targetUrl.pathname === '/' ? cmsHomeUrl : cmsUrl;
 
-  const attempts = 3;
+  const attempts = 2;
   let lastError: Error | undefined;
+  let abortedRetryCount = 0;
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
@@ -287,7 +288,7 @@ export async function loginToCms(
 
       await page.goto(cmsHomeUrl, {
         waitUntil: 'domcontentloaded',
-        timeout: 120000,
+        timeout: 45000,
       });
 
       await page.waitForLoadState('domcontentloaded').catch(() => undefined);
@@ -304,7 +305,7 @@ export async function loginToCms(
       // Reload home URL after clearing state to get a fresh unauthenticated session
       await page.goto(cmsHomeUrl, {
         waitUntil: 'domcontentloaded',
-        timeout: 120000,
+        timeout: 45000,
       });
 
       await page.waitForLoadState('domcontentloaded').catch(() => undefined);
@@ -314,7 +315,7 @@ export async function loginToCms(
       if (!loginFormVisible) {
         await page.goto(cmsLandingUrl, {
           waitUntil: 'domcontentloaded',
-          timeout: 120000,
+          timeout: 45000,
         });
 
         await page.waitForLoadState('domcontentloaded').catch(() => undefined);
@@ -387,7 +388,7 @@ export async function loginToCms(
         if (!page.url().includes('chennai-home')) {
           await page.goto(cmsLandingUrl, {
             waitUntil: 'domcontentloaded',
-            timeout: 120000,
+            timeout: 45000,
           });
           await page.waitForLoadState('domcontentloaded').catch(() => undefined);
         }
@@ -429,7 +430,7 @@ export async function loginToCms(
       ) {
         await page.goto(cmsLandingUrl, {
           waitUntil: 'domcontentloaded',
-          timeout: 120000,
+          timeout: 45000,
         });
       }
 
@@ -471,18 +472,24 @@ export async function loginToCms(
       return;
     } catch (error) {
       lastError = error as Error;
+      const isAborted = /ERR_ABORTED|net::ERR_ABORTED/i.test(lastError.message);
+      if (isAborted) {
+        abortedRetryCount++;
+        if (abortedRetryCount > 1) {
+          throw new Error(
+            `CMS login aborted twice (ERR_ABORTED); stopping retries. ${lastError.message}`
+          );
+        }
+      }
       if (attempt < attempts) {
         console.warn(
           `CMS login attempt ${attempt} failed: ${(error as Error).message}. Retrying...`
         );
         await page.goto(cmsHomeUrl, {
           waitUntil: 'domcontentloaded',
-          timeout: 120000,
+          timeout: 45000,
         }).catch(() => undefined);
-        // Wait at least 10 seconds between attempts to avoid triggering the
-        // CMS rate-limiter or temporary account lockout caused by rapid
-        // successive failed login requests.
-        await page.waitForTimeout(10000);
+        await page.waitForTimeout(isAborted ? 2000 : 5000);
         continue;
       }
       throw error;

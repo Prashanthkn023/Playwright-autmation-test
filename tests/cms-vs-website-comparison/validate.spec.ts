@@ -22,7 +22,7 @@ interface ApiResponse {
 // TEST CONFIGURATION
 // =================================================
 
-test.setTimeout(120000);
+test.setTimeout(90000);
 
 // =================================================
 // MAIN TEST

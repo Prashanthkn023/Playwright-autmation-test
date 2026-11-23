@@ -12,17 +12,17 @@ export default defineConfig({
   globalTeardown: './global-teardown.ts',
 
   // Global test timeout
-  timeout: Number(process.env.TIMEOUT) || 600000,
+  timeout: Math.min(Number(process.env.TIMEOUT) || 90000, 90000),
 
   // Assertion timeout
   expect: {
-    timeout: 30000,
+    timeout: 10000,
   },
 
   // Test execution
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 1,
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : Number(process.env.WORKERS) || 1,
 
   // Terminal + HTML + JUnit + Allure + Excel Bug Report
@@ -62,6 +62,20 @@ export default defineConfig({
     // Application URL
     baseURL: process.env.BASE_URL || 'https://gctp.in',
 
+    // Optional runner-specific request identity and headers
+    userAgent: process.env.PLAYWRIGHT_USER_AGENT || process.env.USER_AGENT,
+    extraHTTPHeaders: (() => {
+      const rawHeaders = process.env.EXTRA_HEADERS;
+      if (!rawHeaders) return undefined;
+      try {
+        return JSON.parse(rawHeaders);
+      } catch (error) {
+        throw new Error(
+          `EXTRA_HEADERS must be valid JSON: ${(error as Error).message}`
+        );
+      }
+    })(),
+
     // Browser mode:
     // HEADLESS=false -> Show browser locally
     // HEADLESS=true  -> Run browser in background
@@ -74,8 +88,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
 
     // Timeouts
-    actionTimeout: 60000,
-    navigationTimeout: 120000,
+    actionTimeout: 30000,
+    navigationTimeout: 45000,
 
     // Browser settings
     ignoreHTTPSErrors: true,
@@ -114,6 +128,7 @@ export default defineConfig({
     {
       name: 'chromium',
       testIgnore: /(?:cms-vs-website-comparison[\\/].*\.spec\.ts|cms-abt-tamil[\\/].*\.spec\.ts|auth\.setup\.ts)/,
+      dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
         bypassCSP: true,
