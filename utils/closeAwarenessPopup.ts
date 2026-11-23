@@ -1,95 +1,55 @@
 import { expect, Page } from '@playwright/test';
 
-const POPUP_SELECTOR =
-  '.flash-popup-overlay:visible, .flash-popup:visible, .modal.show:visible, [role="dialog"]:visible, [class*="popup"]:visible';
-
-const OVERLAY_SELECTOR = '.flash-popup-overlay, .flash-popup, .modal.show, [role="dialog"], [class*="popup"]';
-
-async function forceRemovePopup(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const selectors = [
-      '.flash-popup-overlay',
-      '.flash-popup',
-      '.modal.show',
-      '[role="dialog"]',
-      '.popup',
-      '.modal',
-      '.modal-backdrop',
-      '.overlay',
-    ];
-
-    for (const selector of selectors) {
-      document.querySelectorAll(selector).forEach((element) => {
-        const htmlElement = element as HTMLElement;
-        htmlElement.style.display = 'none';
-        htmlElement.style.visibility = 'hidden';
-        htmlElement.style.opacity = '0';
-        htmlElement.style.pointerEvents = 'none';
-        htmlElement.setAttribute('aria-hidden', 'true');
-        htmlElement.removeAttribute('open');
-      });
-    }
-
-    document.body.classList.remove('modal-open');
-    document.querySelectorAll('.modal-backdrop, .overlay, .popup-overlay').forEach((element) => element.remove());
-  });
-}
+// Scoped explicitly to the awareness popup and flash overlay elements
+const POPUP_SELECTOR = '.flash-popup-overlay:visible, .flash-popup:visible';
 
 export async function closeAwarenessPopup(page: Page) {
-  // Directly check for popup visibility without initial overlay wait
   const popup = page.locator(POPUP_SELECTOR).first();
 
-  for (let attempt = 0; attempt < 4; attempt++) {
-    if (!(await popup.isVisible({ timeout: 500 }).catch(() => false))) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const isVisible = await popup.isVisible();
+    if (!isVisible) {
       break;
     }
 
+    // Scoped specifically inside the awareness popup to avoid clicking unrelated page buttons
     const closeCandidates = [
-      page.locator('.flash-close-btn:visible').first(),
-      page.getByRole('button', { name: /^(close|✕|×)$/i }).first(),
-      popup.locator('button[aria-label="Close"]').first(),
-      popup.locator('button[aria-label="close"]').first(),
-      popup.locator('[data-bs-dismiss="modal"]').first(),
-      popup.locator('[data-dismiss="modal"]').first(),
-      popup.locator('button.close').first(),
-      popup.locator('.btn-close').first(),
-      popup.locator('button:has-text("Close")').first(),
-      popup.locator('button:has-text("Dismiss")').first(),
-      popup.locator('button').first(),
+      popup.locator('.flash-close-btn').first(),
+      popup.getByRole('button', { name: /^(close|✕|×)$/i }).first(),
+      popup.locator('button[aria-label="Close"], button[aria-label="close"]').first(),
+      popup.locator('[data-bs-dismiss="modal"], [data-dismiss="modal"]').first(),
+      popup.locator('button.close, .btn-close').first(),
+      popup.locator('button:has-text("Close"), button:has-text("Dismiss")').first(),
     ];
 
     let dismissed = false;
 
     for (const candidate of closeCandidates) {
-      if (!(await candidate.isVisible().catch(() => false))) {
+      const candidateVisible = await candidate.isVisible().catch(() => false);
+      if (!candidateVisible) {
         continue;
       }
 
-      dismissed = await candidate
-        .click({ force: true, timeout: 1500 })
-        .then(() => true)
-        .catch(() => false);
-
-      if (dismissed) {
+      try {
+        // Normal Playwright click scoped within the popup
+        await candidate.click({ timeout: 2000 });
+        dismissed = true;
         break;
+      } catch {
+        // If clicking this candidate fails or is intercepted, continue to the next candidate
+        // without prematurely aborting or hiding genuine test failures.
+        continue;
       }
     }
 
     if (!dismissed) {
-      await page.keyboard.press('Escape').catch(() => undefined);
+      await page.keyboard.press('Escape');
     }
 
-    // Wait until the overlay/popup is hidden or removed after dismissal action
-    await popup.waitFor({ state: 'hidden', timeout: 2000 }).catch(() => undefined);
+    // Await natural popup and overlay disappearance
+    await popup.waitFor({ state: 'hidden', timeout: 3000 });
   }
 
-  // Fallback to DOM removal if popup remains visible
-  if (await popup.isVisible({ timeout: 500 }).catch(() => false)) {
-    await forceRemovePopup(page);
-  }
-
-  // Ensure overlay/popup is actually hidden/removed so pointer events are not intercepted
-  await expect(page.locator(POPUP_SELECTOR).first()).toBeHidden({
-    timeout: 3000,
-  });
+  // Ensure overlay/popup is fully hidden before subsequent interactions (e.g. language selection)
+  await expect(popup).toBeHidden({ timeout: 5000 });
 }
