@@ -3,6 +3,8 @@ import { expect, Page } from '@playwright/test';
 const POPUP_SELECTOR =
   '.flash-popup-overlay:visible, .flash-popup:visible, .modal.show:visible, [role="dialog"]:visible, [class*="popup"]:visible';
 
+const OVERLAY_SELECTOR = '.flash-popup-overlay, .flash-popup, .modal.show, [role="dialog"], [class*="popup"]';
+
 async function forceRemovePopup(page: Page): Promise<void> {
   await page.evaluate(() => {
     const selectors = [
@@ -34,15 +36,12 @@ async function forceRemovePopup(page: Page): Promise<void> {
 }
 
 export async function closeAwarenessPopup(page: Page) {
+  // Directly check for popup visibility without initial overlay wait
   const popup = page.locator(POPUP_SELECTOR).first();
 
   for (let attempt = 0; attempt < 4; attempt++) {
-    if (!(await popup.isVisible({ timeout: 1500 }).catch(() => false))) {
-      await page.waitForTimeout(500);
-      if (!(await popup.isVisible({ timeout: 500 }).catch(() => false))) {
-        return;
-      }
-      continue;
+    if (!(await popup.isVisible({ timeout: 500 }).catch(() => false))) {
+      break;
     }
 
     const closeCandidates = [
@@ -80,18 +79,17 @@ export async function closeAwarenessPopup(page: Page) {
       await page.keyboard.press('Escape').catch(() => undefined);
     }
 
-    await page.waitForTimeout(300);
-
-    if (!(await popup.isVisible({ timeout: 1000 }).catch(() => false))) {
-      await page.waitForTimeout(500);
-      if (!(await popup.isVisible({ timeout: 500 }).catch(() => false))) {
-        return;
-      }
-    }
+    // Wait until the overlay/popup is hidden or removed after dismissal action
+    await popup.waitFor({ state: 'hidden', timeout: 2000 }).catch(() => undefined);
   }
 
-  await forceRemovePopup(page);
+  // Fallback to DOM removal if popup remains visible
+  if (await popup.isVisible({ timeout: 500 }).catch(() => false)) {
+    await forceRemovePopup(page);
+  }
+
+  // Ensure overlay/popup is actually hidden/removed so pointer events are not intercepted
   await expect(page.locator(POPUP_SELECTOR).first()).toBeHidden({
-    timeout: 2000,
+    timeout: 3000,
   });
 }

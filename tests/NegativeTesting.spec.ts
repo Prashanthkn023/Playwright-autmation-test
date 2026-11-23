@@ -140,12 +140,32 @@ test.describe('Negative Testing Suite', () => {
       if (!ALLOW_PRODUCTION_SUBMISSIONS) {
         test.skip(true, 'Skipping complaint submission test to protect production data.');
       }
+
+      // Block the OTP-dispatch call before the complaint page is opened.
+      // ComplaintPage.submitComplaint() sends this POST only after a valid form.
+      let citizenLoginPostCount = 0;
+      await page.route('**/citizen/login', async route => {
+        if (route.request().method() === 'POST') {
+          citizenLoginPostCount += 1;
+          await route.abort('blockedbyclient');
+          return;
+        }
+        await route.continue();
+      });
+
       await home.openHomePage();
       await home.openComplaint();
       await complaint.verifyComplaintPage();
-      await complaint.clickSubmit();
-      // Expected: Validation errors on required fields
+
+      // An empty form keeps Validate disabled, so the click must not start CAPTCHA or OTP.
+      // A normal click waits until the control is enabled; force is used only after the
+      // disabled assertion so a disabled control can be clicked once without waiting.
+      await expect(complaint.submitButton).toBeDisabled();
+      await complaint.submitButton.click({ force: true });
+
+      expect(citizenLoginPostCount, 'Empty complaint form must not request an OTP').toBe(0);
       expect(page.url()).toContain('complaints');
+      await expect(complaint.heading).toBeVisible();
     });
 
     test('NEG-09: Upload PDF instead of supported JPG/PNG in complaint form', async ({ home, complaint, page }) => {
