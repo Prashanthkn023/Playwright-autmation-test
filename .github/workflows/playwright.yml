@@ -20,7 +20,7 @@ name: Playwright Tests
 jobs:
   test:
     name: Run Playwright Tests
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     # GitHub-hosted runner
     runs-on: ubuntu-latest
@@ -31,6 +31,9 @@ jobs:
       GCTP_BASE_URL: ${{ vars.GCTP_BASE_URL }}
       CMS_MODULE_URL: ${{ vars.CMS_MODULE_URL }}
       CMS_BASE_URL: ${{ vars.CMS_BASE_URL }}
+      CMS_URL: ${{ vars.CMS_URL }}
+      USER_AGENT: ${{ vars.USER_AGENT }}
+      EXTRA_HEADERS: ${{ vars.EXTRA_HEADERS }}
 
       GEMINI_AGENT: ${{ vars.GEMINI_AGENT }}
 
@@ -223,6 +226,17 @@ jobs:
         with:
           name: test-results
           path: test-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload Playwright Traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: |
+            test-results/**/trace.zip
+            test-results/trace.zip
           if-no-files-found: warn
           retention-days: 14
 

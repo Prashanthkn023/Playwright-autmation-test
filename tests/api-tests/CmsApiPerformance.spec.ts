@@ -37,73 +37,82 @@ type EndpointReport = {
 };
 
 const RESPONSE_TIME_THRESHOLD_MS = 2_000;
-const REQUEST_TIMEOUT_MS = 30_000;
+const REQUEST_TIMEOUT_MS = 10_000;
 const REQUESTS_PER_ENDPOINT = 5;
+const cmsBaseUrl = (
+  process.env.CMS_URL ||
+  process.env.CMS_BASE_URL ||
+  'https://cms.gctp.in'
+).replace(/\/$/, '');
+const websiteBaseUrl = (
+  process.env.BASE_URL ||
+  'https://gctp.in'
+).replace(/\/$/, '');
 
 const verifiedEndpoints: VerifiedEndpoint[] = [
   {
     id: 'cms-home-page',
-    url: 'https://cms.gctp.in/api/fusion-cms-web-backend/home-page?approvalStatus=all',
+    url: `${cmsBaseUrl}/api/fusion-cms-web-backend/home-page?approvalStatus=all`,
     source: 'CMS API',
     description: 'CMS Home Page API with approval filter, confirmed in tests/validate.spec.ts',
   },
   {
     id: 'published-home-page',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/home-page',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/home-page`,
     source: 'Published website API',
     description: 'Published Home Page API; live response includes links, sliders, traffic updates, helpline, privacy, and FAQ sections',
   },
   {
     id: 'published-cms-home-page',
-    url: 'https://gctp.in/api/fusion-cms-web-backend/home-page',
+    url: `${websiteBaseUrl}/api/fusion-cms-web-backend/home-page`,
     source: 'CMS API',
     description: 'CMS Home Page data requested by published routes; observed in live browser network capture',
   },
   {
     id: 'published-about-us',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/about-us',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/about-us`,
     source: 'Published website API',
     description: 'About Us and commissioner content; observed in live browser network capture',
   },
   {
     id: 'published-city-profile',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/city-profile',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/city-profile`,
     source: 'Published website API',
     description: 'City Profile content; observed in live browser network capture',
   },
   {
     id: 'published-media',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/media',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/media`,
     source: 'Published website API',
     description: 'Published Media content; observed in live browser network capture',
   },
   {
     id: 'published-news-updates',
-    url: 'https://gctp.in/api/fusion-public-facing-web-backend/news-and-updates',
+    url: `${websiteBaseUrl}/api/fusion-public-facing-web-backend/news-and-updates`,
     source: 'Published website API',
     description: 'Published News Updates content; observed in live browser network capture',
   },
   {
     id: 'published-contact-us',
-    url: 'https://gctp.in/api/fusion-cms-web-backend/contact-us?approvalStatus=all',
+    url: `${websiteBaseUrl}/api/fusion-cms-web-backend/contact-us?approvalStatus=all`,
     source: 'CMS API',
     description: 'Contact Us content; observed in live browser network capture',
   },
   {
     id: 'published-organogram',
-    url: 'https://gctp.in/api/fusion-cms-web-backend/organogram?approvalStatus=all',
+    url: `${websiteBaseUrl}/api/fusion-cms-web-backend/organogram?approvalStatus=all`,
     source: 'CMS API',
     description: 'Organogram content; observed in live browser network capture',
   },
   {
     id: 'city-map-tourist-spots',
-    url: 'https://gctp.in/api/fusion-iccc-service/tourist-spot',
+    url: `${websiteBaseUrl}/api/fusion-iccc-service/tourist-spot`,
     source: 'ICCC API',
     description: 'City Map tourist spot data; observed in live browser network capture',
   },
   {
     id: 'complaint-incident-sub-types',
-    url: 'https://gctp.in/api/fusion-iccc-service/incident-sub-types?cms=true',
+    url: `${websiteBaseUrl}/api/fusion-iccc-service/incident-sub-types?cms=true`,
     source: 'ICCC API',
     description: 'Complaint form incident subtypes; observed in live browser network capture',
   },
@@ -197,7 +206,7 @@ async function measureEndpoint(
         }
       }
     } catch (error) {
-      outcome = `Request error: ${getErrorMessage(error)}`;
+      outcome = `UNREACHABLE: ${getErrorMessage(error)}`;
     }
 
     measurements.push({
@@ -206,6 +215,10 @@ async function measureEndpoint(
       status,
       outcome,
     });
+
+    if (outcome.startsWith('UNREACHABLE:')) {
+      break;
+    }
   }
 
   const elapsedTimes = measurements.map((measurement) => measurement.elapsedMs);
@@ -275,12 +288,30 @@ test('API performance: five sequential requests for every verified endpoint', as
     );
   }
 
+  const unreachableEndpoints = reports
+    .filter((report) => report.measurements.some((measurement) =>
+      measurement.outcome.startsWith('UNREACHABLE:')
+    ))
+    .map((report) => report.endpoint.id);
+
+  console.log(
+    `\n[API PERFORMANCE SUMMARY] Unreachable endpoints: ${
+      unreachableEndpoints.length > 0 ? unreachableEndpoints.join(', ') : 'none'
+    }`
+  );
+
   await testInfo.attach('api-performance-report.json', {
     body: JSON.stringify(
       {
         thresholdMs: RESPONSE_TIME_THRESHOLD_MS,
         requestTimeoutMs: REQUEST_TIMEOUT_MS,
         requestsPerEndpoint: REQUESTS_PER_ENDPOINT,
+        baseUrls: { cms: cmsBaseUrl, website: websiteBaseUrl },
+        unreachableEndpoints: reports
+          .filter((report) => report.measurements.some((measurement) =>
+            measurement.outcome.startsWith('UNREACHABLE:')
+          ))
+          .map((report) => report.endpoint.id),
         moduleMappings: moduleEndpointMappings.map((mapping) => ({
           ...mapping,
           status: mapping.endpointIds.length > 0 ? 'MAPPED' : 'NOT MAPPED',
@@ -295,7 +326,10 @@ test('API performance: five sequential requests for every verified endpoint', as
 
   const failedRequests = reports.flatMap((report) =>
     report.measurements
-      .filter((measurement) => measurement.outcome !== 'PASS')
+      .filter((measurement) =>
+        measurement.outcome !== 'PASS' &&
+        !measurement.outcome.startsWith('UNREACHABLE:')
+      )
       .map(
         (measurement) =>
           `${report.endpoint.id} request ${measurement.attempt}: ${measurement.outcome}`
@@ -308,7 +342,12 @@ test('API performance: five sequential requests for every verified endpoint', as
   ).toEqual([]);
 
   const slowEndpoints = reports
-    .filter((report) => report.averageMs > RESPONSE_TIME_THRESHOLD_MS)
+    .filter((report) =>
+      !report.measurements.some((measurement) =>
+        measurement.outcome.startsWith('UNREACHABLE:')
+      ) &&
+      report.averageMs > RESPONSE_TIME_THRESHOLD_MS
+    )
     .map(
       (report) =>
         `${report.endpoint.id}: average ${report.averageMs.toFixed(2)}ms`

@@ -3,15 +3,38 @@ import { loginToConfiguredCms, hasCmsSession, isLoginFormVisible } from '../util
 import fs from 'fs';
 import path from 'path';
 
-const cmsUrl = process.env.CMS_BASE_URL || 'https://cms.gctp.in/';
+const cmsUrl = (
+  process.env.CMS_URL ||
+  process.env.CMS_BASE_URL ||
+  'https://cms.gctp.in/'
+).replace(/\/$/, '');
+const baseUrl = process.env.BASE_URL || 'https://gctp.in';
 const finalAuthFile = 'playwright/.auth/cms-state.json';
 const tempAuthFile = 'playwright/.auth/temp-cms-state.json';
 
-setup('authenticate CMS session', async ({ page, browser }) => {
-  setup.setTimeout(180000);
+setup('authenticate CMS session', async ({ page, browser, request }) => {
+  setup.setTimeout(90000);
   console.log('\n============================================================');
   console.log('CENTRALIZED CMS AUTHENTICATION SETUP');
   console.log('============================================================');
+
+  for (const [name, url] of [
+    ['CMS', cmsUrl],
+    ['published website', baseUrl],
+  ] as const) {
+    try {
+      const response = await request.get(url, { timeout: 10000 });
+      if (response.status() >= 500) {
+        throw new Error(`health check returned HTTP ${response.status()}`);
+      }
+      console.log(`[HEALTH] ${name} reachable: ${url} (HTTP ${response.status()})`);
+    } catch (error) {
+      throw new Error(
+        `Target site unreachable from this runner: ${name} (${url}). ` +
+        `${(error as Error).message}`
+      );
+    }
+  }
 
   // Ensure the auth directory exists
   const authDir = path.dirname(finalAuthFile);
@@ -76,7 +99,7 @@ setup('authenticate CMS session', async ({ page, browser }) => {
     console.log(`Navigating to protected URL: ${protectedUrl}`);
     await freshPage.goto(protectedUrl, {
       waitUntil: 'domcontentloaded',
-      timeout: 120000
+      timeout: 45000
     });
 
     // 1. Verify the login form is absent
