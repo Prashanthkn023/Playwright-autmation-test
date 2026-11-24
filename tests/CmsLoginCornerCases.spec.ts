@@ -309,7 +309,7 @@ test.describe('CMS Login and Forgot Password Corner Cases Suite', () => {
     });
 
     test('COR-FP-09: Slow network during recovery', async ({ page }) => {
-      test.setTimeout(120000);
+      test.setTimeout(180000);
       const client = await page.context().newCDPSession(page);
       await client.send('Network.emulateNetworkConditions', {
         offline: false,
@@ -321,7 +321,7 @@ test.describe('CMS Login and Forgot Password Corner Cases Suite', () => {
       const loginPage = new CmsLoginPage(page);
       // Increased timeout for slow network
       await loginPage.navigateToLogin(180000);
-      await loginPage.waitForLoginPage();
+      await loginPage.waitForLoginPage(60000);
 
       await loginPage.openForgotPassword();
       await loginPage.enterRecoveryEmail('test@gctp.in');

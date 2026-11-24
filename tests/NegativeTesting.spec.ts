@@ -101,7 +101,7 @@ test.describe('Negative Testing Suite', () => {
       expect(interceptedFeedbackApi).toBe(false);
     });
 
-    test('NEG-05: Enter invalid email or text format in feedback', async ({ home, feedback }) => {
+    test('NEG-05: Enter markup and special characters in feedback message', async ({ home, feedback }) => {
       await home.openHomePage();
       await home.openFeedback();
       await feedback.verifyFeedbackPage();

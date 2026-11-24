@@ -50,9 +50,11 @@ test.describe('Corner Case Testing Suite', () => {
         buffer: zeroByteFile.buffer
       });
 
-      // File input should handle zero-byte gracefully
-      const val = await complaint.uploadInput.inputValue();
-      expect(val || 'zero-byte.jpg').toBeTruthy();
+      // Verify file is attached and properties are correct
+      const fileHandle = await complaint.uploadInput.evaluateHandle(el => (el as HTMLInputElement).files![0]);
+      expect(await fileHandle.evaluate(f => f.name)).toBe('zero-byte.jpg');
+      expect(await fileHandle.evaluate(f => f.size)).toBe(0);
+      expect(await fileHandle.evaluate(f => f.type)).toBe('image/jpeg');
     });
   });
 

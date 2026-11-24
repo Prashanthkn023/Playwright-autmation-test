@@ -34,14 +34,28 @@ export class CmsLoginPage extends BasePage {
   }
 
   async navigateToLogin(timeout = 60000) {
-    await this.page.goto('https://cms.gctp.in', { waitUntil: 'domcontentloaded', timeout });
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await this.page.goto('https://cms.gctp.in', { waitUntil: 'domcontentloaded', timeout });
+        break;
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('ERR_NETWORK_CHANGED') && attempt < maxAttempts) {
+          console.warn(`Navigation hit net::ERR_NETWORK_CHANGED on attempt ${attempt}. Retrying...`);
+          await this.page.waitForTimeout(2000);
+          continue;
+        }
+        throw error;
+      }
+    }
     // Allow natural application redirect to occur without forcing a specific URL
     await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     await closeAwarenessPopup(this.page).catch(() => {});
   }
 
-  async waitForLoginPage() {
-    await expect(this.emailInput).toBeVisible({ timeout: 15000 });
+  async waitForLoginPage(timeout = 15000) {
+    await expect(this.emailInput).toBeVisible({ timeout });
   }
 
   async enterEmail(email: string) {
