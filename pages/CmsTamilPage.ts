@@ -9,10 +9,25 @@ export class CmsTamilPage extends BasePage {
   }
 
   async navigateToTamil() {
-    await this.page.goto('https://gctp.in/chennai-home', {
-      waitUntil: 'domcontentloaded',
-      timeout: 120000,
-    });
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await this.page.goto('https://gctp.in/chennai-home', {
+          waitUntil: 'domcontentloaded',
+          timeout: 120000,
+        });
+        break;
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('ERR_NETWORK_CHANGED') && attempt < maxAttempts) {
+          console.warn(`Navigation hit net::ERR_NETWORK_CHANGED on attempt ${attempt}. Retrying...`);
+          await this.page.waitForTimeout(2000);
+          continue;
+        }
+        throw error;
+      }
+    }
+
     await this.closeAnyPopup();
 
     // Select Tamil

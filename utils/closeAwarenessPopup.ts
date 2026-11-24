@@ -13,6 +13,12 @@ export async function closeAwarenessPopup(page: Page): Promise<void> {
     const overlay = page.locator('.flash-popup-overlay:visible').first();
     const popup = page.locator('.flash-popup:visible').first();
 
+    // Check briefly with a short timeout if a popup/overlay appears asynchronously,
+    // avoiding unnecessary delays when no popup is present.
+    try {
+      await overlay.waitFor({ state: 'visible', timeout: 1500 }).catch(() => {});
+    } catch {}
+
     const isOverlayVisible = await overlay.isVisible().catch(() => false);
     const isPopupVisible = await popup.isVisible().catch(() => false);
 
@@ -34,8 +40,6 @@ export async function closeAwarenessPopup(page: Page): Promise<void> {
         try {
           await closeBtn.click({ timeout: 2000 });
         } catch (error: unknown) {
-          // If the element is detached during clicking, it is already unmounting/closing.
-          // For any other error, propagate it normally to avoid hiding real issues.
           const errorMessage = error instanceof Error ? error.message : String(error);
           if (!errorMessage.includes('detached') && !errorMessage.includes('hidden')) {
             throw error;
