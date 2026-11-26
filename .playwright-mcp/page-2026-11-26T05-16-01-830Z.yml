@@ -1,0 +1,176 @@
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - banner [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: Greater Chennai Traffic Police
+            - generic [ref=e14]: சென்னை பெருநகர போக்குவரத்து காவல்துறை
+          - generic [ref=e20]:
+            - combobox [ref=e253]
+            - group [aria-hidden]
+          - generic [ref=e22]:
+            - text: LOGIN
+            - generic [ref=e25]:
+              - combobox [ref=e26] [cursor=pointer]: English
+              - textbox [aria-hidden]: en
+              - group [aria-hidden]
+            - button [ref=e254] [cursor=pointer]
+            - link [ref=e255] [cursor=pointer]:
+              - /url: https://www.facebook.com/ChennaiTrafficPolice/
+            - link [ref=e256] [cursor=pointer]:
+              - /url: https://www.instagram.com/chennaitrafficpolice/?hl=en
+            - link [ref=e257] [cursor=pointer]:
+              - /url: https://twitter.com/chennaitraffic
+            - link [ref=e258] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCiTcc4YXEGDux20wS7HGR-g
+      - navigation [ref=e41]:
+        - list [ref=e42]:
+          - listitem [ref=e43]:
+            - link [ref=e259] [cursor=pointer]:
+              - /url: /chennai-home
+              - text: Home
+              - link [ref=e45]:
+                - /url: /chennai-Cms
+          - listitem [ref=e48]:
+            - link "About Us" [ref=e49] [cursor=pointer]:
+              - /url: "#"
+              - text: About Us
+              - link [ref=e52]:
+                - /url: /chennai-ctp-Cms
+          - listitem [ref=e55]:
+            - link "City Profile" [ref=e56] [cursor=pointer]:
+              - /url: /city-profile
+              - text: City Profile
+              - link [ref=e57]:
+                - /url: /chennai-cityprofile-Cms
+          - listitem [ref=e60]:
+            - link "City Map" [ref=e61] [cursor=pointer]:
+              - /url: /chennai_map
+          - listitem [ref=e62]:
+            - link "Media" [ref=e63] [cursor=pointer]:
+              - /url: /chennai-media
+              - text: Media
+              - link [ref=e64]:
+                - /url: /chennai-media-Cms
+          - listitem [ref=e67]:
+            - link "News" [ref=e68] [cursor=pointer]:
+              - /url: /chennai-news-updates
+              - text: News
+              - link [ref=e69]:
+                - /url: /chennai-updates-Cms
+          - listitem [ref=e72]:
+            - link [ref=e260] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e74]: VehicleChallan
+          - listitem [ref=e77]:
+            - link "TamilNaduPolice" [ref=e78] [cursor=pointer]:
+              - /url: https://www.police.tn.gov.in/citizenportal
+          - listitem [ref=e79]:
+            - link "Contact Us" [ref=e80] [cursor=pointer]:
+              - /url: /chennai-contactus
+              - text: Contact Us
+              - link [ref=e81]:
+                - /url: /chennai-contactus-Cms
+    - generic [ref=e85]:
+      - generic [ref=e115]:
+        - generic [ref=e118]:
+          - button [ref=e261] [cursor=pointer]
+          - generic [ref=e129] [cursor=pointer]:
+            - generic [ref=e130]: AI enabled Traffic Junction
+            - button [ref=e263]: Read More
+            - generic [ref=e132]: 1/1
+          - button [ref=e264] [cursor=pointer]
+        - generic [ref=e137]:
+          - generic [ref=e138]: Traffic Updates
+          - generic [ref=e139]:
+            - generic [ref=e143]:
+              - generic [ref=e144]: Wear Helmet
+              - generic [ref=e145]: Wearing a helmet is mandatory in Chennai for all two-wheeler riders or else you will be fined.
+            - generic [ref=e150]:
+              - generic [ref=e151]: Safer Pedestrian Walk
+              - generic [ref=e153]:
+                - text: To ensure safer pedestrian walks in Chennai, it's crucial to prioritize visibility, awareness, and d...
+                - generic [ref=e154] [cursor=pointer]: Read More
+      - generic [ref=e156]:
+        - generic [ref=e157]: Helpline
+        - generic [ref=e158]:
+          - generic [ref=e159]: COP SMS-9500099100
+          - generic [ref=e160]: Bandham-94499957575
+          - generic [ref=e161]: Kaaval karangal-9444717100
+          - generic [ref=e162]: Women Helpline- 1091
+          - generic [ref=e163]: Senior Citizen-1253
+      - button [ref=e267] [cursor=pointer]
+      - button [ref=e268] [cursor=pointer]
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]: Smart Traffic Management & Technology in Chennai
+          - generic [ref=e174]:
+            - generic [ref=e175]: Smart Traffic Management & Technology in Chennai
+            - paragraph [ref=e176]:
+              - generic [ref=e177]: To leverage modern technology for efficient, data-driven traffic management and congestion reduction...
+            - button [ref=e269] [cursor=pointer]: Read More
+        - generic [ref=e179]:
+          - generic [ref=e180]: GCTP – Ensuring Safe and Seamless Mobility
+          - generic [ref=e181]:
+            - generic [ref=e182]: GCTP – Ensuring Safe and Seamless Mobility
+            - paragraph [ref=e183]:
+              - generic [ref=e184]: To enforce traffic laws, reduce violations, and maintain discipline on roads. E‑Challan System Aut...
+            - button [ref=e270] [cursor=pointer]: Read More
+        - generic [ref=e186]:
+          - generic [ref=e187]: Road Safety Awareness
+          - generic [ref=e188]:
+            - generic [ref=e189]: Road Safety Awareness
+            - paragraph [ref=e190]:
+              - generic [ref=e191]: To reduce accidents and promote responsible road usage among all citizens. Helmet & Seatbelt – Ma...
+            - button [ref=e271] [cursor=pointer]: Read More
+        - generic [ref=e193]:
+          - generic [ref=e194]: Traffic Hand Signals
+          - generic [ref=e195]:
+            - generic [ref=e196]: Traffic Hand Signals
+            - paragraph [ref=e197]:
+              - generic [ref=e198]: To ensure smooth and safe movement of vehicles and pedestrians, especially at junctions where signal...
+            - button [ref=e272] [cursor=pointer]: Read More
+      - generic [ref=e96]:
+        - button [ref=e273] [cursor=pointer]
+        - generic [ref=e100]:
+          - link [ref=e274] [cursor=pointer]:
+            - /url: https://tnsta.gov.in/
+            - generic [ref=e204]: TNRTO
+          - link [ref=e276] [cursor=pointer]:
+            - /url: https://www.police.tn.gov.in/citizenportal
+            - generic [ref=e214]: Tamilnadu Police Citizen Portal
+          - link [ref=e278] [cursor=pointer]:
+            - /url: https://parivahan.gov.in/
+            - generic [ref=e224]: Parivahan
+          - link [ref=e280] [cursor=pointer]:
+            - /url: https://www.tn.gov.in/
+            - generic [ref=e234]: TN Govt Web
+        - button [ref=e282] [cursor=pointer]
+      - generic [ref=e104]:
+        - generic [ref=e241]:
+          - link [ref=e283] [cursor=pointer]:
+            - /url: /chennai-feedback
+            - text: Feedback
+          - link [ref=e284] [cursor=pointer]:
+            - /url: /chennai-sitemap
+            - text: Site Map
+          - link [ref=e285] [cursor=pointer]:
+            - /url: /chennai-PRIVACYPOLICY
+            - text: Privacy Policy
+          - link [ref=e286] [cursor=pointer]:
+            - /url: /chennai-complaints
+            - text: Complaints
+          - link [ref=e287] [cursor=pointer]:
+            - /url: /chennai-FAQs
+            - text: FAQ'S
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - generic [ref=e107]: "Website Content developed, Managed and Content owned by: Greater Chennai Traffic Police, Chennai"
+            - generic [ref=e108]: "Designed, Developed and Hosted by: L&T Technology Services (LTTS) Last Updated: 25-11-2026 16:58:02 Best Viewed: Google Chrome, Firefox"
+            - generic [ref=e109]: "Version : Fusion V1.2"
+          - paragraph [ref=e111]: "Number Of Visitors : 33603"
+  - menu [ref=e291]:
+    - menuitem "Profile" [active] [ref=e292] [cursor=pointer]
+    - menuitem "Change Password" [ref=e298] [cursor=pointer]
+    - menuitem "Logout" [ref=e304] [cursor=pointer]

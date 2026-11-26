@@ -37,7 +37,7 @@ export class CmsLoginPage extends BasePage {
     const maxAttempts = 3;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        await this.page.goto('https://cms.gctp.in', { waitUntil: 'domcontentloaded', timeout });
+        await this.page.goto('https://cms.gctp.in/chennai-Cms', { waitUntil: 'domcontentloaded', timeout });
         break;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -99,7 +99,7 @@ export class CmsLoginPage extends BasePage {
   }
 
   async openForgotPassword() {
-    await this.forgotPasswordButton.click({ force: true });
+    await this.forgotPasswordButton.click();
     await expect(this.forgotPasswordDialog).toBeVisible({ timeout: 10000 });
   }
 
